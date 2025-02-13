@@ -9,7 +9,7 @@ import torch
 cfg = get_cfg()
 cfg.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
 cfg.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.3
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.1
 cfg.MODEL.DEVICE = "cpu"
 predictor = DefaultPredictor(cfg)
 
@@ -34,7 +34,7 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Change codec to MP4-compatible
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 start_frame = 2210
-end_frame = 2212
+end_frame = 2230
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 frame_number = start_frame
@@ -52,7 +52,7 @@ try:
         outputs = predictor(frame_rgb)
 
         instances = outputs["instances"].to("cpu")
-        class_filter = torch.tensor([0])  # Allowed class IDs
+        class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
         mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
 
         # Apply the mask to filter instances
