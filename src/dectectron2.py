@@ -75,20 +75,22 @@ try:
         filtered_instances = instances[mask]
         
         # Save crop of people
-        for i, box in enumerate(filtered_instances.pred_boxes.tensor):
-            x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
-            
-            # Ensure bounding box is within frame dimensions
-            x1, y1 = max(0, x1), max(0, y1)
-            x2, y2 = min(width, x2), min(height, y2)
+        for i in range(len(filtered_instances)):
+            if filtered_instances.pred_classes[i].item() == 0:
+                box = filtered_instances.pred_boxes.tensor[i]
+                x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                
+                # Ensure bounding box is within frame dimensions
+                x1, y1 = max(0, x1), max(0, y1)
+                x2, y2 = min(width, x2), min(height, y2)
 
-            # Crop the region from the frame
-            cropped_img = frame[y1:y2, x1:x2]
+                # Crop the region from the frame
+                cropped_img = frame[y1:y2, x1:x2]
 
-            # Save the cropped image
-            if cropped_img.size > 0:  # Ensure it's not empty
-                filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
-                cv2.imwrite(filename, cropped_img)
+                # Save the cropped image
+                if cropped_img.size > 0:  # Ensure it's not empty
+                    filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
+                    cv2.imwrite(filename, cropped_img)
                 
 
         # Visualize results
