@@ -9,7 +9,7 @@ import torch
 cfg = get_cfg()
 cfg.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
 cfg.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.1
+cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.05
 cfg.MODEL.DEVICE = "cpu"
 predictor = DefaultPredictor(cfg)
 
@@ -29,14 +29,17 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test9.mp4"
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Change codec to MP4-compatible
+output_path = "test.mp4"
+fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 start_frame = 2210
 end_frame = 2230
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+
+# Thesholds
 min_person_area = 30000
+min_table_area = 400000
 
 frame_number = start_frame
 
@@ -60,8 +63,13 @@ try:
         
         mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
         
+        # Person filter
         spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
-        mask = mask & ~spectator_mask  # Remove small spectators
+        mask = mask & ~spectator_mask
+        
+        # Table filter
+        table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
+        mask = mask & ~table_mask
 
         # Apply the mask to filter instances
         filtered_instances = instances[mask]
