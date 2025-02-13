@@ -6,12 +6,21 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import torch
 
-cfg = get_cfg()
-cfg.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
-cfg.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.05
-cfg.MODEL.DEVICE = "cpu"
-predictor = DefaultPredictor(cfg)
+# Load the object detection model
+cfg_det = get_cfg()
+cfg_det.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
+cfg_det.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
+cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.05
+cfg_det.MODEL.DEVICE = "cpu"
+detector = DefaultPredictor(cfg_det)
+
+# Load the keypoint detection model
+cfg_kp = get_cfg()
+cfg_kp.merge_from_file(get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
+cfg_kp.MODEL.WEIGHTS = get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
+cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.8
+cfg_kp.MODEL.DEVICE = "cpu"
+keypoint_detector = DefaultPredictor(cfg_kp)
 
 video_path = "videos/game_1.mp4"
 cap = cv2.VideoCapture(video_path)
@@ -33,8 +42,8 @@ output_path = "test.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-start_frame = 2220
-end_frame = 2222
+start_frame = 2210
+end_frame = 2230
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 # Thesholds
@@ -53,9 +62,12 @@ try:
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Run inference
-        outputs = predictor(frame_rgb)
+        outputs = detector(frame_rgb)
+        keypoint_outputs = keypoint_detector(frame_rgb)
 
         instances = outputs["instances"].to("cpu")
+        keypoint_instances = keypoint_outputs["instances"].to("cpu")
+
         class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
         
         box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
@@ -92,13 +104,26 @@ try:
                     filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
                     cv2.imwrite(filename, cropped_img)
                 
-
+        keypoint_instances = keypoint_outputs["instances"].to("cpu")
+        
         # Visualize results
-        v = Visualizer(frame_rgb, MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-        vis = v.draw_instance_predictions(filtered_instances)
+        v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
+        vis_det = v_det.draw_instance_predictions(filtered_instances)
+        
+        v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
+        vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
         # Convert back to BGR for OpenCV
-        result_frame = cv2.cvtColor(vis.get_image(), cv2.COLOR_RGB2BGR)
+        # Convert both visualizations to images
+        image_det = vis_det.get_image()
+        image_kp = vis_kp.get_image()
+
+        # Blend the keypoints visualization with the detection visualization
+        alpha = 0.5  # Adjust transparency as needed
+        blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
+
+        # Convert back to BGR for OpenCV
+        result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
 
         # Ensure correct dtype
         result_frame = result_frame.astype("uint8")
