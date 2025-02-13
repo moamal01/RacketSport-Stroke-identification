@@ -4,6 +4,7 @@ from detectron2.model_zoo import get_config_file, get_checkpoint_url
 import cv2
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
+import torch
 
 cfg = get_cfg()
 cfg.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
@@ -28,7 +29,7 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "smash.mp4"
+output_path = "test.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Change codec to MP4-compatible
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
@@ -50,9 +51,16 @@ try:
         # Run inference
         outputs = predictor(frame_rgb)
 
+        instances = outputs["instances"].to("cpu")
+        class_filter = torch.tensor([0])  # Allowed class IDs
+        mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+
+        # Apply the mask to filter instances
+        filtered_instances = instances[mask]
+
         # Visualize results
         v = Visualizer(frame_rgb, MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
-        vis = v.draw_instance_predictions(outputs["instances"].to("cpu"))
+        vis = v.draw_instance_predictions(filtered_instances)
 
         # Convert back to BGR for OpenCV
         result_frame = cv2.cvtColor(vis.get_image(), cv2.COLOR_RGB2BGR)
