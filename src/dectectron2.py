@@ -29,13 +29,14 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test.mp4"
+output_path = "test9.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Change codec to MP4-compatible
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 start_frame = 2210
 end_frame = 2230
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+min_person_area = 30000
 
 frame_number = start_frame
 
@@ -53,7 +54,14 @@ try:
 
         instances = outputs["instances"].to("cpu")
         class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
+        
+        box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
+            (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
+        
         mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+        
+        spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
+        mask = mask & ~spectator_mask  # Remove small spectators
 
         # Apply the mask to filter instances
         filtered_instances = instances[mask]
