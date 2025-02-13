@@ -33,8 +33,8 @@ output_path = "test.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-start_frame = 2210
-end_frame = 2230
+start_frame = 2220
+end_frame = 2222
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 # Thesholds
@@ -73,6 +73,23 @@ try:
 
         # Apply the mask to filter instances
         filtered_instances = instances[mask]
+        
+        # Save crop of people
+        for i, box in enumerate(filtered_instances.pred_boxes.tensor):
+            x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+            
+            # Ensure bounding box is within frame dimensions
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(width, x2), min(height, y2)
+
+            # Crop the region from the frame
+            cropped_img = frame[y1:y2, x1:x2]
+
+            # Save the cropped image
+            if cropped_img.size > 0:  # Ensure it's not empty
+                filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
+                cv2.imwrite(filename, cropped_img)
+                
 
         # Visualize results
         v = Visualizer(frame_rgb, MetadataCatalog.get(cfg.DATASETS.TRAIN[0]), scale=1.2)
