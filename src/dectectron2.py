@@ -58,7 +58,7 @@ frame_number = start_frame
 
 with open(csv_filename, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Game", "Player_1 keypoints", "Player_2 keypoints"])
+    writer.writerow(["Path", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
 
     try:
         while cap.isOpened() and frame_number <= end_frame:
@@ -78,7 +78,7 @@ with open(csv_filename, mode="w", newline="") as file:
         
             
             # Save keypoints
-            writer.writerow(["game_1", keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
+            writer.writerow([video_path, 2185, frame_number, keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
 
             class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
             
