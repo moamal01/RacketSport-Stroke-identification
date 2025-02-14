@@ -38,12 +38,12 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test.mp4"
+output_path = "test2.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-start_frame = 2210
-end_frame = 2230
+start_frame = 2175
+end_frame = 2195
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 # Thesholds
@@ -119,7 +119,7 @@ try:
         image_kp = vis_kp.get_image()
 
         # Blend the keypoints visualization with the detection visualization
-        alpha = 0.5  # Adjust transparency as needed
+        alpha = 0.2  # Adjust transparency as needed
         blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
 
         # Convert back to BGR for OpenCV
