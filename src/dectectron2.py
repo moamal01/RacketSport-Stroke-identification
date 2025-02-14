@@ -1,10 +1,11 @@
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultPredictor
 from detectron2.model_zoo import get_config_file, get_checkpoint_url
-import cv2
 from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 import torch
+import cv2
+import csv
 
 # Load the object detection model
 cfg_det = get_cfg()
@@ -38,12 +39,15 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test2.mp4"
+output_path = "test3.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
+# CSV
+csv_filename = "keypoints.csv"
+
 start_frame = 2175
-end_frame = 2195
+end_frame = 2177
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 # Thesholds
@@ -62,11 +66,20 @@ try:
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         # Run inference
-        outputs = detector(frame_rgb)
         keypoint_outputs = keypoint_detector(frame_rgb)
+        outputs = detector(frame_rgb)
 
         instances = outputs["instances"].to("cpu")
         keypoint_instances = keypoint_outputs["instances"].to("cpu")
+        
+        # Save keypoints
+        with open(csv_filename, mode="w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["Game", "Keypoints"])
+
+            for kp_set in keypoint_instances.pred_keypoints:
+                kp_list = kp_set[:, :2].tolist()  # Convert to list, ignoring confidence
+                writer.writerow(["game_1", kp_list])  # Save to CSV
 
         class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
         
@@ -103,8 +116,7 @@ try:
                 if cropped_img.size > 0:  # Ensure it's not empty
                     filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
                     cv2.imwrite(filename, cropped_img)
-                
-        keypoint_instances = keypoint_outputs["instances"].to("cpu")
+
         
         # Visualize results
         v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
@@ -114,7 +126,6 @@ try:
         vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
         # Convert back to BGR for OpenCV
-        # Convert both visualizations to images
         image_det = vis_det.get_image()
         image_kp = vis_kp.get_image()
 
@@ -135,7 +146,7 @@ try:
         # Write frame to output video
         out.write(result_frame)
 
-        # Display the frame (optional)
+        # Display the frame
         cv2.imshow("Keypoints Detection", result_frame)
         key = cv2.waitKey(1) & 0xFF
         if key == ord("q"):
@@ -148,3 +159,4 @@ finally:
     out.release()
     cv2.destroyAllWindows()
     print("Video processing complete.")
+    print(f"Keypoints saved to {csv_filename}")
