@@ -56,107 +56,106 @@ min_table_area = 400000
 
 frame_number = start_frame
 
-try:
-    while cap.isOpened() and frame_number <= end_frame:
-        ret, frame = cap.read()
-        if not ret or frame is None:
-            print(f"End of video or error at frame {frame_number}")
-            break
+with open(csv_filename, mode="w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Game", "Player_1 keypoints", "Player_2 keypoints"])
 
-        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    try:
+        while cap.isOpened() and frame_number <= end_frame:
+            ret, frame = cap.read()
+            if not ret or frame is None:
+                print(f"End of video or error at frame {frame_number}")
+                break
 
-        # Run inference
-        keypoint_outputs = keypoint_detector(frame_rgb)
-        outputs = detector(frame_rgb)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        instances = outputs["instances"].to("cpu")
-        keypoint_instances = keypoint_outputs["instances"].to("cpu")
+            # Run inference
+            keypoint_outputs = keypoint_detector(frame_rgb)
+            outputs = detector(frame_rgb)
+
+            instances = outputs["instances"].to("cpu")
+            keypoint_instances = keypoint_outputs["instances"].to("cpu")
         
-        # Save keypoints
-        with open(csv_filename, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(["Game", "Keypoints"])
+            
+            # Save keypoints
+            writer.writerow(["game_1", keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
 
-            for kp_set in keypoint_instances.pred_keypoints:
-                kp_list = kp_set[:, :2].tolist()  # Convert to list, ignoring confidence
-                writer.writerow(["game_1", kp_list])  # Save to CSV
+            class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
+            
+            box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
+                (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
+            
+            mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+            
+            # Person filter
+            spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
+            mask = mask & ~spectator_mask
+            
+            # Table filter
+            table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
+            mask = mask & ~table_mask
 
-        class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
-        
-        box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
-            (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
-        
-        mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
-        
-        # Person filter
-        spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
-        mask = mask & ~spectator_mask
-        
-        # Table filter
-        table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
-        mask = mask & ~table_mask
+            # Apply the mask to filter instances
+            filtered_instances = instances[mask]
+            
+            # Save crop of people
+            for i in range(len(filtered_instances)):
+                if filtered_instances.pred_classes[i].item() == 0:
+                    box = filtered_instances.pred_boxes.tensor[i]
+                    x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                    
+                    # Ensure bounding box is within frame dimensions
+                    x1, y1 = max(0, x1), max(0, y1)
+                    x2, y2 = min(width, x2), min(height, y2)
 
-        # Apply the mask to filter instances
-        filtered_instances = instances[mask]
-        
-        # Save crop of people
-        for i in range(len(filtered_instances)):
-            if filtered_instances.pred_classes[i].item() == 0:
-                box = filtered_instances.pred_boxes.tensor[i]
-                x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
-                
-                # Ensure bounding box is within frame dimensions
-                x1, y1 = max(0, x1), max(0, y1)
-                x2, y2 = min(width, x2), min(height, y2)
+                    # Crop the region from the frame
+                    cropped_img = frame[y1:y2, x1:x2]
 
-                # Crop the region from the frame
-                cropped_img = frame[y1:y2, x1:x2]
+                    # Save the cropped image
+                    if cropped_img.size > 0:  # Ensure it's not empty
+                        filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
+                        cv2.imwrite(filename, cropped_img)
 
-                # Save the cropped image
-                if cropped_img.size > 0:  # Ensure it's not empty
-                    filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
-                    cv2.imwrite(filename, cropped_img)
+            
+            # Visualize results
+            v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
+            vis_det = v_det.draw_instance_predictions(filtered_instances)
+            
+            v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
+            vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
-        
-        # Visualize results
-        v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-        vis_det = v_det.draw_instance_predictions(filtered_instances)
-        
-        v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
-        vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
+            # Convert back to BGR for OpenCV
+            image_det = vis_det.get_image()
+            image_kp = vis_kp.get_image()
 
-        # Convert back to BGR for OpenCV
-        image_det = vis_det.get_image()
-        image_kp = vis_kp.get_image()
+            # Blend the keypoints visualization with the detection visualization
+            alpha = 0.2  # Adjust transparency as needed
+            blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
 
-        # Blend the keypoints visualization with the detection visualization
-        alpha = 0.2  # Adjust transparency as needed
-        blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
+            # Convert back to BGR for OpenCV
+            result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
 
-        # Convert back to BGR for OpenCV
-        result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
+            # Ensure correct dtype
+            result_frame = result_frame.astype("uint8")
 
-        # Ensure correct dtype
-        result_frame = result_frame.astype("uint8")
+            # Resize if necessary
+            if result_frame.shape[:2] != (height, width):
+                result_frame = cv2.resize(result_frame, (width, height))
 
-        # Resize if necessary
-        if result_frame.shape[:2] != (height, width):
-            result_frame = cv2.resize(result_frame, (width, height))
+            # Write frame to output video
+            out.write(result_frame)
 
-        # Write frame to output video
-        out.write(result_frame)
+            # Display the frame
+            cv2.imshow("Keypoints Detection", result_frame)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                print("User quit.")
+                break
 
-        # Display the frame
-        cv2.imshow("Keypoints Detection", result_frame)
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord("q"):
-            print("User quit.")
-            break
-
-        frame_number += 1
-finally:
-    cap.release()
-    out.release()
-    cv2.destroyAllWindows()
-    print("Video processing complete.")
-    print(f"Keypoints saved to {csv_filename}")
+            frame_number += 1
+    finally:
+        cap.release()
+        out.release()
+        cv2.destroyAllWindows()
+        print("Video processing complete.")
+        print(f"Keypoints saved to {csv_filename}")
