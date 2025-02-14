@@ -6,6 +6,7 @@ from detectron2.data import MetadataCatalog
 import torch
 import cv2
 import csv
+import json
 
 # Load the object detection model
 cfg_det = get_cfg()
@@ -26,6 +27,14 @@ keypoint_detector = DefaultPredictor(cfg_kp)
 video_path = "videos/game_1.mp4"
 cap = cv2.VideoCapture(video_path)
 
+# Get first frame
+with open("notebooks/empty_event_keys2.json", "r") as file:
+    loaded_keys = json.load(file)
+
+first_pair = list(loaded_keys.items())[0]
+key_frame = first_pair[0]
+value_frame = first_pair[1]
+
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -39,7 +48,7 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test3.mp4"
+output_path = "test4.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
@@ -58,7 +67,7 @@ frame_number = start_frame
 
 with open(csv_filename, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Path", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+    writer.writerow(["Path", "Stroke", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
 
     try:
         while cap.isOpened() and frame_number <= end_frame:
@@ -78,7 +87,7 @@ with open(csv_filename, mode="w", newline="") as file:
         
             
             # Save keypoints
-            writer.writerow([video_path, 2185, frame_number, keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
+            writer.writerow([video_path, value_frame, key_frame, frame_number, keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
 
             class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
             
