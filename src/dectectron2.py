@@ -28,8 +28,8 @@ video_path = "videos/game_1.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Get first frame
-with open("notebooks/empty_event_keys2.json", "r") as file:
-    loaded_keys = json.load(file)
+with open("notebooks/empty_event_keys2.json", "r") as keypoint_file:
+    loaded_keys = json.load(keypoint_file)
 
 first_pair = list(loaded_keys.items())[0]
 key_frame = first_pair[0]
@@ -53,7 +53,8 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-csv_filename = "keypoints.csv"
+keypoint_filename = "keypoints1.csv"
+bbox_filename = "bbox1.csv"
 
 start_frame = 2295
 end_frame = 2315
@@ -65,9 +66,12 @@ min_table_area = 400000
 
 frame_number = start_frame
 
-with open(csv_filename, mode="w", newline="") as file:
-    writer = csv.writer(file)
-    writer.writerow(["Path", "Stroke", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
+    keypoint_writer = csv.writer(keypoint_file)
+    bbox_writer = csv.writer(bbox_file)
+    
+    keypoint_writer.writerow(["Path", "Stroke", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+    bbox_writer.writerow(["Frame", "Class ID", "X1", "Y1", "X2", "Y2"])
 
     try:
         while cap.isOpened() and frame_number <= end_frame:
@@ -84,19 +88,19 @@ with open(csv_filename, mode="w", newline="") as file:
 
             instances = outputs["instances"].to("cpu")
             keypoint_instances = keypoint_outputs["instances"].to("cpu")
-            
+
             player_1_keypoints = []
             player_2_keypoints = []
-            
+
             for kp in keypoint_instances.pred_keypoints:
                 if kp[0, 0] < 700:
                     player_1_keypoints.append(kp)
                 elif kp[0, 0] > 1100:
                     player_2_keypoints.append(kp)
-                    
+
             # Ensure that they are not empty
             default_shape = (1, 17, 3)
-            
+
             if player_1_keypoints:
                 player_1_keypoints = torch.stack(player_1_keypoints)
             else:
@@ -106,16 +110,24 @@ with open(csv_filename, mode="w", newline="") as file:
                 player_2_keypoints = torch.stack(player_2_keypoints)
             else:
                 player_2_keypoints = torch.zeros(default_shape)
-            
+
             # Save keypoints
-            writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0][:, :2].tolist(), player_2_keypoints[0][:, :2].tolist()])
+            keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0].tolist(), player_2_keypoints[0].tolist()])
 
             class_filter = torch.tensor([32, 38, 60])  # Allowed class IDs
             
             box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
                 (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
             
-            mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+            mask = torch.isin(instances.pred_classes, class_filter)
+            correct_instances = instances[mask]
+            
+            # Save objects
+            for i in range(len(correct_instances)):
+                box = correct_instances.pred_boxes.tensor[i]
+                x1, y1, x2, y2 = map(int, box.tolist())
+                class_id = correct_instances.pred_classes[i].item()
+                bbox_writer.writerow([frame_number, class_id, x1, y1, x2, y2])
             
             # Person filter
             spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
@@ -188,4 +200,4 @@ with open(csv_filename, mode="w", newline="") as file:
         out.release()
         cv2.destroyAllWindows()
         print("Video processing complete.")
-        print(f"Keypoints saved to {csv_filename}")
+        print(f"Keypoints saved to {keypoint_filename}")
