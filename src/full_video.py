@@ -20,7 +20,7 @@ detector = DefaultPredictor(cfg_det)
 cfg_kp = get_cfg()
 cfg_kp.merge_from_file(get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
 cfg_kp.MODEL.WEIGHTS = get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
-cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.8
+cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.9
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
@@ -52,12 +52,12 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-csv_filename = "keypoints3.csv"
+csv_filename = "keypoints4.csv"
 
 # Main loop
 with open(csv_filename, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Path", "Stroke", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+    writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
     
     for key_frame, value_frame in loaded_keys.items():
         print(key_frame)
@@ -82,9 +82,31 @@ with open(csv_filename, mode="w", newline="") as file:
 
                 instances = outputs["instances"].to("cpu")
                 keypoint_instances = keypoint_outputs["instances"].to("cpu")
+                
+                player_1_keypoints = []
+                player_2_keypoints = []
+                
+                for kp in keypoint_instances.pred_keypoints:
+                    if kp[0, 0] < 700:
+                        player_1_keypoints.append(kp)
+                    elif kp[0, 0] > 1100:
+                        player_2_keypoints.append(kp)
+                        
+                # Ensure that they are not empty
+                default_shape = (1, 17, 3)
+                
+                if player_1_keypoints:
+                    player_1_keypoints = torch.stack(player_1_keypoints)
+                else:
+                    player_1_keypoints = torch.zeros(default_shape)
+
+                if player_2_keypoints:
+                    player_2_keypoints = torch.stack(player_2_keypoints)
+                else:
+                    player_2_keypoints = torch.zeros(default_shape)
             
                 # Save keypoints
-                writer.writerow([video_path, value_frame, key_frame, frame_number, keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
+                writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0][:, :2].tolist(), player_2_keypoints[0][:, :2].tolist()])
 
                 class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
                 

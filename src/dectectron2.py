@@ -48,15 +48,15 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test4.mp4"
+output_path = "test6.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
 csv_filename = "keypoints.csv"
 
-start_frame = 2175
-end_frame = 2177
+start_frame = 2295
+end_frame = 2315
 cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
 # Thesholds
@@ -67,7 +67,7 @@ frame_number = start_frame
 
 with open(csv_filename, mode="w", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["Path", "Stroke", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+    writer.writerow(["Path", "Stroke", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
 
     try:
         while cap.isOpened() and frame_number <= end_frame:
@@ -84,12 +84,33 @@ with open(csv_filename, mode="w", newline="") as file:
 
             instances = outputs["instances"].to("cpu")
             keypoint_instances = keypoint_outputs["instances"].to("cpu")
-        
+            
+            player_1_keypoints = []
+            player_2_keypoints = []
+            
+            for kp in keypoint_instances.pred_keypoints:
+                if kp[0, 0] < 700:
+                    player_1_keypoints.append(kp)
+                elif kp[0, 0] > 1100:
+                    player_2_keypoints.append(kp)
+                    
+            # Ensure that they are not empty
+            default_shape = (1, 17, 3)
+            
+            if player_1_keypoints:
+                player_1_keypoints = torch.stack(player_1_keypoints)
+            else:
+                player_1_keypoints = torch.zeros(default_shape)
+
+            if player_2_keypoints:
+                player_2_keypoints = torch.stack(player_2_keypoints)
+            else:
+                player_2_keypoints = torch.zeros(default_shape)
             
             # Save keypoints
-            writer.writerow([video_path, value_frame, key_frame, frame_number, keypoint_instances.pred_keypoints[0][:, :2].tolist(), keypoint_instances.pred_keypoints[1][:, :2].tolist()])  # Save to CSV
+            writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0][:, :2].tolist(), player_2_keypoints[0][:, :2].tolist()])
 
-            class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
+            class_filter = torch.tensor([32, 38, 60])  # Allowed class IDs
             
             box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
                 (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
