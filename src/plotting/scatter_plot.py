@@ -4,7 +4,7 @@ import ast
 import matplotlib.pyplot as plt
 
 # Load the keypoints
-df = pd.read_csv("keypoints3_saved.csv")
+df = pd.read_csv("keypoints4_saved.csv")
 keypoints = df["Player_1 keypoints"].apply(ast.literal_eval)
 
 # Define colors for each joint

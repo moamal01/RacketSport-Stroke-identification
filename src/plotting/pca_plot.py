@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-df = pd.read_csv("keypoints3_saved.csv")
+df = pd.read_csv("keypoints4_saved.csv")
 
 # Parse keypoints from strings
 def parse_keypoints(kp_str):
@@ -17,6 +17,8 @@ df["Player_1_features"] = df["Player_1 keypoints"].apply(parse_keypoints)
 
 # Combine features from both players
 X = np.vstack(df["Player_1_features"].values)
+
+print(df)
 
 # Normalize data
 scaler = StandardScaler()

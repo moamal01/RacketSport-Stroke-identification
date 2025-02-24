@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 
 # Sample DataFrame (Replace with actual DataFrame)
-df = pd.read_csv("keypoints3_saved.csv")
+df = pd.read_csv("keypoints3.csv")
 
 # Convert string representation to actual list
 keypoints = df["Player_1 keypoints"].apply(ast.literal_eval)
