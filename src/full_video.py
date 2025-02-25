@@ -7,12 +7,13 @@ import torch
 import cv2
 import csv
 import json
+import os
 
 # Load the object detection model
 cfg_det = get_cfg()
 cfg_det.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
 cfg_det.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.05
+cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_det.MODEL.DEVICE = "cpu"
 detector = DefaultPredictor(cfg_det)
 
@@ -31,8 +32,8 @@ cap = cv2.VideoCapture(video_path)
 min_person_area = 30000
 min_table_area = 400000
 
-with open("notebooks/empty_event_keys3.json", "r") as file:
-    loaded_keys = json.load(file)
+with open("notebooks/empty_event_keys3.json", "r") as keypoint_file:
+    loaded_keys = json.load(keypoint_file)
     
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -47,17 +48,21 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test4.mp4"
+output_path = "test7.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-csv_filename = "keypoints4.csv"
+keypoint_filename = "keypoints5.csv"
+bbox_filename = "bbox5.csv"
 
 # Main loop
-with open(csv_filename, mode="w", newline="") as file:
-    writer = csv.writer(file)
-    writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
+    keypoint_writer = csv.writer(keypoint_file)
+    bbox_writer = csv.writer(bbox_file)
+
+    keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
+    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "X1", "Y1", "X2", "Y2"])
     
     for key_frame, value_frame in loaded_keys.items():
         print(key_frame)
@@ -65,10 +70,10 @@ with open(csv_filename, mode="w", newline="") as file:
 
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
-        frame_number = 1
+        frame_number = -2
 
         try:
-            while cap.isOpened() and frame_number <= 5:
+            while cap.isOpened() and frame_number <= 2:
                 ret, frame = cap.read()
                 if not ret or frame is None:
                     print(f"End of video or error at frame {frame_number}")
@@ -106,14 +111,22 @@ with open(csv_filename, mode="w", newline="") as file:
                     player_2_keypoints = torch.zeros(default_shape)
             
                 # Save keypoints
-                writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0][:, :2].tolist(), player_2_keypoints[0][:, :2].tolist()])
+                keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0].tolist(), player_2_keypoints[0].tolist()])
 
-                class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
+                class_filter = torch.tensor([0, 32, 38, 60])
                 
                 box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
                     (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
                 
                 mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+                correct_instances = instances[mask]
+            
+                # Save objects
+                for i in range(len(correct_instances)):
+                    box = correct_instances.pred_boxes.tensor[i]
+                    x1, y1, x2, y2 = map(int, box.tolist())
+                    class_id = correct_instances.pred_classes[i].item()
+                    bbox_writer.writerow([key_frame, frame_number, class_id, x1, y1, x2, y2])
                 
                 # Person filter
                 spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
@@ -126,23 +139,28 @@ with open(csv_filename, mode="w", newline="") as file:
                 # Apply the mask to filter instances
                 filtered_instances = instances[mask]
                 
-                # Save crop of people
+                # Save crop of objects
                 for i in range(len(filtered_instances)):
-                    if filtered_instances.pred_classes[i].item() == 0:
-                        box = filtered_instances.pred_boxes.tensor[i]
-                        x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
-                        
-                        # Ensure bounding box is within frame dimensions
-                        x1, y1 = max(0, x1), max(0, y1)
-                        x2, y2 = min(width, x2), min(height, y2)
+                    box = filtered_instances.pred_boxes.tensor[i]
+                    x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                    
+                    # Ensure bounding box is within frame dimensions
+                    x1, y1 = max(0, x1), max(0, y1)
+                    x2, y2 = min(width, x2), min(height, y2)
 
-                        # Crop the region from the frame
-                        cropped_img = frame[y1:y2, x1:x2]
+                    # Crop the region from the frame
+                    cropped_img = frame[y1:y2, x1:x2]
 
-                        # Save the cropped image
-                        if cropped_img.size > 0:  # Ensure it's not empty
-                            filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
-                            cv2.imwrite(filename, cropped_img)
+                    # Save the cropped image
+                    base_directory = f"cropped/frame_{int(key_frame) + frame_number}"
+                    os.makedirs(base_directory, exist_ok=True)
+                
+                    if cropped_img.size > 0:  # Ensure it's not empty
+                        class_id = filtered_instances.pred_classes[i].item()
+                        directory = f"{base_directory}/{class_id}"
+                        os.makedirs(directory, exist_ok=True)
+                        filename = f"{directory}/box_{i}.jpg"
+                        cv2.imwrite(filename, cropped_img)
 
                 
                 # Visualize results
@@ -190,4 +208,4 @@ out.release()
 cv2.destroyAllWindows()
 
 print("Video processing complete.")
-print(f"Keypoints saved to {csv_filename}")
+print(f"Keypoints saved to {keypoint_filename}")

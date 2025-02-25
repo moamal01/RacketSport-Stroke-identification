@@ -7,6 +7,7 @@ import torch
 import cv2
 import csv
 import json
+import os
 
 # Load the object detection model
 cfg_det = get_cfg()
@@ -114,10 +115,9 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
             # Save keypoints
             keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0].tolist(), player_2_keypoints[0].tolist()])
 
-            class_filter = torch.tensor([32, 38, 60])  # Allowed class IDs
+            class_filter = torch.tensor([0, 32, 38, 60])  # Allowed class IDs
             
-            box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
-                (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
+            box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
             
             mask = torch.isin(instances.pred_classes, class_filter)
             correct_instances = instances[mask]
@@ -140,23 +140,28 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
             # Apply the mask to filter instances
             filtered_instances = instances[mask]
             
-            # Save crop of people
+            # Save crop of objects
             for i in range(len(filtered_instances)):
-                if filtered_instances.pred_classes[i].item() == 0:
-                    box = filtered_instances.pred_boxes.tensor[i]
-                    x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
-                    
-                    # Ensure bounding box is within frame dimensions
-                    x1, y1 = max(0, x1), max(0, y1)
-                    x2, y2 = min(width, x2), min(height, y2)
+                box = filtered_instances.pred_boxes.tensor[i]
+                x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                
+                # Ensure bounding box is within frame dimensions
+                x1, y1 = max(0, x1), max(0, y1)
+                x2, y2 = min(width, x2), min(height, y2)
 
-                    # Crop the region from the frame
-                    cropped_img = frame[y1:y2, x1:x2]
+                # Crop the region from the frame
+                cropped_img = frame[y1:y2, x1:x2]
 
-                    # Save the cropped image
-                    if cropped_img.size > 0:  # Ensure it's not empty
-                        filename = f"cropped/frame_{frame_number}_box_{i}.jpg"
-                        cv2.imwrite(filename, cropped_img)
+                # Save the cropped image
+                base_directory = f"cropped/frame_{start_frame + frame_number}"
+                os.makedirs(base_directory, exist_ok=True)
+            
+                if cropped_img.size > 0:  # Ensure it's not empty
+                    class_id = filtered_instances.pred_classes[i].item()
+                    directory = f"{base_directory}/{class_id}"
+                    os.makedirs(directory, exist_ok=True)
+                    filename = f"{directory}/box_{i}.jpg"
+                    cv2.imwrite(filename, cropped_img)
 
             
             # Visualize results
