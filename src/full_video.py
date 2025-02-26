@@ -9,6 +9,28 @@ import csv
 import json
 import os
 
+# Helper functions
+def crop_person(box, frame, player, start_frame, frame_number):
+    if torch.equal(box, torch.zeros_like(box)):
+        return
+    
+    x1, y1, x2, y2 = map(int, box[0].tolist())
+    
+    x1, y1 = max(0, x1), max(0, y1)
+    x2, y2 = min(width, x2), min(height, y2)
+
+    # Crop the region from the frame
+    cropped_img = frame[y1:y2, x1:x2]
+
+    # Save the cropped image
+    base_directory = f"cropped/frame_{start_frame + frame_number}"
+    os.makedirs(base_directory, exist_ok=True)
+
+    directory = f"{base_directory}/0"
+    os.makedirs(directory, exist_ok=True)
+    filename = f"{directory}/player_{player}.jpg"
+    cv2.imwrite(filename, cropped_img)
+
 # Load the object detection model
 cfg_det = get_cfg()
 cfg_det.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
@@ -62,7 +84,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     bbox_writer = csv.writer(bbox_file)
 
     keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
-    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "X1", "Y1", "X2", "Y2"])
+    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "X1", "Y1", "X2", "Y2"])
     
     for key_frame, value_frame in loaded_keys.items():
         print(key_frame)
@@ -90,30 +112,47 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 
                 player_1_keypoints = []
                 player_2_keypoints = []
-                
-                for kp in keypoint_instances.pred_keypoints:
+
+                player_1_boxes = []
+                player_2_boxes = []
+
+                player_1_scores = []
+                player_2_scores = []
+
+                for kp, box, score in zip(
+                    keypoint_instances.pred_keypoints, 
+                    keypoint_instances.pred_boxes, 
+                    keypoint_instances.scores
+                ):
                     if kp[0, 0] < 700:
                         player_1_keypoints.append(kp)
+                        player_1_boxes.append(box)
+                        player_1_scores.append(score)
                     elif kp[0, 0] > 1100:
                         player_2_keypoints.append(kp)
-                        
-                # Ensure that they are not empty
-                default_shape = (1, 17, 3)
-                
-                if player_1_keypoints:
-                    player_1_keypoints = torch.stack(player_1_keypoints)
-                else:
-                    player_1_keypoints = torch.zeros(default_shape)
+                        player_2_boxes.append(box)
+                        player_2_scores.append(score)
 
-                if player_2_keypoints:
-                    player_2_keypoints = torch.stack(player_2_keypoints)
-                else:
-                    player_2_keypoints = torch.zeros(default_shape)
-            
+                # Ensure that lists are not empty
+                default_kp_shape = (1, 17, 3)
+                default_box_shape = (1, 4)
+                default_score_shape = (1,)
+
+                player_1_keypoints = torch.stack(player_1_keypoints) if player_1_keypoints else torch.zeros(default_kp_shape)
+                player_1_boxes = torch.stack(player_1_boxes) if player_1_boxes else torch.zeros(default_box_shape)
+                player_1_scores = torch.tensor(player_1_scores) if player_1_scores else torch.zeros(default_score_shape)
+
+                player_2_keypoints = torch.stack(player_2_keypoints) if player_2_keypoints else torch.zeros(default_kp_shape)
+                player_2_boxes = torch.stack(player_2_boxes) if player_2_boxes else torch.zeros(default_box_shape)
+                player_2_scores = torch.tensor(player_2_scores) if player_2_scores else torch.zeros(default_score_shape)
+                
+                crop_person(player_1_boxes, frame, "left", start_frame, frame_number)
+                crop_person(player_2_boxes, frame, "right", start_frame, frame_number)
+        
                 # Save keypoints
                 keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0].tolist(), player_2_keypoints[0].tolist()])
 
-                class_filter = torch.tensor([0, 32, 38, 60])
+                class_filter = torch.tensor([32, 38, 60])
                 
                 box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * \
                     (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
@@ -124,13 +163,11 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 # Save objects
                 for i in range(len(correct_instances)):
                     box = correct_instances.pred_boxes.tensor[i]
+                    score = float(correct_instances.scores[i])
+
                     x1, y1, x2, y2 = map(int, box.tolist())
                     class_id = correct_instances.pred_classes[i].item()
-                    bbox_writer.writerow([key_frame, frame_number, class_id, x1, y1, x2, y2])
-                
-                # Person filter
-                spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
-                mask = mask & ~spectator_mask
+                    bbox_writer.writerow([key_frame, frame_number, class_id, score, x1, y1, x2, y2])
                 
                 # Table filter
                 table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
