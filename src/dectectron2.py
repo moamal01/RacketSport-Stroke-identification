@@ -7,13 +7,12 @@ import torch
 import cv2
 import csv
 import json
-import os
 
 # Load the object detection model
 cfg_det = get_cfg()
 cfg_det.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
 cfg_det.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
-cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.05
+cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_det.MODEL.DEVICE = "cpu"
 detector = DefaultPredictor(cfg_det)
 
@@ -21,21 +20,20 @@ detector = DefaultPredictor(cfg_det)
 cfg_kp = get_cfg()
 cfg_kp.merge_from_file(get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
 cfg_kp.MODEL.WEIGHTS = get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
-cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.8
+cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
 video_path = "videos/game_1.mp4"
 cap = cv2.VideoCapture(video_path)
 
-# Get first frame
-with open("notebooks/empty_event_keys2.json", "r") as keypoint_file:
+# Thesholds
+min_person_area = 30000
+min_table_area = 400000
+
+with open("notebooks/empty_event_keys3 copy.json", "r") as keypoint_file:
     loaded_keys = json.load(keypoint_file)
-
-first_pair = list(loaded_keys.items())[0]
-key_frame = first_pair[0]
-value_frame = first_pair[1]
-
+    
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -49,199 +47,149 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test6.mp4"
+output_path = "test7.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-keypoint_filename = "keypoints1.csv"
-bbox_filename = "bbox1.csv"
+keypoint_filename = "keypoints5.csv"
+bbox_filename = "bbox5.csv"
 
-start_frame = 2295
-end_frame = 2315
-cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
-
-# Thesholds
-min_person_area = 30000
-min_table_area = 400000
-
-frame_number = start_frame
-
+# Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
     keypoint_writer = csv.writer(keypoint_file)
     bbox_writer = csv.writer(bbox_file)
+
+    keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Keypoints", "People boxes", "People scores"])
+    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
-    keypoint_writer.writerow(["Path", "Stroke", "Event frame", "Sequence frame", "Player_1 keypoints", "Player_2 keypoints"])
-    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "X1", "Y1", "X2", "Y2"])
+    for key_frame, value_frame in loaded_keys.items():
+        print(key_frame)
+        start_frame = int(key_frame) - 2
 
-    try:
-        while cap.isOpened() and frame_number <= end_frame:
-            ret, frame = cap.read()
-            if not ret or frame is None:
-                print(f"End of video or error at frame {frame_number}")
-                break
+        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_number = -2
 
-            # Run inference
-            keypoint_outputs = keypoint_detector(frame_rgb)
-            outputs = detector(frame_rgb)
+        try:
+            while cap.isOpened() and frame_number <= 2:
+                ret, frame = cap.read()
+                if not ret or frame is None:
+                    print(f"End of video or error at frame {frame_number}")
+                    break
 
-            instances = outputs["instances"].to("cpu")
-            keypoint_instances = keypoint_outputs["instances"].to("cpu")
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            player_1_keypoints = []
-            player_2_keypoints = []
+                # Run inference
+                keypoint_outputs = keypoint_detector(frame_rgb)
+                outputs = detector(frame_rgb)
 
-            player_1_boxes = []
-            player_2_boxes = []
-
-            player_1_scores = []
-            player_2_scores = []
-
-            for kp, box, score in zip(
-                keypoint_instances.pred_keypoints, 
-                keypoint_instances.pred_boxes, 
-                keypoint_instances.scores
-            ):
-                if kp[0, 0] < 700:
-                    player_1_keypoints.append(kp)
-                    player_1_boxes.append(box)
-                    player_1_scores.append(score)
-                elif kp[0, 0] > 1100:
-                    player_2_keypoints.append(kp)
-                    player_2_boxes.append(box)
-                    player_2_scores.append(score)
-
-            # Ensure that lists are not empty
-            default_kp_shape = (1, 17, 3)
-            default_box_shape = (1, 4)
-            default_score_shape = (1,)
-
-            player_1_keypoints = torch.stack(player_1_keypoints) if player_1_keypoints else torch.zeros(default_kp_shape)
-            player_1_boxes = torch.stack(player_1_boxes) if player_1_boxes else torch.zeros(default_box_shape)
-            player_1_scores = torch.tensor(player_1_scores) if player_1_scores else torch.zeros(default_score_shape)
-
-            player_2_keypoints = torch.stack(player_2_keypoints) if player_2_keypoints else torch.zeros(default_kp_shape)
-            player_2_boxes = torch.stack(player_2_boxes) if player_2_boxes else torch.zeros(default_box_shape)
-            player_2_scores = torch.tensor(player_2_scores) if player_2_scores else torch.zeros(default_score_shape)
-
-            # Save keypoints
-            keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, player_1_keypoints[0].tolist(), player_2_keypoints[0].tolist()])
-
-            class_filter = torch.tensor([32, 38, 60])  # Allowed class IDs
-            
-            box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
-            
-            mask = torch.isin(instances.pred_classes, class_filter)
-            correct_instances = instances[mask]
-            
-            # Save objects
-            for i in range(len(correct_instances)):
-                box = correct_instances.pred_boxes.tensor[i]
-                score = float(correct_instances.scores[i])
-
-                x1, y1, x2, y2 = map(int, box.tolist())
-                class_id = correct_instances.pred_classes[i].item()
-                bbox_writer.writerow([key_frame, frame_number, class_id, score, x1, y1, x2, y2])
-            
-            # Person filter
-            spectator_mask = (instances.pred_classes == 0) & (box_areas < min_person_area)
-            mask = mask & ~spectator_mask
-            
-            # Table filter
-            table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
-            mask = mask & ~table_mask
-
-            # Apply the mask to filter instances
-            filtered_instances = instances[mask]
-            
-            # Save crop of people
-            for i in range(len(keypoint_instances)):
-                box = keypoint_instances.pred_boxes.tensor[i]
-                x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                instances = outputs["instances"].to("cpu")
+                keypoint_instances = keypoint_outputs["instances"].to("cpu")
                 
-                # Ensure bounding box is within frame dimensions
-                x1, y1 = max(0, x1), max(0, y1)
-                x2, y2 = min(width, x2), min(height, y2)
+                player_1_keypoints = []
+                player_2_keypoints = []
 
-                # Crop the region from the frame
-                cropped_img = frame[y1:y2, x1:x2]
+                player_1_boxes = []
+                player_2_boxes = []
 
-                # Save the cropped image
-                base_directory = f"cropped/frame_{start_frame + frame_number}"
-                os.makedirs(base_directory, exist_ok=True)
-            
-                if cropped_img.size > 0:  # Ensure it's not empty
-                    class_id = filtered_instances.pred_classes[i].item()
-                    directory = f"{base_directory}/0"
-                    os.makedirs(directory, exist_ok=True)
-                    filename = f"{directory}/box_{i}.jpg"
-                    cv2.imwrite(filename, cropped_img)
-            
-            # Save crop of objects
-            for i in range(len(filtered_instances)):
-                box = filtered_instances.pred_boxes.tensor[i]
-                x1, y1, x2, y2 = map(int, box.tolist())  # Convert tensor to list and cast to int
+                player_1_scores = []
+                player_2_scores = []
+
+                for kp, box, score in zip(
+                    keypoint_instances.pred_keypoints, 
+                    keypoint_instances.pred_boxes, 
+                    keypoint_instances.scores
+                ):
+                    if kp[0, 0] < 700:
+                        player_1_keypoints.append(kp)
+                        player_1_boxes.append(box)
+                        player_1_scores.append(score)
+                    elif kp[0, 0] > 1100:
+                        player_2_keypoints.append(kp)
+                        player_2_boxes.append(box)
+                        player_2_scores.append(score)
+
+                # Ensure that lists are not empty
+                default_kp_shape = (1, 17, 3)
+                default_box_shape = (1, 4)
+                default_score_shape = (1,)
+
+                player_1_keypoints = torch.stack(player_1_keypoints) if player_1_keypoints else torch.zeros(default_kp_shape)
+                player_1_boxes = torch.stack(player_1_boxes) if player_1_boxes else torch.zeros(default_box_shape)
+                player_1_scores = torch.tensor(player_1_scores) if player_1_scores else torch.zeros(default_score_shape)
+
+                player_2_keypoints = torch.stack(player_2_keypoints) if player_2_keypoints else torch.zeros(default_kp_shape)
+                player_2_boxes = torch.stack(player_2_boxes) if player_2_boxes else torch.zeros(default_box_shape)
+                player_2_scores = torch.tensor(player_2_scores) if player_2_scores else torch.zeros(default_score_shape)
+        
+                # Save keypoints
+                keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, keypoint_instances.pred_keypoints.tolist(), keypoint_instances.pred_boxes.tensor.tolist(), keypoint_instances.scores.tolist()])
+
+                class_filter = torch.tensor([32, 38, 60])
                 
-                # Ensure bounding box is within frame dimensions
-                x1, y1 = max(0, x1), max(0, y1)
-                x2, y2 = min(width, x2), min(height, y2)
-
-                # Crop the region from the frame
-                cropped_img = frame[y1:y2, x1:x2]
-
-                # Save the cropped image
-                base_directory = f"cropped/frame_{start_frame + frame_number}"
-                os.makedirs(base_directory, exist_ok=True)
+                mask = torch.isin(instances.pred_classes, class_filter)  # Create a boolean mask
+                correct_instances = instances[mask]
             
-                if cropped_img.size > 0:  # Ensure it's not empty
-                    class_id = filtered_instances.pred_classes[i].item()
-                    directory = f"{base_directory}/{class_id}"
-                    os.makedirs(directory, exist_ok=True)
-                    filename = f"{directory}/box_{i}.jpg"
-                    cv2.imwrite(filename, cropped_img)
+                # Save objects
+                for i in range(len(correct_instances)):
+                    box = correct_instances.pred_boxes.tensor[i]
+                    score = float(correct_instances.scores[i])
 
-            
-            # Visualize results
-            v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-            vis_det = v_det.draw_instance_predictions(filtered_instances)
-            
-            v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
-            vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
+                    class_id = correct_instances.pred_classes[i].item()
+                    bbox_writer.writerow([key_frame, frame_number, class_id, score, box.tolist()])
+                
+                # Table filter
+                box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
+                table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
+                mask = mask & ~table_mask
 
-            # Convert back to BGR for OpenCV
-            image_det = vis_det.get_image()
-            image_kp = vis_kp.get_image()
+                # Apply the mask to filter instances
+                filtered_instances = instances[mask]
+                
+                # Visualize results
+                v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
+                vis_det = v_det.draw_instance_predictions(filtered_instances)
+                
+                v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
+                vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
-            # Blend the keypoints visualization with the detection visualization
-            alpha = 0.2  # Adjust transparency as needed
-            blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
+                # Convert back to BGR for OpenCV
+                image_det = vis_det.get_image()
+                image_kp = vis_kp.get_image()
 
-            # Convert back to BGR for OpenCV
-            result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
+                # Blend the keypoints visualization with the detection visualization
+                alpha = 0.2  # Adjust transparency as needed
+                blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
 
-            # Ensure correct dtype
-            result_frame = result_frame.astype("uint8")
+                # Convert back to BGR for OpenCV
+                result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
 
-            # Resize if necessary
-            if result_frame.shape[:2] != (height, width):
-                result_frame = cv2.resize(result_frame, (width, height))
+                # Ensure correct dtype
+                result_frame = result_frame.astype("uint8")
 
-            # Write frame to output video
-            out.write(result_frame)
+                # Resize if necessary
+                if result_frame.shape[:2] != (height, width):
+                    result_frame = cv2.resize(result_frame, (width, height))
 
-            # Display the frame
-            cv2.imshow("Keypoints Detection", result_frame)
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord("q"):
-                print("User quit.")
-                break
+                # Write frame to output video
+                out.write(result_frame)
 
-            frame_number += 1
-    finally:
-        cap.release()
-        out.release()
-        cv2.destroyAllWindows()
-        print("Video processing complete.")
-        print(f"Keypoints saved to {keypoint_filename}")
+                # Display the frame
+                cv2.imshow("Keypoints Detection", result_frame)
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord("q"):
+                    print("User quit.")
+                    break
+
+                frame_number += 1
+        except Exception as e:
+            print(f"Error during processing: {e}")
+
+
+cap.release()
+out.release()
+cv2.destroyAllWindows()
+
+print("Video processing complete.")
+print(f"Keypoints saved to {keypoint_filename}")
