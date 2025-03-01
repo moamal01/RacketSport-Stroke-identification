@@ -19,10 +19,10 @@ if not cap.isOpened():
 # Process each event frame
 for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
     if label != "empty_event":
-        continue  # Skip non-empty events
+        continue  # Skip other events
 
     start_frame = max(0, int(frame_num) - 20)  # Ensure start frame is non-negative
-    end_frame = min(int(frame_num) + 20, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
+    end_frame = min(int(frame_num) + 2, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
 
     while True:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)  # Jump to the starting frame
@@ -48,7 +48,7 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
     cv2.destroyAllWindows()  # Close the video window before labeling
 
     # Get user input for the new label
-    new_label = input("Enter new label (or press Enter to keep 'empty_event'): ").strip()
+    new_label = input("Enter new label (or press Enter to keep current event): ").strip()
 
     if new_label:
         label_map = {
