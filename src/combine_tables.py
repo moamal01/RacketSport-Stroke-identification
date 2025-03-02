@@ -2,8 +2,8 @@ import pandas as pd
 import ast
 
 # File paths
-keypoints_file = "keypoints5.csv"
-bbox_file = "bbox5.csv"
+keypoints_file = "keypoints6.csv"
+bbox_file = "bbox6.csv"
 
 # Load the CSV files
 keypoints_df = pd.read_csv(keypoints_file)

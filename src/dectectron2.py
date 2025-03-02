@@ -31,7 +31,7 @@ cap = cv2.VideoCapture(video_path)
 min_person_area = 30000
 min_table_area = 400000
 
-with open("notebooks/empty_event_keys3 copy.json", "r") as keypoint_file:
+with open("notebooks/empty_event_keys4.json", "r") as keypoint_file:
     loaded_keys = json.load(keypoint_file)
     
 # Get video properties
