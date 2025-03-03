@@ -41,11 +41,21 @@ for index, row in bbox_df.iterrows():
 # Drop unneeded columns
 bbox_df = bbox_df.drop(columns=["Class ID", "Score", "Bboxes"])
 
-# Group by Event frame and Sequence frame to aggregate multiple detections
 def aggregate_lists(series):
-    return [item for sublist in series.dropna() for item in (sublist if isinstance(sublist, list) else [sublist])]
+    return [sublist for sublist in series.dropna() if isinstance(sublist, list)]
 
-bbox_agg = bbox_df.groupby(["Event frame", "Sequence frame"]).agg(aggregate_lists).reset_index()
+def flatten_lists(series):
+    return [item for item in series.dropna()]
+
+# Apply different aggregation functions
+bbox_agg = bbox_df.groupby(["Event frame", "Sequence frame"]).agg({
+    "Ball boxes": aggregate_lists,
+    "Ball scores": flatten_lists,
+    "Racket boxes": aggregate_lists,
+    "Racket scores": flatten_lists,
+    "Table boxes": aggregate_lists,
+    "Table scores": flatten_lists
+}).reset_index()
 
 # Merge with keypoints dataset
 merged_df = pd.merge(keypoints_df, bbox_agg, on=["Event frame", "Sequence frame"], how="left")
@@ -55,6 +65,6 @@ for col in ["Ball boxes", "Ball scores", "Racket boxes", "Racket scores", "Table
     merged_df[col] = merged_df[col].apply(lambda x: x if isinstance(x, list) else [])
 
 # Save to CSV
-merged_df.to_csv("merged_output.csv", index=False)
+merged_df.to_csv("merged_output4.csv", index=False)
 
-print("Merged dataset saved as 'merged_output.csv'")
+print("Merged dataset saved as 'merged_output3.csv'")
