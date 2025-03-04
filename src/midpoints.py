@@ -9,8 +9,11 @@ TABLE_MIDPOINT = (0.5, 0.5)
 
 # Function to compute player's body midpoint (e.g., average of hips)
 def compute_player_midpoints(df):
-    keypoints_left_left_hip = []
-    keypoints_right_left_hip = []
+    paths = []
+    event_frames = []
+    sequence_frames = []
+    keypoints_left = []
+    keypoints_right = []
     left_score = []
     right_score = []
     
@@ -18,33 +21,61 @@ def compute_player_midpoints(df):
         if isinstance(row["Keypoints"], str):
             keypoints_row = ast.literal_eval(row["Keypoints"])
             scores_row = ast.literal_eval(row["People scores"])
+            path = row["Path"]
+            event_frame = row["Event frame"]
+            sequence_frame = row["Sequence frame"]
             
         for i, keypoints in enumerate(keypoints_row):
-            if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left_left_hip) <= idx:
-                keypoints_left_left_hip.append(keypoints)
+            if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
+                keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
-            elif keypoints[0][0] > TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right_left_hip) <= idx:
-                keypoints_right_left_hip.append(keypoints)
+            elif keypoints[0][0] > TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
+                paths.append(path)
+                event_frames.append(event_frame)
+                sequence_frames.append(sequence_frame)
+                keypoints_right.append(keypoints)
                 right_score.append(scores_row[i])
     
-    return keypoints_left_left_hip, left_score, keypoints_right_left_hip, right_score
+    return paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score
 
+def get_hips(keypoints_left, keypoints_right):
+    ll_hip = []     # Left player, left hip
+    lr_hip = []     # Left player, right hip
+    rl_hip = []     # Right player, left hip
+    rr_hip = []     # Right player, right hip
     
-keypoints_left, left_score, keypoints_right, right_score = compute_player_midpoints(df)
+    for i in range(len(keypoints_left)):
+        ll_hip.append(keypoints_left[i][11])
+        lr_hip.append(keypoints_left[i][12])
+        rl_hip.append(keypoints_right[i][11])
+        rr_hip.append(keypoints_right[i][12])
+    
+    return ll_hip, lr_hip, rl_hip, rr_hip
+    
+    
+paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score = compute_player_midpoints(df)
+ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 
 # Prepare data for saving to CSV
 data = {
-    'Keypoints Left': keypoints_left,
-    'Left Score': left_score,
-    'Keypoints Right': keypoints_right,
-    'Right Score': right_score
+    'Path': paths,
+    'Event frame': event_frames,
+    'Sequence frame': sequence_frames,
+    'Keypoints left': keypoints_left,
+    'Left score': left_score,
+    'Left players left hip': ll_hip,
+    'Left players right hip': lr_hip,
+    'Keypoints right': keypoints_right,
+    'Right score': right_score,
+    'Right players left hip': rl_hip,
+    'Right players right hip': rr_hip,
 }
 
 # Create DataFrame from the data
 result_df = pd.DataFrame(data)
 
 # Save the DataFrame to a new CSV file
-output_file = "midpoints.csv"
+output_file = "midpoints3.csv"
 result_df.to_csv(output_file, index=False)
 
 print(f"Keypoints and scores have been saved to {output_file}")
