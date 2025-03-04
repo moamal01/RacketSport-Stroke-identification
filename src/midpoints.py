@@ -1,5 +1,6 @@
 import pandas as pd
 import ast
+import math
 
 # Load CSV file
 file_path = "normalized_data.csv"
@@ -20,10 +21,13 @@ def compute_player_midpoints(df):
     for idx, row in df.iterrows():
         if isinstance(row["Keypoints"], str):
             keypoints_row = ast.literal_eval(row["Keypoints"])
+
+        if isinstance(row["People scores"], str):
             scores_row = ast.literal_eval(row["People scores"])
-            path = row["Path"]
-            event_frame = row["Event frame"]
-            sequence_frame = row["Sequence frame"]
+
+        path = row["Path"]
+        event_frame = row["Event frame"]
+        sequence_frame = row["Sequence frame"]
             
         for i, keypoints in enumerate(keypoints_row):
             if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
@@ -51,10 +55,50 @@ def get_hips(keypoints_left, keypoints_right):
         rr_hip.append(keypoints_right[i][12])
     
     return ll_hip, lr_hip, rl_hip, rr_hip
+
+def calculate_distance(midpoint, keypoint):    
+    keypoint_x = keypoint[0]
+    keypoint_y = keypoint[1]
     
+    midpoint_x = midpoint[0]
+    midpoint_y = midpoint[1]
+    
+    d = math.sqrt((midpoint_x - keypoint_x) ** 2 + (midpoint_y - keypoint_y) ** 2)
+    
+    return d
+
+def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
+    left_player_distance_to_midpoint = []
+    right_player_distance_to_midpoint = []
+    
+    for i in range(len(keypoints_left)):
+        left_hip = ll_hips[i]
+        right_hip = rl_hips[i]
+        
+        left_frame_list = []
+        right_frame_list = []
+
+        for j in range(len(keypoints_left[i])):
+            left_keypoint = keypoints_left[i][j]
+            right_keypoint = keypoints_right[i][j]
+            
+            left_d = calculate_distance(left_hip, left_keypoint)
+            right_d = calculate_distance(right_hip, right_keypoint)
+                        
+            left_frame_list.append(left_d)
+            right_frame_list.append(right_d)
+        
+        left_player_distance_to_midpoint.append(left_frame_list)
+        right_player_distance_to_midpoint.append(right_frame_list)
+        
+    
+    return left_player_distance_to_midpoint, right_player_distance_to_midpoint
     
 paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score = compute_player_midpoints(df)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
+left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
+
+print()
 
 # Prepare data for saving to CSV
 data = {
@@ -65,17 +109,19 @@ data = {
     'Left score': left_score,
     'Left player left hip': ll_hip,
     'Left player right hip': lr_hip,
+    'Left distances': left_distances,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
     'Right player left hip': rl_hip,
     'Right player right hip': rr_hip,
+    'Right distances': right_distances
 }
 
 # Create DataFrame from the data
 result_df = pd.DataFrame(data)
 
 # Save the DataFrame to a new CSV file
-output_file = "midpoints1.csv"
+output_file = "midpoints.csv"
 result_df.to_csv(output_file, index=False)
 
 print(f"Keypoints and scores have been saved to {output_file}")
