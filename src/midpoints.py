@@ -26,10 +26,10 @@ def compute_player_midpoints(df):
             sequence_frame = row["Sequence frame"]
             
         for i, keypoints in enumerate(keypoints_row):
-            if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
+            if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
-            elif keypoints[0][0] > TABLE_MIDPOINT[0] and abs(keypoints[0][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
+            elif keypoints[0][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
                 paths.append(path)
                 event_frames.append(event_frame)
                 sequence_frames.append(sequence_frame)
@@ -63,19 +63,19 @@ data = {
     'Sequence frame': sequence_frames,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
-    'Left players left hip': ll_hip,
-    'Left players right hip': lr_hip,
+    'Left player left hip': ll_hip,
+    'Left player right hip': lr_hip,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
-    'Right players left hip': rl_hip,
-    'Right players right hip': rr_hip,
+    'Right player left hip': rl_hip,
+    'Right player right hip': rr_hip,
 }
 
 # Create DataFrame from the data
 result_df = pd.DataFrame(data)
 
 # Save the DataFrame to a new CSV file
-output_file = "midpoints3.csv"
+output_file = "midpoints1.csv"
 result_df.to_csv(output_file, index=False)
 
 print(f"Keypoints and scores have been saved to {output_file}")
