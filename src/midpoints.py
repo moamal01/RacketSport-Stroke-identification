@@ -8,7 +8,6 @@ df = pd.read_csv(file_path)
 
 TABLE_MIDPOINT = (0.5, 0.5)
 
-# Function to compute player's body midpoint (e.g., average of hips)
 def compute_player_midpoints(df):
     paths = []
     event_frames = []
@@ -30,10 +29,10 @@ def compute_player_midpoints(df):
         sequence_frame = row["Sequence frame"]
             
         for i, keypoints in enumerate(keypoints_row):
-            if keypoints[0][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
+            if keypoints[11][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
-            elif keypoints[0][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
+            elif keypoints[11][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
                 paths.append(path)
                 event_frames.append(event_frame)
                 sequence_frames.append(sequence_frame)
@@ -97,8 +96,6 @@ def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
 paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score = compute_player_midpoints(df)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
-
-print()
 
 # Prepare data for saving to CSV
 data = {
