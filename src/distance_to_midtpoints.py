@@ -49,8 +49,67 @@ def compute_player_midpoints(df):
                 
     return midtpoints, distances
 
+def compute_table_midpoints(df):
+    t_midtpoints = []
+
+    for _, row in df.iterrows():
+        mm = []
+
+        if isinstance(row["Table boxes"], str):
+            table_row = ast.literal_eval(row["Table boxes"])
+
+        for _ in range(len(table_row)):
+            for j in range(len(table_row)):
+                table_coords = table_row[j]
+                
+                x1 = table_coords[0]
+                x2 = table_coords[2]
+                
+                mm.append([(x1 + x2) / 2, table_coords[3]])
+            
+            mm.append(mm)
+        t_midtpoints.append(mm)  
+                
+    return t_midtpoints
+
+
+def center_to_midpoint_distances(midpoints):
+    distances = []
+    for row in midpoints:
+        distances_within_row = []
+        for midpoint in row:
+            d = math.sqrt((midpoint[0] - 0.5) ** 2 + (midpoint[1] - 0.5) ** 2)
+            distances_within_row.append(d)
+        distances.append(distances_within_row)
+    return distances
+
+# def midpoint_distances(p_midpoints, t_midpoints):
+#     distances = []
     
+#     for i in range(len(p_midpoints)):
+#         for j in range(len(t_midpoints)):
+#             for midpoint in p_midpoints[j]:
+#                 d_for_each_tablemidpoint = []
+#                 for k in range(len(t_midpoints[i])):
+#                     print(t_midpoints[i][k])
+#                     tx = t_midpoints[i][k][0]
+#                     ty = t_midpoints[i][k][0]
+                    
+#                     mx = midpoint[0]
+#                     my = midpoint[0]
+                    
+#                     d = math.sqrt((tx - mx) ** 2 + (ty - my) ** 2)
+                    
+#                     d_for_each_tablemidpoint.append(d)
+                    
+#             break
+#         break
+  
+    
+
 midpoints, distances = compute_player_midpoints(df)
+table_midpoints = compute_table_midpoints(df)
+tm_distances = center_to_midpoint_distances(midpoints)
 
 # Prepare data for saving to CSV
 data = {
@@ -59,7 +118,10 @@ data = {
     'Sequence frame': df["Sequence frame"],
     'Keypoints': df["Keypoints"],
     'Midpoints': midpoints,
-    'Distances to midpoint': distances
+    'Distances to midpoint': distances,
+    'Distances to table midpoints': tm_distances,
+    'Table boxes': df['Table boxes'],
+    'Table midpoints': table_midpoints
 }
 
 #Create DataFrame from the data
