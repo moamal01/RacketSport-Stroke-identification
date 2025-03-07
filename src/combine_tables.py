@@ -65,6 +65,6 @@ for col in ["Ball boxes", "Ball scores", "Racket boxes", "Racket scores", "Table
     merged_df[col] = merged_df[col].apply(lambda x: x if isinstance(x, list) else [])
 
 # Save to CSV
-merged_df.to_csv("merged_output4.csv", index=False)
+merged_df.to_csv("merged_output.csv", index=False)
 
 print("Merged dataset saved as 'merged_output3.csv'")

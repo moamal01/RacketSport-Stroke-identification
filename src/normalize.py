@@ -2,7 +2,7 @@ import pandas as pd
 import ast
 
 # Load CSV
-input_file = "merged_output4.csv"
+input_file = "merged_output.csv"
 output_file = "normalized_data.csv"
 
 # Read CSV

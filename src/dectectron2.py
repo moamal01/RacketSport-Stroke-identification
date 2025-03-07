@@ -31,7 +31,7 @@ cap = cv2.VideoCapture(video_path)
 min_person_area = 30000
 min_table_area = 400000
 
-with open("notebooks/empty_event_keys4.json", "r") as keypoint_file:
+with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
     loaded_keys = json.load(keypoint_file)
     
 # Get video properties
@@ -47,13 +47,13 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test7.mp4"
+output_path = "test.mp4"
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-keypoint_filename = "keypoints5.csv"
-bbox_filename = "bbox5.csv"
+keypoint_filename = "keypoints.csv"
+bbox_filename = "bbox.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
