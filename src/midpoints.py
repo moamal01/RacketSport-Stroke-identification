@@ -16,6 +16,8 @@ def compute_player_midpoints(df):
     keypoints_right = []
     left_score = []
     right_score = []
+    left_bboxes = []
+    right_bboxes = []
     
     for idx, row in df.iterrows():
         if isinstance(row["Keypoints"], str):
@@ -23,6 +25,9 @@ def compute_player_midpoints(df):
 
         if isinstance(row["People scores"], str):
             scores_row = ast.literal_eval(row["People scores"])
+            
+        if isinstance(row["People boxes"], str):
+            bboxes_row = ast.literal_eval(row["People boxes"])
 
         path = row["Path"]
         event_frame = row["Event frame"]
@@ -32,14 +37,16 @@ def compute_player_midpoints(df):
             if keypoints[11][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
+                left_bboxes.append(bboxes_row[i])
             elif keypoints[11][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
                 paths.append(path)
                 event_frames.append(event_frame)
                 sequence_frames.append(sequence_frame)
                 keypoints_right.append(keypoints)
                 right_score.append(scores_row[i])
+                right_bboxes.append(bboxes_row[i])
     
-    return paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score
+    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes
 
 def get_hips(keypoints_left, keypoints_right):
     ll_hip = []     # Left player, left hip
@@ -93,7 +100,7 @@ def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
     
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
     
-paths, event_frames, sequence_frames, keypoints_left, left_score, keypoints_right, right_score = compute_player_midpoints(df)
+paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
 
@@ -104,11 +111,13 @@ data = {
     'Sequence frame': sequence_frames,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
+    'Left bbox': left_bboxes,
     'Left player left hip': ll_hip,
     'Left player right hip': lr_hip,
     'Left distances': left_distances,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
+    'Right bbox': right_bboxes,
     'Right player left hip': rl_hip,
     'Right player right hip': rr_hip,
     'Right distances': right_distances
