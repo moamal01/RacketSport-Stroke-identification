@@ -1,3 +1,6 @@
+import numpy as np
+import torch
+import csv
 from transformers import CLIPProcessor, CLIPModel
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -45,7 +48,7 @@ leg_foot_position = [
     "Person is stepping forward",
     "Person's legs are wide apart",
     "Person's legs are close together",
-    "Person's legs are shoulder-width apart",
+    #"Person's legs are shoulder-width apart",
 ]
 
 # Motion-Based Descriptions
@@ -102,25 +105,65 @@ clip_captions = {
 }
 
 
-inputs = processor(text=leg_foot_position, images=images, return_tensors="pt", padding=True, do_convert_rgb=False)
+# Process images and text
+image_inputs = processor(images=images, return_tensors="pt", do_convert_rgb=False)
+text_inputs = processor(text=leg_foot_position, return_tensors="pt", padding=True)
 
-outputs = model(**inputs)
-logits_per_image = outputs.logits_per_image  # this is the image-text similarity score
-probs = logits_per_image.softmax(dim=1)  # we can take the softmax to get the label probabilities
+# Extract embeddings
+with torch.no_grad():
+    image_embeddings = model.get_image_features(**image_inputs)
+    text_embeddings = model.get_text_features(**text_inputs)
+    
+# Convert embeddings to lists (to save in CSV)
+image_embeddings_list = image_embeddings.cpu().numpy().tolist()  # Convert to list
+text_embeddings_list = text_embeddings.cpu().numpy().tolist()  # Convert to list
 
+# Save to CSV
+embedding_dim = len(image_embeddings_list[0])
+with open('image_embeddings.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow([f"Image_Embedding_{i}" for i in range(embedding_dim)])  # Column headers
+    writer.writerows(image_embeddings_list)  # Write image embeddings
+
+with open('text_embeddings.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow([f"Text_Embedding_{i}" for i in range(embedding_dim)])  # Column headers
+    writer.writerows(text_embeddings_list)  # Write text embeddings
+
+# Normalize embeddings for cosine similarity
+#image_embeddings = image_embeddings / image_embeddings.norm(dim=-1, keepdim=True)
+#text_embeddings = text_embeddings / text_embeddings.norm(dim=-1, keepdim=True)
+
+# Convert to NumPy
+image_embeddings_np = image_embeddings.cpu().numpy()
+text_embeddings_np = text_embeddings.cpu().numpy()
+
+# Print embedding shapes
+print(f"Image Embeddings Shape: {image_embeddings_np.shape}")  # (num_images, embedding_dim)
+print(f"Text Embeddings Shape: {text_embeddings_np.shape}")    # (num_texts, embedding_dim)
+
+# Save embeddings if needed
+np.save("image_embeddings.npy", image_embeddings_np)
+np.save("text_embeddings.npy", text_embeddings_np)
+
+# Compute similarity using cosine similarity (dot product of normalized embeddings)
+similarity_scores = image_embeddings @ text_embeddings.T  # Shape: (num_images, num_texts)
+probs = similarity_scores.softmax(dim=1)  # Normalize scores using softmax
+
+# Visualization
 fig = plt.figure(figsize=(10, 10))
 
 for idx in range(len(images)):
-    # show original image
-    fig.add_subplot(len(images), 2, 2*(idx+1)-1 )
+    # Show original image
+    fig.add_subplot(len(images), 2, 2 * (idx + 1) - 1)
     plt.imshow(images[idx])
     plt.xticks([])
     plt.yticks([])
 
-    # show probabilities
-    fig.add_subplot(len(images), 2, 2*(idx+1))
-    plt.barh(range(len(probs[0].detach().numpy())),probs[idx].detach().numpy(), tick_label=leg_foot_position)
-    plt.xlim(0,1.0)
+    # Show probabilities
+    fig.add_subplot(len(images), 2, 2 * (idx + 1))
+    plt.barh(range(len(probs[0].detach().numpy())), probs[idx].detach().numpy(), tick_label=leg_foot_position)
+    plt.xlim(0, 1.0)
 
     plt.subplots_adjust(
         left=0.1,
@@ -131,4 +174,4 @@ for idx in range(len(images)):
         hspace=0.2
     )
 
-plt.show()
+#plt.show()
