@@ -1,0 +1,55 @@
+{
+    "body_orientation": [
+      "Person is standing upright",
+      "Person is leaning forward",
+      "Person is leaning backward",
+      "Person is leaning forward"
+    ],
+    "arm_hand_position": [
+      "One arm is raised to the head",
+      "One arm is stretched out to the side",
+      "Both arms are stretched out to the sides",
+      "One arm is infront of the body"
+    ],
+    "leg_foot_position": [
+      "One foot is lifted off the ground",
+      "Person is stepping forward",
+      "Person's legs are wide apart",
+      "Person's legs are close together"
+    ],
+    "motion_based": [
+      "Person is mid-swing",
+      "Person is preparing to hit something",
+      "Person is following through after a motion",
+      "Person is in a crouched position with arms raised",
+      "Person is moving one arm forward quickly",
+      "Person is moving one arm across the body",
+      "Person is swinging their arm downward",
+      "Person is holding an object and moving it forward"
+    ],
+    "general_pose": [
+      "Person is in an active stance",
+      "Person is in a relaxed stance",
+      "Person is in a defensive position",
+      "Person is stretching to reach something",
+      "Person is twisting their torso",
+      "Person is bending their knees"
+    ],
+    "question_based": [
+      "Is the person leaning forward?",
+      "Is the person in mid-air?",
+      "Does the person have one arm raised above their head?",
+      "Is the person moving one arm forward?",
+      "Is the person stepping forward?",
+      "Is the person jumping?",
+      "Is the person in a crouched position?",
+      "Is the person's hand fully extended?"
+    ],
+    "contrasting_pairs": [
+      "Person is leaning forward", "Person is leaning backward", "Person is standing upright",
+      "One leg is lifted", "Both feet are on the ground",
+      "Person is jumping", "Person is stepping forward",
+      "Person is in an active stance", "Person is in a relaxed stance", "Person is in a crouched stance"
+    ]
+  }
+  
