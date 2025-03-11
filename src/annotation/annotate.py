@@ -22,7 +22,7 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
         continue  # Skip other events
 
     start_frame = max(0, int(frame_num) - 20)  # Ensure start frame is non-negative
-    end_frame = min(int(frame_num) + 2, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
+    end_frame = min(int(frame_num) + 5, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
 
     while True:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)  # Jump to the starting frame
@@ -41,6 +41,7 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
                 cv2.destroyAllWindows()
                 exit()
             elif key == ord('r'):  # Press 'r' to restart the segment
+                replay = True
                 break  # Break out of the inner loop to restart
         else:
             break  # Break out of the outer loop if no restart requested
@@ -104,7 +105,8 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
                 "f": " front_heavy",
                 "r": " right_leaning",
                 "l": " left_leaning",
-                "n": " neutral"
+                "n": " neutral",
+                "u": " unknown"
             }
         
         body_pos_label = label_map.get(body_pos_label, body_pos_label)
@@ -115,6 +117,7 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
                 "b": " both_feet_planted",
                 "r": " right_foot_lifted",
                 "l": " left_foot_lifted",
+                "u": " unknown"
             }
             
         leg_label = label_map.get(leg_label, leg_label)
