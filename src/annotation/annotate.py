@@ -2,8 +2,8 @@ import cv2
 import json
 
 # File paths
-json_path = "events_markup.json"
-video_path = "videos/game_1f.mp4"
+json_path = "data/events/events_markup2.json"
+video_path = "videos/game_2f.mp4"
 
 # Load the event frames from JSON
 with open(json_path, "r") as f:
@@ -54,47 +54,72 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
         label_map = {
             "e": "empty_event",
             # Serve
-            "lfsv": "left forehand serve",
-            "rfsv": "right forehand serve",
-            "lbsv": "left backhand serve",
-            "rbsv": "right backhand serve",
+            "lfsv": "left_forehand_serve",
+            "rfsv": "right_forehand_serve",
+            "lbsv": "left_backhand_serve",
+            "rbsv": "right_backhand_serve",
             # Loop
-            "lfl": "left forehand loop",
-            "rfl": "right forehand loop",
-            "lbl": "left backhand loop",
-            "rbl": "right backhand loop",
+            "lfl": "left_forehand_loop",
+            "rfl": "right_forehand_loop",
+            "lbl": "left_backhand_loop",
+            "rbl": "right_backhand_loop",
             # Short
-            "lfsh": "left forehand short",
-            "rfsh": "right forehand short",
-            "lbsh": "left backhand short",
-            "rbsh": "right backhand short",
+            "lfsh": "left_forehand_short",
+            "rfsh": "right_forehand_short",
+            "lbsh": "left_backhand_short",
+            "rbsh": "right_backhand_short",
             # Block
-            "lfb": "left forehand block",
-            "rfb": "right forehand block",
-            "lbb": "left backhand block",
-            "rbb": "right backhand block",
+            "lfb": "left_forehand_block",
+            "rfb": "right_forehand_block",
+            "lbb": "left_backhand_block",
+            "rbb": "right_backhand_block",
             # Push
-            "lfp": "left forehand push",
-            "rfp": "right forehand push",
-            "lbp": "left backhand push",
-            "rbp": "right backhand push",
+            "lfp": "left_forehand_push",
+            "rfp": "right_forehand_push",
+            "lbp": "left_backhand_push",
+            "rbp": "right_backhand_push",
             # Flick
-            "lff": "left forehand flick",
-            "rff": "right forehand flick",
-            "lbf": "left backhand flick",
-            "rbf": "right backhand flick",
+            "lff": "left_forehand_flick",
+            "rff": "right_forehand_flick",
+            "lbf": "left_backhand_flick",
+            "rbf": "right_backhand_flick",
             # Smash
-            "lfs": "left forehand smash",
-            "rfs": "right forehand smash",
-            "lbs": "left backhand smash",
-            "rbs": "right backhand smash",
+            "lfs": "left_forehand_smash",
+            "rfs": "right_forehand_smash",
+            "lbs": "left_backhand_smash",
+            "rbs": "right_backhand_smash",
             # Lob
-            "lflo": "left forehand lob",
-            "rflo": "right forehand lob",
-            "lblo": "left backhand lob",
-            "rblo": "right backhand lob",
+            "lflo": "left_forehand_lob",
+            "rflo": "right_forehand_lob",
+            "lblo": "left_backhand_lob",
+            "rblo": "right_backhand_lob",
         }
+
         new_label = label_map.get(new_label, new_label)
+        
+        body_pos_label = input("Enter lean information (or press Enter to keep current event): ").strip()
+        if body_pos_label:
+            label_map = {
+                "b": " back_heavy",
+                "f": " front_heavy",
+                "r": " right_leaning",
+                "l": " left_leaning",
+                "n": " neutral"
+            }
+        
+        body_pos_label = label_map.get(body_pos_label, body_pos_label)
+        
+        leg_label = input("Enter leg information (or press Enter to keep current event): ").strip()
+        if leg_label:
+            label_map = {
+                "b": " both_feet_planted",
+                "r": " right_foot_lifted",
+                "l": " left_foot_lifted",
+            }
+            
+        leg_label = label_map.get(leg_label, leg_label)
+        
+        new_label = new_label + body_pos_label + leg_label
 
         event_frames[frame_num] = new_label  # Update the label
 

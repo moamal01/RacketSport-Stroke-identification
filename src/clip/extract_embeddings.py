@@ -12,18 +12,6 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 with open("clip_captions.json", "r") as f:
     clip_captions = json.load(f)
 
-# Example usage of the clip_captions dictionary
-captions = [
-    clip_captions["body_orientation"],
-    clip_captions["arm_hand_position"],
-    clip_captions["leg_foot_position"],
-    clip_captions["motion_based"],
-    clip_captions["general_pose"],
-    clip_captions["question_based"],
-    clip_captions["contrasting_pairs"],
-]
-
-print(captions)
 
 with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
     loaded_keys = json.load(keypoint_file)
