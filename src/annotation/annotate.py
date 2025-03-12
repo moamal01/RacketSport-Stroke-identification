@@ -18,15 +18,16 @@ if not cap.isOpened():
 
 # Process each event frame
 for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
-    if label != "empty_event":
+    if "left_backhand_smash" not in label :
         continue  # Skip other events
 
     start_frame = max(0, int(frame_num) - 20)  # Ensure start frame is non-negative
-    end_frame = min(int(frame_num) + 5, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
+    end_frame = min(int(frame_num) + 10, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) - 1)
 
     while True:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)  # Jump to the starting frame
         print(f"Showing frames {start_frame} to {end_frame} (Event frame: {frame_num})")
+        print(label)
         
         while cap.get(cv2.CAP_PROP_POS_FRAMES) <= end_frame:
             ret, frame = cap.read()
@@ -115,6 +116,7 @@ for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
         if leg_label:
             label_map = {
                 "b": " both_feet_planted",
+                "bl": " both_feet_lifted",
                 "r": " right_foot_lifted",
                 "l": " left_foot_lifted",
                 "u": " unknown"
