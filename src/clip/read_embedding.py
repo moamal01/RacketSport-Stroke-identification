@@ -4,4 +4,4 @@ import numpy as np
 data = np.load("imbeddings/video_1/58/32/image_embeddings.npy")
 
 # Print or inspect the data
-print(len(data))
+print(data)
