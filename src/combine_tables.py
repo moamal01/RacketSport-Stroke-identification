@@ -2,8 +2,8 @@ import pandas as pd
 import ast
 
 # File paths
-keypoints_file = "bbox_saved.csv"
-bbox_file = "keypoints_saved.csv"
+keypoints_file = "keypoints_video2.csv"
+bbox_file = "bbox_video2.csv"
 
 # Load the CSV files
 keypoints_df = pd.read_csv(keypoints_file)
@@ -65,6 +65,6 @@ for col in ["Ball boxes", "Ball scores", "Racket boxes", "Racket scores", "Table
     merged_df[col] = merged_df[col].apply(lambda x: x if isinstance(x, list) else [])
 
 # Save to CSV
-merged_df.to_csv("merged_output.csv", index=False)
+merged_df.to_csv("merged_output_video2.csv", index=False)
 
 print("Merged dataset saved as 'merged_output3.csv'")

@@ -3,7 +3,7 @@ import ast
 import math
 
 # Load CSV file
-file_path = "normalized_data.csv"
+file_path = "normalized_data_video2.csv"
 df = pd.read_csv(file_path)
 
 TABLE_MIDPOINT = (0.5, 0.5)
@@ -127,7 +127,7 @@ data = {
 result_df = pd.DataFrame(data)
 
 # Save the DataFrame to a new CSV file
-output_file = "midpoints.csv"
+output_file = "midpoints_video2.csv"
 result_df.to_csv(output_file, index=False)
 
 print(f"Keypoints and scores have been saved to {output_file}")

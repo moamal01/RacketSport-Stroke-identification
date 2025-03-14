@@ -2,8 +2,8 @@ import pandas as pd
 import ast
 
 # Load CSV
-input_file = "merged_output.csv"
-output_file = "normalized_data.csv"
+input_file = "merged_output_video2.csv"
+output_file = "normalized_data_video2.csv"
 
 # Read CSV
 df = pd.read_csv(input_file)
