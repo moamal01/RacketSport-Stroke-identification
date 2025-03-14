@@ -4,10 +4,10 @@ import cv2
 import os
 
 # Load CSV file
-file_path = "midpoints.csv"
+file_path = "midpoints_video2.csv"
 df = pd.read_csv(file_path)
 
-video_path = "videos/game_1.mp4"
+video_path = "videos/game_2.mp4"
 cap = cv2.VideoCapture(video_path)
 
 def get_player_boxes(df):
@@ -44,7 +44,7 @@ def process_player(bbox, frame, index, player):
         
         cropped_img = frame[int(y1):int(y2), int(x1):int(x2)]
         
-        frame_directory = f"cropped/video_1/{frames[index]}/0"
+        frame_directory = f"cropped/video_2/{frames[index]}/0"
         if not os.path.exists(frame_directory):
             os.makedirs(frame_directory)
         

@@ -22,7 +22,8 @@ def save_people_embedding(paths):
     os.makedirs(directory)
     
     image_embeddings_np = image_embeddings.cpu().numpy()
-    np.save(directory + "/image_embeddings.npy", image_embeddings_np)
+    np.save(directory + "/left.npy", image_embeddings_np[0])
+    np.save(directory + "/right.npy", image_embeddings_np[1])
 
 def save_object_embedding(path):
     image = Image.open("cropped/" + path)
@@ -41,22 +42,25 @@ def save_object_embedding(path):
     np.save(directory + "/image_embeddings.npy", image_embeddings_np)
 
 
-with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
-    loaded_keys = json.load(keypoint_file)
+with open("data/events/events_markup2.json", "r") as keypoint_file:
+    data = json.load(keypoint_file)
+    
+excluded_values = {"empty_event", "bounce", "net"}
+loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
 
 for key_frame, _ in loaded_keys.items():
-    frame = int(key_frame) - 2
-    for i in range(5):
-        save_people_embedding([f"video_1/{frame}/0/left.png", f"video_1/{frame}/0/right.png"])
+    frame = int(key_frame) - 0
+    for i in range(1):
+        save_people_embedding([f"video_2/{frame}/0/left.png", f"video_2/{frame}/0/right.png"])
         
-        if os.path.exists(f"cropped/video_1/{frame}/32"):
-            save_object_embedding(f"video_1/{frame}/32/object.png")
+        if os.path.exists(f"cropped/video_2/{frame}/32"):
+            save_object_embedding(f"video_2/{frame}/32/object.png")
                 
-        if os.path.exists(f"cropped/video_1/{frame}/38"):
-            save_object_embedding(f"video_1/{frame}/38/object.png")
+        if os.path.exists(f"cropped/video_2/{frame}/38"):
+            save_object_embedding(f"video_2/{frame}/38/object.png")
             
-        if os.path.exists(f"cropped/video_1/{frame}/60"):
-            save_object_embedding(f"video_1/{frame}/60/object.png")
+        if os.path.exists(f"cropped/video_2/{frame}/60"):
+            save_object_embedding(f"video_2/{frame}/60/object.png")
 
         frame += 1
     
