@@ -24,15 +24,18 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video_path = "videos/game_1.mp4"
+video_path = "videos/game_2f.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Thesholds
 min_person_area = 30000
 min_table_area = 400000
 
-with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
-    loaded_keys = json.load(keypoint_file)
+with open("data/events/events_markup2.json", "r") as keypoint_file:
+    data = json.load(keypoint_file)
+    
+excluded_values = {"empty_event", "bounce", "net"}
+loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
     
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -52,8 +55,8 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-keypoint_filename = "keypoints.csv"
-bbox_filename = "bbox.csv"
+keypoint_filename = "keypoints_video2.csv"
+bbox_filename = "bbox_video2.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
@@ -65,14 +68,14 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     
     for key_frame, value_frame in loaded_keys.items():
         print(key_frame)
-        start_frame = int(key_frame) - 2
+        start_frame = int(key_frame) - 0
 
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
-        frame_number = -2
+        frame_number = 0
 
         try:
-            while cap.isOpened() and frame_number <= 2:
+            while cap.isOpened() and frame_number <= 0:
                 ret, frame = cap.read()
                 if not ret or frame is None:
                     print(f"End of video or error at frame {frame_number}")
