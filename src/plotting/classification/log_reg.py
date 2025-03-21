@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 import json
 import os
+from collections import Counter
 
 player = "right"
 video_number = 2
@@ -42,6 +43,13 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # Train logistic regression
 clf = LogisticRegression(max_iter=1000, solver='lbfgs', multi_class='auto')
 clf.fit(X_train, y_train)
+
+# Baseline
+class_counts = Counter(y)
+most_common_class = max(class_counts, key=class_counts.get)
+baseline_acc = class_counts[most_common_class] / len(y)
+
+print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
 # Evaluate
 y_pred = clf.predict(X_test)
