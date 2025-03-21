@@ -1,33 +1,60 @@
+import json
+import os
 import numpy as np
-import pandas as pd
-import ast
+
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 from sklearn.manifold import TSNE
 
-# Sample DataFrame (Replace with actual DataFrame)
-df = pd.read_csv("keypoints3.csv")
+player = "left"
+video_number = 2
 
-# Convert string representation to actual list
-keypoints = df["Player_1 keypoints"].apply(ast.literal_eval)
+with open(f"data/events/events_markup{video_number}.json", "r") as file:
+    data = json.load(file)
 
-# Extract X and Y coordinates
-X_coords = np.array([[kp[i][0] for i in range(len(kp))] for kp in keypoints])
-Y_coords = np.array([[kp[i][1] for i in range(len(kp))] for kp in keypoints])
+excluded_values = {"empty_event", "bounce", "net"}
+stroke_frames = {k: v for k, v in data.items() if v not in excluded_values}
 
-# Flatten into a feature vector per player
-features = np.hstack((X_coords, Y_coords))
+embeddings = []
+labels = []
 
-# Ensure perplexity < number of samples
-perplexity_value = min(5, len(features) - 1)
+for frame, value in stroke_frames.items():
+    if value == "other" or value == "otherotherother":
+        continue
+    
+    value1 = value.split(" ")[0]
+    value2 = value1.split("_")[2]
+    if player in value1: # and labels.count(value) < 10:
+        if os.path.exists(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"):
+            embeddings.append(np.load(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"))  
+            labels.append(value1)
 
-# Apply t-SNE
-tsne = TSNE(n_components=2, perplexity=perplexity_value, random_state=42)
-tsne_results = tsne.fit_transform(features)
+print(len(labels))
+print(len(embeddings))
 
-# Plot results
-plt.figure(figsize=(8, 6))
-plt.scatter(tsne_results[:, 0], tsne_results[:, 1], marker='o', color='blue', edgecolors='k')
-plt.xlabel("t-SNE Component 1")
-plt.ylabel("t-SNE Component 2")
-plt.title("t-SNE Visualization of Player Keypoints")
+embeddings = np.vstack(embeddings)  # Stack embeddings into a single array
+
+tsne_model = TSNE(n_components=2, perplexity=5, learning_rate=200, random_state=42)
+embeddings_2d = tsne_model.fit_transform(embeddings)
+
+unique_labels = list(set(labels))
+cmap = cm.get_cmap("tab10", len(unique_labels))  # Get a colormap
+color_dict = {label: cmap(i) for i, label in enumerate(unique_labels)}  # Assign colors
+
+# Create scatter plot with colors
+plt.figure(figsize=(10, 6))
+for label in unique_labels:
+    mask = np.array(labels) == label  # Convert mask to NumPy array
+    marker = 'v' if 'forehand' in label else 'x'
+    plt.scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1], 
+                s=4, label=label, color=color_dict[label], marker=marker)
+
+plt.title(f"t-sne Projection of Image Embeddings for {player} player")
+plt.xlabel("t-sne Dimension 1")
+plt.ylabel("t-sne Dimension 2")
+
+# Move legend outside the plot
+plt.legend(markerscale=4, bbox_to_anchor=(1.05, 1), loc='upper left')
+
+plt.tight_layout()  # Adjust layout to fit everything
 plt.show()
