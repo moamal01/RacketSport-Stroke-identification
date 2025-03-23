@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 
 # Player and video settings
-player = "right"
+player = "left"
 video_number = 2
 
 # Load the data
@@ -22,7 +22,6 @@ with open(f"data/events/events_markup{video_number}.json", "r") as file:
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames = {k: v for k, v in data.items() if v not in excluded_values}
 
-# Initialize lists to hold embeddings and labels
 embeddings = []
 labels = []
 
@@ -40,7 +39,7 @@ for frame, value in stroke_frames.items():
 
 
 label_counts = Counter(labels)
-min_label_threshold = 5
+min_label_threshold = 6
 valid_labels = [label for label, count in label_counts.items() if count >= min_label_threshold]
 
 # Filter embeddings and labels based on valid labels
