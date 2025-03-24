@@ -9,33 +9,53 @@ from collections import Counter
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Player and video settings
-player = "left"
-video_number = 2
+def plot_label_distribution(y_data, title):
+    plt.figure(figsize=(12, 7))
+    sns.countplot(y=y_data, order=np.unique(y_data))
+    plt.title(title)
+    plt.xlabel("Count")
+    plt.ylabel("Label")
+    plt.show()
 
-# Load the data
-with open(f"data/events/events_markup{video_number}.json", "r") as file:
-    data = json.load(file)
+with open(f"data/events/events_markup1.json", "r") as file:
+    data1 = json.load(file)
+    
+with open(f"data/events/events_markup2.json", "r") as file:
+    data2 = json.load(file)
 
-# Exclude specific event types
 excluded_values = {"empty_event", "bounce", "net"}
-stroke_frames = {k: v for k, v in data.items() if v not in excluded_values}
+stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
+stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
 
 embeddings = []
 labels = []
 
-# Process the frames to extract embeddings and corresponding labels
-for frame, value in stroke_frames.items():
+for frame, value in stroke_frames_1.items():
     if value == "other" or value == "otherotherother":
         continue
+    
+    player = value.split(" ")[0]
+    label = value.replace(" ", "_")
+    
+    file_path = f"imbeddings/video_1/{frame}/0/{player}.npy"
+    if os.path.exists(file_path):
+        embeddings.append(np.load(f"imbeddings/video_1/{frame}/0/{player}.npy"))  
+        labels.append(label)
 
-    value1 = value.split(" ")[0]
-    value2 = value1.split("_")[2]
-    if player in value1:
-        if os.path.exists(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"):
-            embeddings.append(np.load(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"))  
-            labels.append(value1.split('_', 1)[1])
+for frame, value in stroke_frames_2.items():
+    if value in {"other", "otherotherother"}:
+        continue
+
+    label = value.split(" ")[0]
+    value2 = label.split("_")[0]
+    value3 = label.split("_")[2]
+
+    file_path = f"imbeddings/video_2/{frame}/0/{value2}.npy"
+    if os.path.exists(file_path):
+        embeddings.append(np.load(file_path))
+        labels.append(label)  # Extract the class label
 
 
 label_counts = Counter(labels)
@@ -61,6 +81,10 @@ X = np.vstack(filtered_embeddings)
 # Split into training & testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+plot_label_distribution(filtered_labels, "Original Label Distribution")
+plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
+plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
+
 # Train logistic regression
 clf = LogisticRegression(max_iter=1000, solver='lbfgs', multi_class='auto')
 clf.fit(X_train, y_train)
@@ -73,6 +97,10 @@ baseline_acc = class_counts[most_common_class] / len(y)
 print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
 # Evaluate
+y_train_pred = clf.predict(X_train)  # Get predictions on the training data
+train_accuracy = accuracy_score(y_train, y_train_pred)  # Calculate training accuracy
+print(f"Training Accuracy: {train_accuracy:.2f}")
+
 y_pred = clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Test Accuracy: {accuracy:.2f}")
@@ -86,10 +114,11 @@ print(f"Random Forest Accuracy: {rf_acc:.2f}")
 
 # Confusion matrix
 cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=label_encoder.classes_)
-disp.plot(cmap="Blues")
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=np.unique(label_encoder.inverse_transform(y_test)))
+fig, ax = plt.subplots(figsize=(10, 8))
+disp.plot(cmap="Blues", ax=ax)
 
 # Rotate the x-axis labels to avoid overlap
-plt.xticks(rotation=30, ha='right')
+plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
 plt.show()
