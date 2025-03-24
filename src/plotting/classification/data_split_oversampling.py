@@ -1,15 +1,12 @@
 import numpy as np
 import os
-import json
 import random
 from sklearn.model_selection import StratifiedShuffleSplit
 from collections import Counter
+from utility_functions import load_json_with_dicts
 
-with open(f"data/events/events_markup1.json", "r") as file:
-    data1 = json.load(file)
-    
-with open(f"data/events/events_markup2.json", "r") as file:
-    data2 = json.load(file)
+data1 = load_json_with_dicts(f"data/events/events_markup1.json")
+data2 = load_json_with_dicts(f"data/events/events_markup2.json")
 
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}

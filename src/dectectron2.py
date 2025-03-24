@@ -6,7 +6,7 @@ from detectron2.data import MetadataCatalog
 import torch
 import cv2
 import csv
-import json
+from utility_functions import load_json_with_dicts
 
 # Load the object detection model
 cfg_det = get_cfg()
@@ -31,8 +31,7 @@ cap = cv2.VideoCapture(video_path)
 min_person_area = 30000
 min_table_area = 400000
 
-with open("data/events/events_markup2.json", "r") as keypoint_file:
-    data = json.load(keypoint_file)
+data = load_json_with_dicts("data/events/events_markup2.json")
     
 excluded_values = {"empty_event", "bounce", "net"}
 loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}

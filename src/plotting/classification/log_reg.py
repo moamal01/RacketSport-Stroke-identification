@@ -3,27 +3,13 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
-import json
 import os
 from collections import Counter
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
-import matplotlib.pyplot as plt
-import seaborn as sns
+from utility_functions import plot_label_distribution, plot_confusion_matrix, load_json_with_dicts
 
-def plot_label_distribution(y_data, title):
-    plt.figure(figsize=(12, 7))
-    sns.countplot(y=y_data, order=np.unique(y_data))
-    plt.title(title)
-    plt.xlabel("Count")
-    plt.ylabel("Label")
-    plt.show()
-
-with open(f"data/events/events_markup1.json", "r") as file:
-    data1 = json.load(file)
-    
-with open(f"data/events/events_markup2.json", "r") as file:
-    data2 = json.load(file)
+data1 = load_json_with_dicts(f"data/events/events_markup1.json")
+data2 = load_json_with_dicts(f"data/events/events_markup2.json")
 
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
@@ -55,7 +41,7 @@ for frame, value in stroke_frames_2.items():
     file_path = f"imbeddings/video_2/{frame}/0/{value2}.npy"
     if os.path.exists(file_path):
         embeddings.append(np.load(file_path))
-        labels.append(label)  # Extract the class label
+        labels.append(label)
 
 
 label_counts = Counter(labels)
@@ -93,7 +79,6 @@ clf.fit(X_train, y_train)
 class_counts = Counter(y)
 most_common_class = max(class_counts, key=class_counts.get)
 baseline_acc = class_counts[most_common_class] / len(y)
-
 print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
 # Evaluate
@@ -109,16 +94,9 @@ print(f"Test Accuracy: {accuracy:.2f}")
 clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf_rf.fit(X_train, y_train)
 rf_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-
 print(f"Random Forest Accuracy: {rf_acc:.2f}")
 
 # Confusion matrix
-cm = confusion_matrix(y_test, y_pred)
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=np.unique(label_encoder.inverse_transform(y_test)))
-fig, ax = plt.subplots(figsize=(10, 8))
-disp.plot(cmap="Blues", ax=ax)
-
-# Rotate the x-axis labels to avoid overlap
-plt.xticks(rotation=45, ha='right')
-plt.tight_layout()
-plt.show()
+y_test = label_encoder.inverse_transform(y_test)
+y_pred = label_encoder.inverse_transform(y_pred)
+plot_confusion_matrix(y_test, y_pred)
