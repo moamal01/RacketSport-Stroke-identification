@@ -66,6 +66,7 @@ X_train, y_train = embeddings[train_idx], labels[train_idx]
 X_temp, y_temp = embeddings[temp_idx], labels[temp_idx]
 
 # Oversample small classes
+label_counts = Counter(y_train)
 X_train_balanced = []
 y_train_balanced = []
 
@@ -76,17 +77,18 @@ for label in label_counts:
     samples_needed = average_count - label_counts[label]
     indices = np.where(y_train == label)[0]
     
-    if samples_needed < 10:
-        X_train_balanced.extend(X_train[indices])
-        y_train_balanced.extend(y_train[indices])
-        continue
-    
     X_train_balanced.extend(X_train[indices])
     y_train_balanced.extend(y_train[indices])
-
-    # Randomly duplicate samples
-    num_samples_to_duplicate = min(samples_needed, len(indices))
+    
+    if samples_needed < 5:
+        continue
+    
+    num_samples_to_duplicate = len(indices)
     extra_samples = random.choices(indices.tolist(), k=num_samples_to_duplicate)
+    
+    while len(extra_samples) < samples_needed:
+        extra_samples.extend(random.choices(indices.tolist(), k=num_samples_to_duplicate))
+    
     X_train_balanced.extend(X_train[extra_samples])
     y_train_balanced.extend(y_train[extra_samples])
 

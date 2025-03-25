@@ -4,6 +4,12 @@ from sklearn.metrics import accuracy_score
 from collections import Counter
 from sklearn.ensemble import RandomForestClassifier
 from utility_functions import plot_label_distribution, plot_confusion_matrix
+from src.data_utils.dataloader import EmbeddingDataset
+from torch.utils.data import DataLoader
+
+train_loader = DataLoader(EmbeddingDataset("train"), batch_size=32, shuffle=True)
+val_loader = DataLoader(EmbeddingDataset("val"), batch_size=32, shuffle=False)
+test_loader = DataLoader(EmbeddingDataset("test"), batch_size=32, shuffle=False)
 
 def load_dataset(split="train"):
     file_path = f"data/splits/oversampled/{split}.npz"
@@ -45,4 +51,4 @@ rf_acc = accuracy_score(y_test, clf_rf.predict(X_test))
 print(f"Random Forest Accuracy: {rf_acc:.2f}")
 
 # Confusion matrix
-plot_confusion_matrix(y_test, y_pred)
+plot_confusion_matrix(y_test, y_pred, True)

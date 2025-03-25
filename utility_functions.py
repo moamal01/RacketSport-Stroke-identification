@@ -44,6 +44,10 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: boo
         concatenate (bool): Gather the unique labels of test and prediction labels into one list of unique labels.
     """
     cm = confusion_matrix(test_labels, pred_labels)
+    
+    if concatenate:
+        test_labels = np.unique(np.concatenate([test_labels, pred_labels]))
+
     disp = ConfusionMatrixDisplay(
         confusion_matrix=cm, display_labels=np.unique(test_labels)
     )
