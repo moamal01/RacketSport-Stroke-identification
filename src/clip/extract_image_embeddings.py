@@ -5,7 +5,7 @@ from PIL import Image
 import json
 import os
 
-video = 2
+video = 1
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -50,7 +50,7 @@ def save_object_embedding(path):
     np.save(directory + "/image_embeddings.npy", image_embeddings_np)
 
 
-with open("data/events/events_markup2.json", "r") as keypoint_file:
+with open(f"data/events/events_markup{video}.json", "r") as keypoint_file:
     data = json.load(keypoint_file)
     
 excluded_values = {"empty_event", "bounce", "net"}

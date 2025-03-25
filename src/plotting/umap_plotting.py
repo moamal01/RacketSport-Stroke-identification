@@ -56,6 +56,6 @@ plt.ylabel("UMAP Dimension 2")
 plt.legend(markerscale=1, bbox_to_anchor=(0.5, -0.1), loc='upper center', ncol=5)
 plt.tight_layout()
 
-plt.savefig(f"figures/umaps/for_report/red_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
+plt.savefig(f"figures/umaps/cleaned/red_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
 
 plt.show()

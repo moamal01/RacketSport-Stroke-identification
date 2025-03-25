@@ -24,7 +24,7 @@ for frame, value in stroke_frames_1.items():
     
     file_path = f"embeddings/video_1/{frame}/0/{player}.npy"
     if os.path.exists(file_path):
-        embeddings.append(np.load(f"embeddings/video_1/{frame}/0/{player}.npy"))  
+        embeddings.append(np.load(file_path).squeeze())  
         labels.append(label)
 
 for frame, value in stroke_frames_2.items():
