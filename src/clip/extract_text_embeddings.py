@@ -15,16 +15,14 @@ with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
     loaded_keys = json.load(keypoint_file)
 
 for key, grouping in clip_captions.items():
-    text_inputs = processor(text=grouping, return_tensors="pt", padding=True)
+    for caption in grouping:
+        text_inputs = processor(text=caption, return_tensors="pt", padding=True)
 
-    # Extract embeddings
-    with torch.no_grad():
-        text_embeddings = model.get_text_features(**text_inputs)
+        with torch.no_grad():
+            text_embeddings = model.get_text_features(**text_inputs)
 
-    text_embeddings_np = text_embeddings.cpu().numpy()
+        text_embeddings_np = text_embeddings.cpu().numpy()
 
-    print(f"Text Embeddings Shape: {text_embeddings_np.shape}")
-
-    directory = f"imbeddings/text/{key}/"
-    os.makedirs(directory)
-    np.save(directory + "embeddings.npy", text_embeddings_np)
+        directory = f"embeddings/text/{key}/{caption}/"
+        os.makedirs(directory)
+        np.save(f"{directory}/embedding.npy", text_embeddings_np)
