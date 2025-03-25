@@ -22,9 +22,9 @@ for frame, value in stroke_frames_1.items():
     player = value.split(" ")[0]
     label = value.replace(" ", "_")
     
-    file_path = f"imbeddings/video_1/{frame}/0/{player}.npy"
+    file_path = f"embeddings/video_1/{frame}/0/{player}.npy"
     if os.path.exists(file_path):
-        embeddings.append(np.load(f"imbeddings/video_1/{frame}/0/{player}.npy"))  
+        embeddings.append(np.load(f"embeddings/video_1/{frame}/0/{player}.npy"))  
         labels.append(label)
 
 for frame, value in stroke_frames_2.items():
@@ -35,9 +35,9 @@ for frame, value in stroke_frames_2.items():
     value2 = label.split("_")[0]
     value3 = label.split("_")[2]
 
-    file_path = f"imbeddings/video_2/{frame}/0/{value2}.npy"
+    file_path = f"embeddings/video_2/{frame}/0/{value2}.npy"
     if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))
+        embeddings.append(np.load(file_path).squeeze())
         labels.append(label)  # Extract the class label
             
 # Ensure there are classes have sufficient populations

@@ -27,8 +27,8 @@ for frame, value in stroke_frames.items():
         value1 = value.split(" ")[0]
         value2 = value1.split("_")[2]
         if player in value1: # and labels.count(value) < 10:
-            if os.path.exists(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"):
-                embeddings.append(np.load(f"imbeddings/video_{video_number}/{frame}/0/{player}.npy"))  
+            if os.path.exists(f"embeddings/video_{video_number}/{frame}/0/{player}.npy"):
+                embeddings.append(np.load(f"embeddings/video_{video_number}/{frame}/0/{player}.npy"))  
                 labels.append(value1.split('_', 1)[1])
 
 print(len(labels))

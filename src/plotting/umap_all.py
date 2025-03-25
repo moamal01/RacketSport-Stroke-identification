@@ -29,8 +29,8 @@ for frame, value in stroke_frames_1.items():
             continue
 
         if player in value: # and labels.count(value) < 10:
-            if os.path.exists(f"imbeddings/video_1/{frame}/0/{player}.npy"):
-                embeddings.append(np.load(f"imbeddings/video_1/{frame}/0/{player}.npy"))  
+            if os.path.exists(f"embeddings/video_1/{frame}/0/{player}.npy"):
+                embeddings.append(np.load(f"embeddings/video_1/{frame}/0/{player}.npy"))  
                 labels.append(value.replace(" ", "_"))
 
 for frame, value in stroke_frames_2.items():
@@ -42,8 +42,8 @@ for frame, value in stroke_frames_2.items():
         value1 = value.split(" ")[0]
         value2 = value1.split("_")[2]
         if player in value1: # and labels.count(value) < 10:
-            if os.path.exists(f"imbeddings/video_2/{frame}/0/{player}.npy"):
-                embeddings.append(np.load(f"imbeddings/video_2/{frame}/0/{player}.npy"))  
+            if os.path.exists(f"embeddings/video_2/{frame}/0/{player}.npy"):
+                embeddings.append(np.load(f"embeddings/video_2/{frame}/0/{player}.npy"))  
                 labels.append(value1)
 
 print(len(labels))
@@ -72,6 +72,6 @@ plt.ylabel("UMAP Dimension 2")
 plt.legend(markerscale=4, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
-plt.savefig(f"figures/umaps/umap_both_videos_player{player}_neighbors{neighbors}.png", dpi=300)
+#plt.savefig(f"figures/umaps/umap_both_videos_player{player}_neighbors{neighbors}.png", dpi=300)
 
 plt.show()
