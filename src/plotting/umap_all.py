@@ -8,6 +8,7 @@ import matplotlib.cm as cm
 player = "left"
 video_number = 2
 neighbors = 15
+key_of_interest = "question_based"
 
 with open(f"data/events/events_markup1.json", "r") as file:
     data1 = json.load(file)
@@ -53,7 +54,7 @@ for frame, value in stroke_frames_2.items():
 
 for key, grouping in clip_captions.items():
     for caption in grouping:
-        if key == "body_orientation":
+        if key == key_of_interest:
             file_path = f"embeddings/text/{key}/{caption}//embedding.npy"
             text_embeddings.append(np.load(file_path))
             text_labels.append(caption)
@@ -84,7 +85,7 @@ plt.scatter(text_embeddings_2d[:, 0], text_embeddings_2d[:, 1],
 
 # Add captions to text embeddings
 for i, caption in enumerate(text_labels):
-    plt.text(text_embeddings_2d[i, 0], text_embeddings_2d[i, 1], caption, 
+    plt.text(text_embeddings_2d[i, 0] + 1.15, text_embeddings_2d[i, 1], caption, 
              fontsize=8, color='black', ha='center', va='center', alpha=0.7)
 
 plt.title(f"UMAP Projection of Image Embeddings for {player} player in both videos. Neighbors = {neighbors}.")
@@ -93,6 +94,6 @@ plt.ylabel("UMAP Dimension 2")
 plt.legend(markerscale=4, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
-plt.savefig(f"figures/umaps/cleaned/with_text{player}_neighbors{neighbors}.png", dpi=300)
+plt.savefig(f"figures/umaps/cleaned/{key_of_interest}_{player}_neighbors{neighbors}.png", dpi=300)
 
 plt.show()
