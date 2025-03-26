@@ -10,6 +10,8 @@ import ast
 video_number = 2
 neighbors = 15
 
+player = "right"
+
 file_path1 = "midpoints.csv" # Make a cleaned midpoints file!
 file_path2 = "midpoints_video2.csv" # Make a cleaned midpoints file!
 
@@ -34,22 +36,18 @@ for frame, value in stroke_frames_1.items():
         continue
     
     event_row = df1.loc[df1['Event frame'] == int(frame)]
-    
-    if "left" in value:
-        player = "left"
-    else:
-        player = "right"
 
-    if os.path.exists(f"embeddings/video_1/{frame}/0/{player}.npy"):
-        embedding = np.load(f"embeddings/video_1/{frame}/0/{player}.npy")
-        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        
-        # Remove confidence scores (keep only x and y)
-        keypoints = np.array(keypoints)
-        keypoints_xy = keypoints[:, :2]
-        
-        features.append(np.concatenate([embedding.squeeze(), keypoints_xy.flatten()]))  
-        labels.append(value.replace(" ", "_"))
+    if player in value:
+        if os.path.exists(f"embeddings/video_1/{frame}/0/{player}.npy"):
+            embedding = np.load(f"embeddings/video_1/{frame}/0/{player}.npy")
+            keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+            
+            # Remove confidence scores (keep only x and y)
+            keypoints = np.array(keypoints)
+            keypoints_xy = keypoints[:, :2]
+            
+            features.append(np.concatenate([embedding.squeeze(), keypoints_xy.flatten()]))  
+            labels.append(value.replace(" ", "_"))
 
 for frame, value in stroke_frames_2.items():
     if value == "other" or value == "otherotherother":
@@ -60,21 +58,17 @@ for frame, value in stroke_frames_2.items():
     value1 = value.split(" ")[0]
     value2 = value1.split("_")[2]
     
-    if "left" in value1:
-        player = "left"
-    else:
-        player = "right"
-    
-    if os.path.exists(f"embeddings/video_2/{frame}/0/{player}.npy"):
-        embedding = np.load(f"embeddings/video_2/{frame}/0/{player}.npy")
-        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        
-        # Remove confidence scores (keep only x and y)
-        keypoints = np.array(keypoints)
-        keypoints_xy = keypoints[:, :2]
-        
-        features.append(np.concatenate([embedding.squeeze(), keypoints_xy.flatten()]))  
-        labels.append(value1)
+    if player in value1:
+        if os.path.exists(f"embeddings/video_2/{frame}/0/{player}.npy"):
+            embedding = np.load(f"embeddings/video_2/{frame}/0/{player}.npy")
+            keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+            
+            # Remove confidence scores (keep only x and y)
+            keypoints = np.array(keypoints)
+            keypoints_xy = keypoints[:, :2]
+            
+            features.append(np.concatenate([embedding.squeeze(), keypoints_xy.flatten()]))  
+            labels.append(value1)
         
 # Stack embeddings into a single arrays
 features = np.vstack(features)
