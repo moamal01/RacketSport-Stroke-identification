@@ -49,7 +49,7 @@ for frame, value in stroke_frames_1.items():
             keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
             
             keypoints = np.array(keypoints)[:, :2]  # Remove confidence scores
-            features.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
+            features.append(keypoints.flatten())
             labels.append(value.replace(" ", "_"))
 
 for frame, value in stroke_frames_2.items():
@@ -67,7 +67,7 @@ for frame, value in stroke_frames_2.items():
             keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
             
             keypoints = np.array(keypoints)[:, :2]  # Remove confidence scores
-            features.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
+            features.append(keypoints.flatten())
             labels.append(value1)
             
 for key, grouping in clip_captions.items():
@@ -103,7 +103,7 @@ for label in unique_labels:
                 edgecolors='black', linewidth=0.5, alpha=0.8)
     
 plt.scatter(text_embeddings_2d[:, 0], text_embeddings_2d[:, 1], 
-           s=4, c='black', label="Text Embeddings", marker='o')
+          s=4, c='black', label="Text Embeddings", marker='o')
 
 # Add captions to text embeddings
 # for i, caption in enumerate(text_labels):
@@ -111,13 +111,13 @@ plt.scatter(text_embeddings_2d[:, 0], text_embeddings_2d[:, 1],
 #     plt.text(text_embeddings_2d[i, 0] + offset, text_embeddings_2d[i, 1], caption, 
 #              fontsize=8, color='black', ha='center', va='center', alpha=0.7)
 
-plt.title(f"UMAP Projection for {player} player\nNeighbors = {neighbors}")
+plt.title(f"UMAP Projection of keypoints for {player} player\nNeighbors = {neighbors}")
 plt.xlabel("UMAP Dimension 1")
 plt.ylabel("UMAP Dimension 2")
 plt.legend(markerscale=2, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
 # Save the figure
-os.makedirs("figures/umaps/cleaned", exist_ok=True)
-plt.savefig(f"figures/umaps/cleaned/concatenated_without_captions_{player}_neighbors{neighbors}.png", dpi=300)
+os.makedirs("figures/umaps/keypoints_only", exist_ok=True)
+plt.savefig(f"figures/umaps/keypoints_only/caption_{player}_neighbors{neighbors}.png", dpi=300)
 plt.show()

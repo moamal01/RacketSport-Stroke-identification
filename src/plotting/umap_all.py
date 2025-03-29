@@ -5,7 +5,7 @@ import umap
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-player = "left"
+player = "right"
 video_number = 2
 neighbors = 15
 key_of_interest = "question_based"
@@ -54,7 +54,7 @@ for frame, value in stroke_frames_2.items():
 
 for key, grouping in clip_captions.items():
     for caption in grouping:
-        if key == key_of_interest:
+        #if key == key_of_interest:
             file_path = f"embeddings/text/{key}/{caption}//embedding.npy"
             text_embeddings.append(np.load(file_path))
             text_labels.append(caption)
@@ -73,27 +73,31 @@ cmap = cm.get_cmap("tab10", len(unique_labels))
 color_dict = {label: cmap(i) for i, label in enumerate(unique_labels)}
 
 # Create scatter plot with colors and different markers
-plt.figure(figsize=(10, 6))
+markers = ['o', 's', 'D', 'P', '*', 'X', '^', 'v', '<', '>', 'p', 'h']
+marker_dict = {label: markers[i % len(markers)] for i, label in enumerate(unique_labels)}
+
+# Create scatter plot
+plt.figure(figsize=(12, 7))
 for label in unique_labels:
-    mask = np.array(image_labels) == label  # Convert mask to NumPy array
-    marker = 'v' if 'forehand' in label else 'x'
+    mask = np.array(image_labels) == label
     plt.scatter(embeddings_2d[mask, 0], embeddings_2d[mask, 1], 
-                s=4, label=label, color=color_dict[label], marker=marker)
+                s=20, label=label, color=color_dict[label], marker=marker_dict[label], 
+                edgecolors='black', linewidth=0.5, alpha=0.8)
     
 plt.scatter(text_embeddings_2d[:, 0], text_embeddings_2d[:, 1], 
-            s=4, c='black', label="Text Embeddings", marker='o')
+            s=2, c='black', label="Text Embeddings", marker='o')
 
 # Add captions to text embeddings
-for i, caption in enumerate(text_labels):
-    plt.text(text_embeddings_2d[i, 0] + 1.15, text_embeddings_2d[i, 1], caption, 
-             fontsize=8, color='black', ha='center', va='center', alpha=0.7)
+# for i, caption in enumerate(text_labels):
+#     plt.text(text_embeddings_2d[i, 0] + 1.15, text_embeddings_2d[i, 1], caption, 
+#              fontsize=8, color='black', ha='center', va='center', alpha=0.7)
 
 plt.title(f"UMAP Projection of Image Embeddings for {player} player in both videos. Neighbors = {neighbors}.")
 plt.xlabel("UMAP Dimension 1")
 plt.ylabel("UMAP Dimension 2")
-plt.legend(markerscale=4, bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.legend(markerscale=2, bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
 
-plt.savefig(f"figures/umaps/cleaned/{key_of_interest}_{player}_neighbors{neighbors}.png", dpi=300)
+plt.savefig(f"figures/umaps/cleaned/captions_{player}_neighbors{neighbors}.png", dpi=300)
 
 plt.show()
