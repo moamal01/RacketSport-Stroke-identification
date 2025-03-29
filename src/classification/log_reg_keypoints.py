@@ -6,21 +6,29 @@ from sklearn.preprocessing import LabelEncoder
 import os
 from collections import Counter
 from sklearn.ensemble import RandomForestClassifier
-import sys
 import os
+import pandas as pd
+import json
+import ast
+from utility_functions import plot_label_distribution, plot_confusion_matrix
 
-sys.path.append(os.path.abspath('../../'))
+file_path1 = "midpoints.csv"
+file_path2 = "midpoints_video2.csv"
 
-from utility_functions import plot_label_distribution, plot_confusion_matrix, load_json_with_dicts
+df1 = pd.read_csv(file_path1)
+df2 = pd.read_csv(file_path2)
 
-data1 = load_json_with_dicts(f"../../data/events/events_markup1.json")
-data2 = load_json_with_dicts(f"../../data/events/events_markup2.json")
+with open(f"data/events/events_markup1.json", "r") as file:
+    data1 = json.load(file)
+
+with open(f"data/events/events_markup2.json", "r") as file:
+    data2 = json.load(file)
 
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
 stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
 
-embeddings = []
+keypoint_list = []
 labels = []
 
 for frame, value in stroke_frames_1.items():
@@ -30,9 +38,12 @@ for frame, value in stroke_frames_1.items():
     player = value.split(" ")[0]
     label = value.replace(" ", "_")
     
-    file_path = f"../../embeddings/video_1/{frame}/0/{player}.npy"
-    if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))  
+    path = f"embeddings/video_1/{frame}/0/{player}.npy"
+    if os.path.exists(path):
+        event_row = df1.loc[df1['Event frame'] == int(frame)]
+        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+        keypoints = np.array(keypoints)[:, :2]
+        keypoint_list.append(keypoints.flatten())
         labels.append(label)
 
 for frame, value in stroke_frames_2.items():
@@ -40,26 +51,28 @@ for frame, value in stroke_frames_2.items():
         continue
 
     label = value.split(" ")[0]
-    value2 = label.split("_")[0]
+    player = label.split("_")[0]
     value3 = label.split("_")[2]
 
-    file_path = f"../../embeddings/video_2/{frame}/0/{value2}.npy"
-    if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))
+    path = f"embeddings/video_2/{frame}/0/{player}.npy"
+    if os.path.exists(path):
+        event_row = df2.loc[df2['Event frame'] == int(frame)]
+        keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+        keypoint = np.array(keypoint)[:, :2]
+        keypoint_list.append(keypoint.flatten())
         labels.append(label)
-
 
 label_counts = Counter(labels)
 min_label_threshold = 6
 valid_labels = [label for label, count in label_counts.items() if count >= min_label_threshold]
 
 # Filter embeddings and labels based on valid labels
-filtered_embeddings = []
+filtered_keypoint_list = []
 filtered_labels = []
 
-for embedding, label in zip(embeddings, labels):
+for keypoints, label in zip(keypoint_list, labels):
     if label in valid_labels:
-        filtered_embeddings.append(embedding)
+        filtered_keypoint_list.append(keypoints)
         filtered_labels.append(label)
 
 # Encode labels as numbers
@@ -67,7 +80,7 @@ label_encoder = LabelEncoder()
 y = label_encoder.fit_transform(filtered_labels)
 
 # Stack embeddings into a 2D array (X)
-X = np.vstack(filtered_embeddings)
+X = np.vstack(filtered_keypoint_list)
 
 # Split into training & testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -95,19 +108,13 @@ y_pred = clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Test Accuracy: {accuracy:.2f}")
 
-weights = np.abs(clf.coef_).sum(axis=0)
-important_features = np.argsort(weights)[::-1]
-print(f"Top 10 important dimensions: {important_features[:10]}")
-print(f"Number of nonzero dimensions: {np.sum(weights > 0)} / 512")
-
 # Random Forest
 clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf_rf.fit(X_train, y_train)
-print(clf.coef_)
 rf_acc = accuracy_score(y_test, clf_rf.predict(X_test))
 print(f"Random Forest Accuracy: {rf_acc:.2f}")
 
 # Confusion matrix
 y_test = label_encoder.inverse_transform(y_test)
 y_pred = label_encoder.inverse_transform(y_pred)
-plot_confusion_matrix(y_test, y_pred)
+plot_confusion_matrix(y_test, y_pred, True)
