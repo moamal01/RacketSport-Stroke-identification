@@ -11,6 +11,7 @@ height = 1080
 cap = cv2.VideoCapture(video_path)
 cap.set(cv2.CAP_PROP_POS_FRAMES, 874)
 ret, frame = cap.read()
+flipped_image = cv2.flip(frame, 1)
 
 keypoints = [
     [0.25478248596191405, 0.4202563250506366, 1.6208348274230957],
@@ -77,23 +78,19 @@ cv2.imshow(f"Event Preview (Frame {int(cap.get(cv2.CAP_PROP_POS_FRAMES))})", fra
 cv2.waitKey(0)
 
 # Mirrored
-flipped_image = cv2.flip(frame, 1)
-
 for keypoint in keypoints:
     x, y, _ = keypoint
-    x_pixel = width - int(x * width)
-    y_pixel = int(y * height)
+    x = 1 - x
     
-    cv2.circle(frame, (x_pixel, y_pixel), radius=1, color=(0, 255, 0), thickness=-1)
-    
+    cv2.circle(flipped_image, (int(x * width), int(y * height)), radius=1, color=(0, 255, 0), thickness=-1)
+
+
 for bbox in bboxes:
     xmin, ymin, xmax, ymax = bbox
-    xmin_pixel = width - int(xmin * width)
-    ymin_pixel = int(ymin * height)
-    xmax_pixel = width - int(xmax * width)
-    ymax_pixel = int(ymax * height)
+    xmin_pixel = 1 - xmin
+    xmax_pixel = 1 - xmax
     
-    cv2.rectangle(frame, (xmin_pixel, ymin_pixel), (xmax_pixel, ymax_pixel), color=(0, 255, 0), thickness=1)
+    cv2.rectangle(flipped_image, (int(xmin_pixel * width), int(ymin * height)), (int(xmax_pixel * width), int(ymax * height)), color=(0, 255, 0), thickness=1)
 
 
 cv2.imshow(f"Event Preview (Frame {int(cap.get(cv2.CAP_PROP_POS_FRAMES))})", flipped_image)
