@@ -3,8 +3,9 @@ import ast
 import math
 
 # Load CSV file
-file_path = "normalized_data_video2.csv"
+file_path = "mirrored_normalized_video2.csv"
 df = pd.read_csv(file_path)
+mirrored = True
 
 TABLE_MIDPOINT = (0.5, 0.5)
 
@@ -105,6 +106,10 @@ ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
 
 # Prepare data for saving to CSV
+output_file = "midpoints_video2.csv"
+if mirrored:
+    output_file = "mirrored_midpoints_video2.csv"
+
 data = {
     'Path': paths,
     'Event frame': event_frames,
@@ -127,7 +132,6 @@ data = {
 result_df = pd.DataFrame(data)
 
 # Save the DataFrame to a new CSV file
-output_file = "midpoints_video2.csv"
 result_df.to_csv(output_file, index=False)
 
 print(f"Keypoints and scores have been saved to {output_file}")

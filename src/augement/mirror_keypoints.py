@@ -20,14 +20,12 @@ def mirror_keypoints(keypoints):
     return mirrored_keypoints
 
 def mirror_bboxes(bbox):
-    mirrored_bboxes = []
     x_min, y_min, x_max, y_max = bbox
-    x_min = 1 - x_min
-    x_max = 1 - x_max
+    mirrored_x_min = 1 - x_max
+    mirrored_x_max = 1 - x_min
     
-    mirrored_bboxes.append([x_min, y_min, x_max, y_max])
-        
-    return mirrored_bboxes
+    return [mirrored_x_min, y_min, mirrored_x_max, y_max]
+    
     
 for idx, row in df.iterrows():
     type = row['Type']
@@ -61,11 +59,12 @@ for idx, row in df.iterrows():
         mirrored_table_boxes.append(mirror_bboxes(boxes))
         
     df.at[idx, 'Keypoints'] = mirrored_keypoints
-    df.at[idx, 'People boxes'] = people_boxes_list
-    df.at[idx, 'Ball boxes'] = ball_boxes_list
-    df.at[idx, 'Racket boxes'] = racket_boxes_list
-    df.at[idx, 'Table boxes'] = table_boxes_list
+    df.at[idx, 'People boxes'] = mirrored_people_boxes
+    df.at[idx, 'Ball boxes'] = mirrored_ball_boxes
+    df.at[idx, 'Racket boxes'] = mirrored_racket_boxes
+    df.at[idx, 'Table boxes'] = mirrored_table_boxes
     
 
-new_file_path = "mirrored_midpoints_video2.csv"
-df.to_csv(new_file_path, index=False)
+output_file = "mirrored_normalized_video2.csv"
+df.to_csv(output_file, index=False)
+print(f"Mirroring completed to {output_file}")
