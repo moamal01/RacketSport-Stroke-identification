@@ -13,8 +13,8 @@ sys.path.append(os.path.abspath('../../'))
 
 from utility_functions import plot_label_distribution, plot_confusion_matrix, load_json_with_dicts
 
-data1 = load_json_with_dicts(f"../../data/events/events_markup1.json")
-data2 = load_json_with_dicts(f"../../data/events/events_markup2.json")
+data1 = load_json_with_dicts(f"data/events/events_markup1.json")
+data2 = load_json_with_dicts(f"data/events/events_markup2.json")
 
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
@@ -23,17 +23,35 @@ stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
 embeddings = []
 labels = []
 
-for frame, value in stroke_frames_1.items():
-    if value == "other" or value == "otherotherother":
-        continue
+def mirror_string(input_str):
+    mirrored = input_str.replace('left', 'TEMP').replace('right', 'left').replace('TEMP', 'right')
+    return mirrored
+
+# for frame, value in stroke_frames_1.items():
+#     if value == "other" or value == "otherotherother":
+#         continue
     
-    player = value.split(" ")[0]
-    label = value.replace(" ", "_")
+#     player = value.split(" ")[0]
+#     label = value.replace(" ", "_")
     
-    file_path = f"../../embeddings/video_1/{frame}/0/{player}.npy"
-    if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))  
-        labels.append(label)
+#     file_path = f"embeddings/video_1/{frame}/0/{player}.npy"
+#     if os.path.exists(file_path):
+#         embeddings.append(np.load(file_path))  
+#         labels.append(label)
+        
+# for frame, value in stroke_frames_1.items():
+#     if value == "other" or value == "otherotherother":
+#         continue
+    
+#     value = mirror_string(value)
+    
+#     player = value.split(" ")[0]
+#     label = value.replace(" ", "_")
+    
+#     file_path = f"embeddings/video_1m/{frame}/0/{player}.npy"
+#     if os.path.exists(file_path):
+#         embeddings.append(np.load(file_path))  
+#         labels.append(label)
 
 for frame, value in stroke_frames_2.items():
     if value in {"other", "otherotherother"}:
@@ -43,11 +61,25 @@ for frame, value in stroke_frames_2.items():
     value2 = label.split("_")[0]
     value3 = label.split("_")[2]
 
-    file_path = f"../../embeddings/video_2/{frame}/0/{value2}.npy"
+    file_path = f"embeddings/video_2/{frame}/0/{value2}.npy"
     if os.path.exists(file_path):
         embeddings.append(np.load(file_path))
         labels.append(label)
 
+for frame, value in stroke_frames_2.items():
+    if value in {"other", "otherotherother"}:
+        continue
+    
+    value = mirror_string(value)
+
+    label = value.split(" ")[0]
+    value2 = label.split("_")[0]
+    value3 = label.split("_")[2]
+
+    file_path = f"embeddings/video_2m/{frame}/0/{value2}.npy"
+    if os.path.exists(file_path):
+        embeddings.append(np.load(file_path))
+        labels.append(label)
 
 label_counts = Counter(labels)
 min_label_threshold = 6
@@ -72,6 +104,8 @@ X = np.vstack(filtered_embeddings)
 # Split into training & testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+print(f"Length of training set {len(X_train)}")
+print(f"Length of test set {len(X_test)}")
 plot_label_distribution(filtered_labels, "Original Label Distribution")
 plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
 plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
@@ -103,11 +137,10 @@ print(f"Number of nonzero dimensions: {np.sum(weights > 0)} / 512")
 # Random Forest
 clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf_rf.fit(X_train, y_train)
-print(clf.coef_)
 rf_acc = accuracy_score(y_test, clf_rf.predict(X_test))
 print(f"Random Forest Accuracy: {rf_acc:.2f}")
 
 # Confusion matrix
 y_test = label_encoder.inverse_transform(y_test)
 y_pred = label_encoder.inverse_transform(y_pred)
-plot_confusion_matrix(y_test, y_pred)
+plot_confusion_matrix(y_test, y_pred, True)

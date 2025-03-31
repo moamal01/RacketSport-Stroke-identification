@@ -5,7 +5,7 @@ from PIL import Image
 import json
 import os
 
-video = 1
+video = 2
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -29,9 +29,11 @@ def save_people_embedding(path):
     image_embeddings_np = image_embeddings.cpu().numpy()
     
     if "left" in path:
-        np.save(directory + "/left.npy", image_embeddings_np)
+        #np.save(directory + "/left.npy", image_embeddings_np)
+        pass
     else:
-        np.save(directory + "/right.npy", image_embeddings_np)
+        pass
+        #np.save(directory + "/right.npy", image_embeddings_np)
 
 def save_object_embedding(path):
     image = Image.open("cropped/" + path)
@@ -43,7 +45,7 @@ def save_object_embedding(path):
 
     # Save embeddings
     path = '/'.join(path.split('/')[:-1])
-    directory = "imbeddings/" + path
+    directory = "embeddings/" + path
     os.makedirs(directory)
     
     image_embeddings_np = image_embeddings.cpu().numpy()
@@ -59,8 +61,8 @@ loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
 for key_frame, _ in loaded_keys.items():
     frame = int(key_frame) - 0
     for i in range(1):
-        save_people_embedding(f"video_{video}/{frame}/0/left.png")
-        save_people_embedding(f"video_{video}/{frame}/0/right.png")
+        save_people_embedding(f"video_{video}m/{frame}/0/left.png")
+        save_people_embedding(f"video_{video}m/{frame}/0/right.png")
         
         #if os.path.exists(f"cropped/video_{video}/{frame}/32"):
         #    save_object_embedding(f"video_{video}/{frame}/32/object.png")

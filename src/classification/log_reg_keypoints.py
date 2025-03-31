@@ -13,23 +13,31 @@ import ast
 from utility_functions import plot_label_distribution, plot_confusion_matrix
 
 file_path1 = "midpoints.csv"
-file_path2 = "midpoints_video2.csv"
+file_path2 = "mirrored_midpoints_video1.csv"
+file_path3 = "midpoints_video2.csv"
+file_path4 = "mirrored_midpoints_video2.csv"
 
 df1 = pd.read_csv(file_path1)
 df2 = pd.read_csv(file_path2)
+df3 = pd.read_csv(file_path3)
+df4 = pd.read_csv(file_path4)
 
 with open(f"data/events/events_markup1.json", "r") as file:
     data1 = json.load(file)
 
 with open(f"data/events/events_markup2.json", "r") as file:
-    data2 = json.load(file)
+    data3 = json.load(file)
 
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
-stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
+stroke_frames_2 = {k: v for k, v in data3.items() if v not in excluded_values}
 
 keypoint_list = []
 labels = []
+
+def mirror_string(input_str):
+    mirrored = input_str.replace('left', 'TEMP').replace('right', 'left').replace('TEMP', 'right')
+    return mirrored
 
 for frame, value in stroke_frames_1.items():
     if value == "other" or value == "otherotherother":
@@ -45,6 +53,23 @@ for frame, value in stroke_frames_1.items():
         keypoints = np.array(keypoints)[:, :2]
         keypoint_list.append(keypoints.flatten())
         labels.append(label)
+        
+for frame, value in stroke_frames_1.items():
+    if value == "other" or value == "otherotherother":
+        continue
+    
+    value = mirror_string(value)
+    
+    player = value.split(" ")[0]
+    label = value.replace(" ", "_")
+    
+    path = f"embeddings/video_1/{frame}/0/{player}.npy"
+    if os.path.exists(path):
+        event_row = df2.loc[df2['Event frame'] == int(frame)]
+        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+        keypoints = np.array(keypoints)[:, :2]
+        keypoint_list.append(keypoints.flatten())
+        labels.append(label)
 
 for frame, value in stroke_frames_2.items():
     if value in {"other", "otherotherother"}:
@@ -56,7 +81,25 @@ for frame, value in stroke_frames_2.items():
 
     path = f"embeddings/video_2/{frame}/0/{player}.npy"
     if os.path.exists(path):
-        event_row = df2.loc[df2['Event frame'] == int(frame)]
+        event_row = df3.loc[df3['Event frame'] == int(frame)]
+        keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+        keypoint = np.array(keypoint)[:, :2]
+        keypoint_list.append(keypoint.flatten())
+        labels.append(label)
+
+for frame, value in stroke_frames_2.items():
+    if value in {"other", "otherotherother"}:
+        continue
+    
+    value = mirror_string(value)
+
+    label = value.split(" ")[0]
+    player = label.split("_")[0]
+    value3 = label.split("_")[2]
+
+    path = f"embeddings/video_2/{frame}/0/{player}.npy"
+    if os.path.exists(path):
+        event_row = df4.loc[df4['Event frame'] == int(frame)]
         keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
         keypoint = np.array(keypoint)[:, :2]
         keypoint_list.append(keypoint.flatten())
@@ -85,6 +128,8 @@ X = np.vstack(filtered_keypoint_list)
 # Split into training & testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+print(f"Length of training set {len(X_train)}")
+print(f"Length of test set {len(X_test)}")
 plot_label_distribution(filtered_labels, "Original Label Distribution")
 plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
 plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")

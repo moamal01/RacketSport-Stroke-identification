@@ -3,9 +3,9 @@ import ast
 import math
 
 # Load CSV file
-file_path = "mirrored_normalized_video2.csv"
+file_path = "normalized_data_video2.csv"
 df = pd.read_csv(file_path)
-mirrored = True
+mirrored = False
 
 TABLE_MIDPOINT = (0.5, 0.5)
 
@@ -33,19 +33,25 @@ def compute_player_midpoints(df):
         path = row["Path"]
         event_frame = row["Event frame"]
         sequence_frame = row["Sequence frame"]
+        
+        added = False
             
         for i, keypoints in enumerate(keypoints_row):
             if keypoints[11][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
                 left_bboxes.append(bboxes_row[i])
+                added = True
             elif keypoints[11][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
-                paths.append(path)
-                event_frames.append(event_frame)
-                sequence_frames.append(sequence_frame)
                 keypoints_right.append(keypoints)
                 right_score.append(scores_row[i])
                 right_bboxes.append(bboxes_row[i])
+                added = True
+        
+        if added:
+            paths.append(path)
+            event_frames.append(event_frame)
+            sequence_frames.append(sequence_frame)
     
     return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes
 
