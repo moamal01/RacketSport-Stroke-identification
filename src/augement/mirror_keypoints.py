@@ -1,13 +1,10 @@
 import pandas as pd
 import ast
+from utility_functions import mirror_string
 
 # Load CSV file
 file_path = "normalized_data_video2.csv"
 df = pd.read_csv(file_path)
-
-def mirror_string(input_str):
-    mirrored = input_str.replace('left', 'TEMP').replace('right', 'left').replace('TEMP', 'right')
-    return mirrored
 
 def mirror_keypoints(keypoints):
     mirrored_keypoints = []

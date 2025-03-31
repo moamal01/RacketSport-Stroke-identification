@@ -3,15 +3,19 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
-import os
 from collections import Counter
 from sklearn.ensemble import RandomForestClassifier
-import os
 import pandas as pd
 import json
-import ast
-from utility_functions import plot_label_distribution, plot_confusion_matrix
+from utility_functions import (
+    plot_label_distribution,
+    plot_confusion_matrix,
+    get_keypoints_and_labels,
+    get_keypoints_and_labels_special,
+    plot_coefficients
+)
 
+# keypoints
 file_path1 = "midpoints.csv"
 file_path2 = "mirrored_midpoints_video1.csv"
 file_path3 = "midpoints_video2.csv"
@@ -28,6 +32,7 @@ with open(f"data/events/events_markup1.json", "r") as file:
 with open(f"data/events/events_markup2.json", "r") as file:
     data3 = json.load(file)
 
+# Timestamps
 excluded_values = {"empty_event", "bounce", "net"}
 stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
 stroke_frames_2 = {k: v for k, v in data3.items() if v not in excluded_values}
@@ -35,75 +40,25 @@ stroke_frames_2 = {k: v for k, v in data3.items() if v not in excluded_values}
 keypoint_list = []
 labels = []
 
-def mirror_string(input_str):
-    mirrored = input_str.replace('left', 'TEMP').replace('right', 'left').replace('TEMP', 'right')
-    return mirrored
+# First video
+keypoints1, label1 = get_keypoints_and_labels_special(1, stroke_frames_2, df1)
+keypoint_list.extend(keypoints1)
+labels.extend(label1)
 
-for frame, value in stroke_frames_1.items():
-    if value == "other" or value == "otherotherother":
-        continue
-    
-    player = value.split(" ")[0]
-    label = value.replace(" ", "_")
-    
-    path = f"embeddings/video_1/{frame}/0/{player}.npy"
-    if os.path.exists(path):
-        event_row = df1.loc[df1['Event frame'] == int(frame)]
-        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        keypoints = np.array(keypoints)[:, :2]
-        keypoint_list.append(keypoints.flatten())
-        labels.append(label)
-        
-for frame, value in stroke_frames_1.items():
-    if value == "other" or value == "otherotherother":
-        continue
-    
-    value = mirror_string(value)
-    
-    player = value.split(" ")[0]
-    label = value.replace(" ", "_")
-    
-    path = f"embeddings/video_1/{frame}/0/{player}.npy"
-    if os.path.exists(path):
-        event_row = df2.loc[df2['Event frame'] == int(frame)]
-        keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        keypoints = np.array(keypoints)[:, :2]
-        keypoint_list.append(keypoints.flatten())
-        labels.append(label)
+# First video mirrored
+keypoints1m, label1m = get_keypoints_and_labels_special(1, stroke_frames_2, df2)
+keypoint_list.extend(keypoints1m)
+labels.extend(label1m)
 
-for frame, value in stroke_frames_2.items():
-    if value in {"other", "otherotherother"}:
-        continue
+# Second video
+keypoints2, label2 = get_keypoints_and_labels(2, stroke_frames_2, df3)
+keypoint_list.extend(keypoints2)
+labels.extend(label2)
 
-    label = value.split(" ")[0]
-    player = label.split("_")[0]
-    value3 = label.split("_")[2]
-
-    path = f"embeddings/video_2/{frame}/0/{player}.npy"
-    if os.path.exists(path):
-        event_row = df3.loc[df3['Event frame'] == int(frame)]
-        keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        keypoint = np.array(keypoint)[:, :2]
-        keypoint_list.append(keypoint.flatten())
-        labels.append(label)
-
-for frame, value in stroke_frames_2.items():
-    if value in {"other", "otherotherother"}:
-        continue
-    
-    value = mirror_string(value)
-
-    label = value.split(" ")[0]
-    player = label.split("_")[0]
-    value3 = label.split("_")[2]
-
-    path = f"embeddings/video_2/{frame}/0/{player}.npy"
-    if os.path.exists(path):
-        event_row = df4.loc[df4['Event frame'] == int(frame)]
-        keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        keypoint = np.array(keypoint)[:, :2]
-        keypoint_list.append(keypoint.flatten())
-        labels.append(label)
+# Second mirrored
+keypoints2m, label2m = get_keypoints_and_labels(2, stroke_frames_2, df4, True)
+keypoint_list.extend(keypoints2m)
+labels.extend(label2m)
 
 label_counts = Counter(labels)
 min_label_threshold = 6
@@ -145,7 +100,7 @@ baseline_acc = class_counts[most_common_class] / len(y)
 print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
 # Evaluate
-y_train_pred = clf.predict(X_train)  # Get predictions on the training data
+y_train_pred = clf.predict(X_train)
 train_accuracy = accuracy_score(y_train, y_train_pred)  # Calculate training accuracy
 print(f"Training Accuracy: {train_accuracy:.2f}")
 
@@ -163,3 +118,6 @@ print(f"Random Forest Accuracy: {rf_acc:.2f}")
 y_test = label_encoder.inverse_transform(y_test)
 y_pred = label_encoder.inverse_transform(y_pred)
 plot_confusion_matrix(y_test, y_pred, True)
+
+# Coefficients heatmap
+plot_coefficients(clf.coef_, label_encoder.classes_)

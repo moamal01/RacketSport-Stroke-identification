@@ -11,7 +11,13 @@ import os
 
 sys.path.append(os.path.abspath('../../'))
 
-from utility_functions import plot_label_distribution, plot_confusion_matrix, load_json_with_dicts
+from utility_functions import (
+    plot_label_distribution,
+    plot_confusion_matrix,
+    load_json_with_dicts,
+    get_embeddings_and_labels,
+    get_embeddings_and_labels_special
+)
 
 data1 = load_json_with_dicts(f"data/events/events_markup1.json")
 data2 = load_json_with_dicts(f"data/events/events_markup2.json")
@@ -23,63 +29,21 @@ stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
 embeddings = []
 labels = []
 
-def mirror_string(input_str):
-    mirrored = input_str.replace('left', 'TEMP').replace('right', 'left').replace('TEMP', 'right')
-    return mirrored
-
-# for frame, value in stroke_frames_1.items():
-#     if value == "other" or value == "otherotherother":
-#         continue
-    
-#     player = value.split(" ")[0]
-#     label = value.replace(" ", "_")
-    
-#     file_path = f"embeddings/video_1/{frame}/0/{player}.npy"
-#     if os.path.exists(file_path):
-#         embeddings.append(np.load(file_path))  
-#         labels.append(label)
+video1_embeddings, video1_labels = get_embeddings_and_labels_special(stroke_frames_1)
+embeddings.extend(video1_embeddings)
+labels.extend(video1_labels)
         
-# for frame, value in stroke_frames_1.items():
-#     if value == "other" or value == "otherotherother":
-#         continue
-    
-#     value = mirror_string(value)
-    
-#     player = value.split(" ")[0]
-#     label = value.replace(" ", "_")
-    
-#     file_path = f"embeddings/video_1m/{frame}/0/{player}.npy"
-#     if os.path.exists(file_path):
-#         embeddings.append(np.load(file_path))  
-#         labels.append(label)
+video1m_embeddings, video1m_labels = get_embeddings_and_labels_special(stroke_frames_1, True)
+embeddings.extend(video1m_embeddings)
+labels.extend(video1m_labels)
 
-for frame, value in stroke_frames_2.items():
-    if value in {"other", "otherotherother"}:
-        continue
+video2_embeddings, video2_labels = get_embeddings_and_labels(2, stroke_frames_2)
+embeddings.extend(video2_embeddings)
+labels.extend(video2_labels)
 
-    label = value.split(" ")[0]
-    value2 = label.split("_")[0]
-    value3 = label.split("_")[2]
-
-    file_path = f"embeddings/video_2/{frame}/0/{value2}.npy"
-    if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))
-        labels.append(label)
-
-for frame, value in stroke_frames_2.items():
-    if value in {"other", "otherotherother"}:
-        continue
-    
-    value = mirror_string(value)
-
-    label = value.split(" ")[0]
-    value2 = label.split("_")[0]
-    value3 = label.split("_")[2]
-
-    file_path = f"embeddings/video_2m/{frame}/0/{value2}.npy"
-    if os.path.exists(file_path):
-        embeddings.append(np.load(file_path))
-        labels.append(label)
+video2m_embeddings, video2m_labels = get_embeddings_and_labels(2, stroke_frames_2, True)
+embeddings.extend(video2m_embeddings)
+labels.extend(video2m_labels)
 
 label_counts = Counter(labels)
 min_label_threshold = 6
