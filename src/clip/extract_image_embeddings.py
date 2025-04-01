@@ -5,7 +5,14 @@ from PIL import Image
 import json
 import os
 
-video = 2
+video = 3
+mirror = True
+
+if mirror:
+    m = "m"
+else:
+    m = ""
+
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
@@ -61,8 +68,8 @@ loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
 for key_frame, _ in loaded_keys.items():
     frame = int(key_frame) - 0
     for i in range(1):
-        save_people_embedding(f"video_{video}m/{frame}/0/left.png")
-        save_people_embedding(f"video_{video}m/{frame}/0/right.png")
+        save_people_embedding(f"video_{video}{m}/{frame}/0/left.png")
+        save_people_embedding(f"video_{video}{m}/{frame}/0/right.png")
         
         #if os.path.exists(f"cropped/video_{video}/{frame}/32"):
         #    save_object_embedding(f"video_{video}/{frame}/32/object.png")

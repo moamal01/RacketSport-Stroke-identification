@@ -3,7 +3,8 @@ import ast
 from utility_functions import mirror_string
 
 # Load CSV file
-file_path = "normalized_data_video2.csv"
+video = 3
+file_path = f"normalized_data_video{3}.csv"
 df = pd.read_csv(file_path)
 
 def mirror_keypoints(keypoints):
@@ -62,6 +63,6 @@ for idx, row in df.iterrows():
     df.at[idx, 'Table boxes'] = mirrored_table_boxes
     
 
-output_file = "mirrored_normalized_video2.csv"
+output_file = f"mirrored_normalized_video{3}.csv"
 df.to_csv(output_file, index=False)
 print(f"Mirroring completed to {output_file}")
