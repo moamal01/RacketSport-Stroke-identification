@@ -24,14 +24,15 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video_path = "videos/game_2f.mp4"
+video = 3
+video_path = f"videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Thesholds
 min_person_area = 30000
 min_table_area = 400000
 
-data = load_json_with_dicts("data/events/events_markup2.json")
+data = load_json_with_dicts(f"data/events/events_markup{video}.json")
     
 excluded_values = {"empty_event", "bounce", "net"}
 loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
@@ -54,8 +55,8 @@ fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV
-keypoint_filename = "keypoints_video2.csv"
-bbox_filename = "bbox_video2.csv"
+keypoint_filename = f"keypoints_video{video}.csv"
+bbox_filename = f"bbox_video{video}.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:

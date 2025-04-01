@@ -3,9 +3,10 @@ import ast
 import math
 
 # Load CSV file
-file_path = "normalized_data_video2.csv"
+video = 3
+file_path = f"normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = False
+mirrored = True
 
 TABLE_MIDPOINT = (0.5, 0.5)
 
@@ -112,9 +113,9 @@ ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
 
 # Prepare data for saving to CSV
-output_file = "midpoints_video2.csv"
+output_file = f"midpoints_video{video}.csv"
 if mirrored:
-    output_file = "mirrored_midpoints_video2.csv"
+    output_file = f"mirrored_midpoints_video{video}.csv"
 
 data = {
     'Path': paths,
