@@ -5,119 +5,114 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 from sklearn.ensemble import RandomForestClassifier
+#import xgboost as xgb
 import pandas as pd
 import json
 from utility_functions import (
     plot_label_distribution,
     plot_confusion_matrix,
     get_keypoints_and_labels,
-    get_keypoints_and_labels_special,
     plot_coefficients
 )
 
-# keypoints
-file_path1 = "midpoints.csv"
-file_path2 = "mirrored_midpoints_video1.csv"
-file_path3 = "midpoints_video2.csv"
-file_path4 = "mirrored_midpoints_video2.csv"
+simplify = True
+mirror = False
 
-df1 = pd.read_csv(file_path1)
-df2 = pd.read_csv(file_path2)
-df3 = pd.read_csv(file_path3)
-df4 = pd.read_csv(file_path4)
+# Load keypoint data
+file_paths = [
+    ("midpoints_video1.csv", "mirrored_midpoints_video1.csv"),
+    ("midpoints_video2.csv", "mirrored_midpoints_video2.csv"),
+    ("midpoints_video3.csv", "mirrored_midpoints_video3.csv")
+]
 
-with open(f"data/events/events_markup1.json", "r") as file:
-    data1 = json.load(file)
+df_videos = [(pd.read_csv(fp1), pd.read_csv(fp2)) for fp1, fp2 in file_paths]
 
-with open(f"data/events/events_markup2.json", "r") as file:
-    data3 = json.load(file)
+# Load event data
+json_paths = [
+    "data/events/events_markup1.json",
+    "data/events/events_markup2.json",
+    "data/events/events_markup3.json"
+]
 
-# Timestamps
+data_videos = [json.load(open(jp, "r")) for jp in json_paths]
+
+# Filter timestamps
 excluded_values = {"empty_event", "bounce", "net"}
-stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
-stroke_frames_2 = {k: v for k, v in data3.items() if v not in excluded_values}
+stroke_frames = [{k: v for k, v in data.items() if v not in excluded_values} for data in data_videos]
 
-keypoint_list = []
-labels = []
+# Prepare keypoints and labels
+keypoints_train, label_train = [], []
 
-# First video
-keypoints1, label1 = get_keypoints_and_labels_special(1, stroke_frames_2, df1)
-keypoint_list.extend(keypoints1)
-labels.extend(label1)
+# Training (Video 1 & 2)
+for i in range(2):
+    keypoints, label = get_keypoints_and_labels(stroke_frames[i], df_videos[i][0],simplify=simplify)
+    keypoints_train.extend(keypoints)
+    label_train.extend(label)
+    
+    if mirror:
+        keypoints_m, label_m = get_keypoints_and_labels(stroke_frames[i], df_videos[i][1], simplify=simplify)
+        keypoints_train.extend(keypoints_m)
+        label_train.extend(label_m)
 
-# First video mirrored
-keypoints1m, label1m = get_keypoints_and_labels_special(1, stroke_frames_2, df2)
-keypoint_list.extend(keypoints1m)
-labels.extend(label1m)
+# Testing (Video 3)
+keypoints_test, label_test = get_keypoints_and_labels(stroke_frames[2], df_videos[2][0], simplify=simplify)
 
-# Second video
-keypoints2, label2 = get_keypoints_and_labels(2, stroke_frames_2, df3)
-keypoint_list.extend(keypoints2)
-labels.extend(label2)
-
-# Second mirrored
-keypoints2m, label2m = get_keypoints_and_labels(2, stroke_frames_2, df4, True)
-keypoint_list.extend(keypoints2m)
-labels.extend(label2m)
-
-label_counts = Counter(labels)
+# Filter labels with sufficient samples
+label_counts = Counter(label_train)
 min_label_threshold = 6
-valid_labels = [label for label, count in label_counts.items() if count >= min_label_threshold]
+valid_labels = {label for label, count in label_counts.items() if count >= min_label_threshold}
 
-# Filter embeddings and labels based on valid labels
-filtered_keypoint_list = []
-filtered_labels = []
+# Apply filtering
+filtered_keypoint_list = [kp for kp, lbl in zip(keypoints_train, label_train) if lbl in valid_labels]
+filtered_labels = [lbl for lbl in label_train if lbl in valid_labels]
+filtered_keypoints_test = [kp for kp, lbl in zip(keypoints_test, label_test) if lbl in valid_labels]
+filtered_labels_test = [lbl for lbl in label_test if lbl in valid_labels]
 
-for keypoints, label in zip(keypoint_list, labels):
-    if label in valid_labels:
-        filtered_keypoint_list.append(keypoints)
-        filtered_labels.append(label)
-
-# Encode labels as numbers
+# Encode labels
 label_encoder = LabelEncoder()
-y = label_encoder.fit_transform(filtered_labels)
+y_train = label_encoder.fit_transform(filtered_labels)
+y_test = label_encoder.transform(filtered_labels_test)
 
-# Stack embeddings into a 2D array (X)
-X = np.vstack(filtered_keypoint_list)
+# Stack keypoints into arrays
+X_train = np.vstack(filtered_keypoint_list)
+X_test = np.vstack(filtered_keypoints_test)
 
-# Split into training & testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-print(f"Length of training set {len(X_train)}")
-print(f"Length of test set {len(X_test)}")
-plot_label_distribution(filtered_labels, "Original Label Distribution")
-plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
-plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
-
-# Train logistic regression
-clf = LogisticRegression(max_iter=1000, solver='saga', multi_class='auto', penalty='l2')
-clf.fit(X_train, y_train)
+print(f"Training set size: {len(X_train)}")
+print(f"Test set size: {len(X_test)}")
+plot_label_distribution(filtered_labels, "Training Set Label Distribution")
+plot_label_distribution(filtered_labels_test, "Test Set Label Distribution")
 
 # Baseline accuracy
-class_counts = Counter(y)
+class_counts = Counter(y_train)
 most_common_class = max(class_counts, key=class_counts.get)
-baseline_acc = class_counts[most_common_class] / len(y)
+baseline_acc = class_counts[most_common_class] / len(y_train)
 print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
-# Evaluate
-y_train_pred = clf.predict(X_train)
-train_accuracy = accuracy_score(y_train, y_train_pred)  # Calculate training accuracy
-print(f"Training Accuracy: {train_accuracy:.2f}")
+# Train logistic regression
+clf = LogisticRegression(max_iter=1000, solver='lbfgs', penalty='l2')
+clf.fit(X_train, y_train)
 
+# Evaluate logistic regression
 y_pred = clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
-print(f"Test Accuracy: {accuracy:.2f}")
+print(f"Logistic Regression Test Accuracy: {accuracy:.2f}")
 
-# Random Forest
-clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
+# Train Random Forest
+clf_rf = RandomForestClassifier(n_estimators=100, random_state=69)
 clf_rf.fit(X_train, y_train)
 rf_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-print(f"Random Forest Accuracy: {rf_acc:.2f}")
+print(f"Random Forest Test Accuracy: {rf_acc:.2f}")
+
+# XGBoost Classifier
+# clf_xgb = xgb.XGBClassifier(use_label_encoder=False, eval_metric='mlogloss', n_estimators=100, random_state=42)
+# clf_xgb.fit(X_train, y_train)
+# xgb_acc = accuracy_score(y_test, clf_xgb.predict(X_test))
+# print(f"XGBoost Accuracy: {xgb_acc:.2f}")
 
 # Confusion matrix
-y_test = label_encoder.inverse_transform(y_test)
-y_pred = label_encoder.inverse_transform(y_pred)
-plot_confusion_matrix(y_test, y_pred, True)
+y_test_labels = label_encoder.inverse_transform(y_test)
+y_pred_labels = label_encoder.inverse_transform(y_pred)
+plot_confusion_matrix(y_test_labels, y_pred_labels, True)
 
 # Coefficients heatmap
 plot_coefficients(clf.coef_, label_encoder.classes_)

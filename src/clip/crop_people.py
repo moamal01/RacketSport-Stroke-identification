@@ -4,10 +4,18 @@ import cv2
 import os
 
 # Load CSV file
-file_path = "midpoints.csv"
+video = 3
+mirrored = True
+file_path = f"midpoints_video{video}.csv"
+
+if mirrored:
+    m = "m"
+else:
+    m = ""
+
 df = pd.read_csv(file_path)
 
-video_path = "videos/game_1.mp4"
+video_path = f"videos/game_{3}.mp4"
 cap = cv2.VideoCapture(video_path)
 
 def get_player_boxes(df):
@@ -40,6 +48,9 @@ def save_crops(left_bboxes, right_bboxes, frames, left_scores, right_scores):
         cap.set(cv2.CAP_PROP_POS_FRAMES, frames[i])
         _, frame = cap.read()
         
+        if mirrored:
+            frame = cv2.flip(frame, 1)
+            
         process_player(left_bboxes[i], frame, i, "left", left_scores[i])
         process_player(right_bboxes[i], frame, i, "right", right_scores[i])
         
@@ -52,7 +63,7 @@ def process_player(bbox, frame, index, player, score):
         cropped_img = frame[int(y1):int(y2), int(x1):int(x2)]
         
         if score > 0.9:
-            frame_directory = f"cropped/video_1/{frames[index]}/0"
+            frame_directory = f"cropped/video_{video}{m}/{frames[index]}/0"
             if not os.path.exists(frame_directory):
                 os.makedirs(frame_directory)
             
