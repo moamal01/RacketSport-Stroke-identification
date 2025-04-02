@@ -6,7 +6,7 @@ import json
 import os
 
 video = 3
-mirror = True
+mirror = False
 
 if mirror:
     m = "m"
@@ -36,11 +36,11 @@ def save_people_embedding(path):
     image_embeddings_np = image_embeddings.cpu().numpy()
     
     if "left" in path:
-        #np.save(directory + "/left.npy", image_embeddings_np)
+        np.save(directory + "/left.npy", image_embeddings_np)
         pass
     else:
         pass
-        #np.save(directory + "/right.npy", image_embeddings_np)
+        np.save(directory + "/right.npy", image_embeddings_np)
 
 def save_object_embedding(path):
     image = Image.open("cropped/" + path)
