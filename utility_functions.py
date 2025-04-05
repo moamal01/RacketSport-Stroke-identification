@@ -3,6 +3,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
@@ -98,7 +99,7 @@ def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player
     return features, labels
 
 
-def get_keypoints_and_labels(timestamps, df, mirror=False, simplify=False) -> list | list:
+def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
 
     Args:
@@ -112,6 +113,10 @@ def get_keypoints_and_labels(timestamps, df, mirror=False, simplify=False) -> li
     keypoint_list = []
     labels = []
     
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+    
     for frame, value in timestamps.items():
         if value in {"other", "otherotherother"}:
             continue
@@ -122,6 +127,9 @@ def get_keypoints_and_labels(timestamps, df, mirror=False, simplify=False) -> li
         label = value.split(" ")[0]
         label_parts = label.split("_")
         player = label_parts[0]
+        
+        if player != player_to_get and player_to_get != "both":
+            continue
         
         if simplify:
             if "serve" in label:
@@ -138,6 +146,7 @@ def get_keypoints_and_labels(timestamps, df, mirror=False, simplify=False) -> li
     return keypoint_list, labels
 
 
+
 def plot_label_distribution(y_data: list, title: str) -> None:
     """Plots the distribution of labels as a bar plot, showing the frequency of each label in the list.
 
@@ -151,6 +160,7 @@ def plot_label_distribution(y_data: list, title: str) -> None:
     plt.xlabel("Count")
     plt.ylabel("Label")
     plt.show()
+
 
 
 def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: bool=False) -> None:
@@ -176,6 +186,8 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: boo
     plt.tight_layout()
     plt.show()
 
+
+
 def plot_coefficients(coefs, classes):
     plt.figure(figsize=(12, 7))
     sns.heatmap(coefs, cmap="coolwarm", annot=False, xticklabels=feature_labels, yticklabels=classes)
@@ -183,4 +195,38 @@ def plot_coefficients(coefs, classes):
     plt.ylabel("Class")
     plt.title("Logistic Regression Coefficients")
     plt.xticks(rotation=45, ha="right")
+    plt.show()
+    
+
+def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors):
+    unique_labels = list(set(labels))
+    cmap = cm.get_cmap("tab20", len(unique_labels))
+    color_dict = {label: cmap(i) for i, label in enumerate(unique_labels)}
+
+    markers = ['o', 's', 'D', 'P', '*', 'X', '^', 'v', '<', '>', 'p', 'h']
+    marker_dict = {label: markers[i % len(markers)] for i, label in enumerate(unique_labels)}
+
+    plt.figure(figsize=(10, 6))
+    for label in unique_labels:
+        mask = np.array(labels) == label
+        plt.scatter(data[mask, 0], data[mask, 1], 
+                    s=20, label=label, color=color_dict[label], marker=marker_dict[label], 
+                    edgecolors='black', linewidth=0.5, alpha=0.8)
+        
+    #plt.scatter(text_embeddings[:, 0], text_embeddings[:, 1], 
+    #            s=2, c='black', label="Text Embeddings", marker='o')
+
+    # Add captions to text embeddings
+    # for i, caption in enumerate(text_labels):
+    #     plt.text(text_embeddings[i, 0] + 1.15, text_embeddings[i, 1], caption, 
+    #              fontsize=8, color='black', ha='center', va='center', alpha=0.7)
+
+    plt.title(f"UMAP Projection of Image Embeddings for {player} player in video_{video_number}. Neighbors = {neighbors}")
+    plt.xlabel("UMAP Dimension 1")
+    plt.ylabel("UMAP Dimension 2")
+    plt.legend(markerscale=1, bbox_to_anchor=(0.5, -0.1), loc='upper center', ncol=5)
+    plt.tight_layout()
+
+    #plt.savefig(f"figures/umaps/cleaned/LALALALAred_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
+
     plt.show()
