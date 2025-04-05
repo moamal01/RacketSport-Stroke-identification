@@ -42,8 +42,16 @@ def load_json_with_dicts(path: str) -> dict:
     return data
 
 
+def get_timestamps(video_number):
+    with open(f"data/events/events_markup{video_number}.json", "r") as file:
+        data = json.load(file)
+        
+    excluded_values = {"empty_event", "bounce", "net"}
 
-def get_embeddings_and_labels(video, timestamps, mirror=False) -> list | list:
+    return {k: v for k, v in data.items() if v not in excluded_values}
+
+
+def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
 
     Args:
@@ -58,7 +66,10 @@ def get_embeddings_and_labels(video, timestamps, mirror=False) -> list | list:
     labels = []
     mirrored = ""
     
+    timestamps = get_timestamps(video_number)
+    
     for frame, value in timestamps.items():
+        #if not (29000 < int(frame) and int(frame) < 66000 ) or (94000 < int(frame) and int(frame) < 135000) or int(frame) > 150000:
         if value in {"other", "otherotherother"}:
             continue
         
@@ -67,10 +78,19 @@ def get_embeddings_and_labels(video, timestamps, mirror=False) -> list | list:
             mirrored = "m"
 
         label = value.split(" ")[0]
-        value2 = label.split("_")[0]
-        value3 = label.split("_")[2]
+        label_parts = label.split("_")
+        player = label_parts[0]
+        
+        if player != player_to_get and player_to_get != "both":
+            continue
+        
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
 
-        file_path = f"embeddings/video_{video}{mirrored}/{frame}/0/{value2}.npy"
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
         if os.path.exists(file_path):
             features.append(np.load(file_path))
             labels.append(label)
@@ -152,7 +172,6 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: boo
     _, ax = plt.subplots(figsize=(10, 8))
     disp.plot(cmap="Blues", ax=ax)
 
-    # Rotate the x-axis labels to avoid overlap
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
     plt.show()

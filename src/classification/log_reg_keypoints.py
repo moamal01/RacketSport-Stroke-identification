@@ -93,6 +93,10 @@ clf = LogisticRegression(max_iter=1000, solver='lbfgs', penalty='l2')
 clf.fit(X_train, y_train)
 
 # Evaluate logistic regression
+y_pred_train = clf.predict(X_train)
+train_accuracy = accuracy_score(y_train, y_pred_train)
+print(f"Logistic Regression training Accuracy: {train_accuracy:.2f}")
+
 y_pred = clf.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Logistic Regression Test Accuracy: {accuracy:.2f}")
