@@ -18,10 +18,13 @@ from utility_functions import (
     get_concat_and_labels
 )
 
-test_on_one = True
-simplify = True
+test_on_one = False
+simplify = False
 mirrored_only = False
 add_mirrored = False
+videos = [1, 2]
+train_videos = videos[:-1]
+test_videos = [videos[-1]]
 
 # Get embeddings and labels
 def get_embeddings(videos, simplify):
@@ -75,11 +78,11 @@ def get_concatenated(videos, simplify):
 # Combine all data
 def get_splits(type="embeddings"):
     if type == "embeddings":
-        all_data, all_labels = get_embeddings([1, 2, 3], True)
+        all_data, all_labels = get_embeddings(videos, True)
     elif type == "keypoints":
-        all_data, all_labels = get_keypoints([1, 2, 3], True)
+        all_data, all_labels = get_keypoints(videos, True)
     else:
-        all_data, all_labels = get_concatenated([1, 2, 3], True)
+        all_data, all_labels = get_concatenated(videos, True)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -92,11 +95,11 @@ def get_splits(type="embeddings"):
 
     if test_on_one:
         if type == "embeddings":
-            train_embeddings, train_labels = get_embeddings([1, 2], True)
+            train_embeddings, train_labels = get_embeddings(train_videos, True)
         elif type == "keypoints":
-            train_embeddings, train_labels = get_keypoints([1, 2], True)
+            train_embeddings, train_labels = get_keypoints(train_videos, True)
         else:
-            train_embeddings, train_labels = get_concatenated([1, 2], True)
+            train_embeddings, train_labels = get_concatenated(train_videos, True)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
@@ -104,11 +107,11 @@ def get_splits(type="embeddings"):
         filtered_test_labels = []
 
         if type == "embeddings":
-            video3_embeddings, video3_labels = get_embeddings([3], True)
+            video3_embeddings, video3_labels = get_embeddings(test_videos, True)
         elif type == "keypoints":
-            video3_embeddings, video3_labels = get_keypoints([3], True)
+            video3_embeddings, video3_labels = get_keypoints(test_videos, True)
         else:
-            video3_embeddings, video3_labels = get_concatenated([3], True)
+            video3_embeddings, video3_labels = get_concatenated(test_videos, True)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set:
