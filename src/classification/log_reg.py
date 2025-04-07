@@ -20,67 +20,79 @@ test_on_one = True
 simplify = True
 
 # Get embeddings and labels
-video1_embeddings, video1_labels = get_embeddings_and_labels(1, simplify=True)
-video2_embeddings, video2_labels = get_embeddings_and_labels(2, simplify=True)
-video3_embeddings, video3_labels = get_embeddings_and_labels(3, simplify=True)
+def get_embeddings(videos, simplify):
+    embeddings = []
+    labels = []
+    
+    for video in videos:
+        video_embeddings, video_labels = get_embeddings_and_labels(video, simplify=simplify)
+        embeddings.extend(video_embeddings)
+        labels.extend(video_labels)
+    
+    return embeddings, labels
 
 # Combine all data
-all_embeddings = video1_embeddings + video2_embeddings + video3_embeddings
-all_labels = video1_labels + video2_labels + video3_labels
+def get_splits():
+    all_data, all_labels = get_embeddings([1, 2, 3], True)
 
-# Encode all labels
-label_encoder = LabelEncoder()
-all_labels_encoded = label_encoder.fit_transform(all_labels)
-all_embeddings_np = np.vstack(all_embeddings)
 
-def can_stratify(labels):
-    label_counts = Counter(labels)
-    return all(count >= 2 for count in label_counts.values())
+    # Encode all labels
+    label_encoder = LabelEncoder()
+    all_labels_encoded = label_encoder.fit_transform(all_labels)
+    all_embeddings_np = np.vstack(all_data)
 
-if test_on_one:
-    train_embeddings = video1_embeddings + video2_embeddings
-    train_labels = video1_labels + video2_labels
+    def can_stratify(labels):
+        label_counts = Counter(labels)
+        return all(count >= 2 for count in label_counts.values())
 
-    # Filter test samples from video 3 that have seen labels
-    train_label_set = set(train_labels)
-    filtered_test_embeddings = []
-    filtered_test_labels = []
-    for emb, label in zip(video3_embeddings, video3_labels):
-        if label in train_label_set:
-            filtered_test_embeddings.append(emb)
-            filtered_test_labels.append(label)
+    if test_on_one:
+        train_embeddings, train_labels = get_embeddings([1, 2], True)
 
-    X_train = np.vstack(train_embeddings)
-    y_train = label_encoder.transform(train_labels)
+        # Filter test samples from video 3 that have seen labels
+        train_label_set = set(train_labels)
+        filtered_test_embeddings = []
+        filtered_test_labels = []
+        
+        video3_embeddings, video3_labels = get_embeddings([3], True)
+        for emb, label in zip(video3_embeddings, video3_labels):
+            if label in train_label_set:
+                filtered_test_embeddings.append(emb)
+                filtered_test_labels.append(label)
 
-    X_val, y_val = None, None  # No validation set in this case
-    X_test = np.vstack(filtered_test_embeddings)
-    y_test = label_encoder.transform(filtered_test_labels)
+        X_train = np.vstack(train_embeddings)
+        y_train = label_encoder.transform(train_labels)
 
-else:
-    # Random 80/10/10 split
-    if can_stratify(all_labels_encoded):
-        strat = all_labels_encoded
+        X_val, y_val = None, None  # No validation set in this case
+        X_test = np.vstack(filtered_test_embeddings)
+        y_test = label_encoder.transform(filtered_test_labels)
+
     else:
-        strat = None
-        print("⚠️ Not all classes have ≥2 samples. Falling back to non-stratified split.")
+        # Random 80/10/10 split
+        if can_stratify(all_labels_encoded):
+            strat = all_labels_encoded
+        else:
+            strat = None
+            print("⚠️ Not all classes have ≥2 samples. Falling back to non-stratified split.")
 
-    # First: 90% temp, 10% test
-    X_temp, X_test, y_temp, y_test = train_test_split(
-        all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat
-    )
+        # First: 90% temp, 10% test
+        X_temp, X_test, y_temp, y_test = train_test_split(
+            all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat
+        )
 
-    if can_stratify(y_temp):
-        strat_temp = y_temp
-    else:
-        strat_temp = None
-        print("⚠️ Not all classes in temp split have ≥2 samples. Validation will be non-stratified.")
+        if can_stratify(y_temp):
+            strat_temp = y_temp
+        else:
+            strat_temp = None
+            print("⚠️ Not all classes in temp split have ≥2 samples. Validation will be non-stratified.")
 
-    # Then: 10% of 90% (i.e. 10% overall) for validation
-    X_train, X_val, y_train, y_val = train_test_split(
-        X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp
-    )
+        # Then: 10% of 90% (i.e. 10% overall) for validation
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp
+        )
 
+    return X_train, y_train, X_val, y_val, X_test, y_test, label_encoder
+
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits()
 # Print stats
 print(f"Train samples: {len(X_train)}")
 print(f"Validation samples: {len(X_val) if X_val is not None else 0}")
