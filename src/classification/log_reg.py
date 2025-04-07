@@ -53,7 +53,7 @@ def get_keypoints(videos, simplify):
         labels.extend(video_labels)
     
         if add_mirrored and len(videos) > 1:
-            video_keypoints, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
+            video_keypoints, video_labels = get_keypoints_and_labels(video, mirror=True, simplify=simplify)
             keypoints.extend(video_keypoints)
             labels.extend(video_labels)
     
@@ -69,7 +69,7 @@ def get_concatenated(videos, simplify):
         labels.extend(video_labels)
         
         if add_mirrored and len(videos) > 1:
-            video_concatenated, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
+            video_concatenated, video_labels = get_concat_and_labels(video, mirror=True, simplify=simplify)
             concatenated.extend(video_concatenated)
             labels.extend(video_labels)
     
@@ -78,11 +78,11 @@ def get_concatenated(videos, simplify):
 # Combine all data
 def get_splits(type="embeddings"):
     if type == "embeddings":
-        all_data, all_labels = get_embeddings(videos, True)
+        all_data, all_labels = get_embeddings(videos, simplify)
     elif type == "keypoints":
-        all_data, all_labels = get_keypoints(videos, True)
+        all_data, all_labels = get_keypoints(videos, simplify)
     else:
-        all_data, all_labels = get_concatenated(videos, True)
+        all_data, all_labels = get_concatenated(videos, simplify)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -95,11 +95,11 @@ def get_splits(type="embeddings"):
 
     if test_on_one:
         if type == "embeddings":
-            train_embeddings, train_labels = get_embeddings(train_videos, True)
+            train_embeddings, train_labels = get_embeddings(train_videos, simplify)
         elif type == "keypoints":
-            train_embeddings, train_labels = get_keypoints(train_videos, True)
+            train_embeddings, train_labels = get_keypoints(train_videos, simplify)
         else:
-            train_embeddings, train_labels = get_concatenated(train_videos, True)
+            train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
@@ -107,11 +107,11 @@ def get_splits(type="embeddings"):
         filtered_test_labels = []
 
         if type == "embeddings":
-            video3_embeddings, video3_labels = get_embeddings(test_videos, True)
+            video3_embeddings, video3_labels = get_embeddings(test_videos, simplify)
         elif type == "keypoints":
-            video3_embeddings, video3_labels = get_keypoints(test_videos, True)
+            video3_embeddings, video3_labels = get_keypoints(test_videos, simplify)
         else:
-            video3_embeddings, video3_labels = get_concatenated(test_videos, True)
+            video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set:
