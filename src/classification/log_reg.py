@@ -20,6 +20,8 @@ from utility_functions import (
 
 test_on_one = True
 simplify = True
+mirrored_only = False
+add_mirrored = False
 
 # Get embeddings and labels
 def get_embeddings(videos, simplify):
@@ -27,10 +29,15 @@ def get_embeddings(videos, simplify):
     labels = []
     
     for video in videos:
-        video_embeddings, video_labels = get_embeddings_and_labels(video, simplify=simplify)
+        video_embeddings, video_labels = get_embeddings_and_labels(video, mirror=mirrored_only, simplify=simplify)
         embeddings.extend(video_embeddings)
         labels.extend(video_labels)
-    
+        
+        if add_mirrored and len(videos) > 1:
+            video_embeddings, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
+            embeddings.extend(video_embeddings)
+            labels.extend(video_labels)
+            
     return embeddings, labels
 
 def get_keypoints(videos, simplify):
@@ -38,9 +45,14 @@ def get_keypoints(videos, simplify):
     labels = []
     
     for video in videos:
-        video_keypoints, video_labels = get_keypoints_and_labels(video, simplify=simplify)
+        video_keypoints, video_labels = get_keypoints_and_labels(video, mirror=mirrored_only, simplify=simplify)
         keypoints.extend(video_keypoints)
         labels.extend(video_labels)
+    
+        if add_mirrored and len(videos) > 1:
+            video_keypoints, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
+            keypoints.extend(video_keypoints)
+            labels.extend(video_labels)
     
     return keypoints, labels
 
@@ -49,9 +61,14 @@ def get_concatenated(videos, simplify):
     labels = []
     
     for video in videos:
-        video_keypoints, video_labels = get_concat_and_labels(video, simplify=simplify)
-        concatenated.extend(video_keypoints)
+        video_concatenated, video_labels = get_concat_and_labels(video, mirror=mirrored_only, simplify=simplify)
+        concatenated.extend(video_concatenated)
         labels.extend(video_labels)
+        
+        if add_mirrored and len(videos) > 1:
+            video_concatenated, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
+            concatenated.extend(video_concatenated)
+            labels.extend(video_labels)
     
     return concatenated, labels
 
@@ -175,7 +192,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
