@@ -13,7 +13,9 @@ sys.path.append(os.path.abspath('../../'))
 from utility_functions import (
     plot_label_distribution,
     plot_confusion_matrix,
-    get_embeddings_and_labels
+    get_embeddings_and_labels,
+    get_keypoints_and_labels,
+    get_concat_and_labels
 )
 
 test_on_one = True
@@ -31,10 +33,36 @@ def get_embeddings(videos, simplify):
     
     return embeddings, labels
 
-# Combine all data
-def get_splits():
-    all_data, all_labels = get_embeddings([1, 2, 3], True)
+def get_keypoints(videos, simplify):
+    keypoints = []
+    labels = []
+    
+    for video in videos:
+        video_keypoints, video_labels = get_keypoints_and_labels(video, simplify=simplify)
+        keypoints.extend(video_keypoints)
+        labels.extend(video_labels)
+    
+    return keypoints, labels
 
+def get_concatenated(videos, simplify):
+    concatenated = []
+    labels = []
+    
+    for video in videos:
+        video_keypoints, video_labels = get_concat_and_labels(video, simplify=simplify)
+        concatenated.extend(video_keypoints)
+        labels.extend(video_labels)
+    
+    return concatenated, labels
+
+# Combine all data
+def get_splits(type="embeddings"):
+    if type == "embeddings":
+        all_data, all_labels = get_embeddings([1, 2, 3], True)
+    elif type == "keypoints":
+        all_data, all_labels = get_keypoints([1, 2, 3], True)
+    else:
+        all_data, all_labels = get_concatenated([1, 2, 3], True)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -46,14 +74,25 @@ def get_splits():
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels = get_embeddings([1, 2], True)
+        if type == "embeddings":
+            train_embeddings, train_labels = get_embeddings([1, 2], True)
+        elif type == "keypoints":
+            train_embeddings, train_labels = get_keypoints([1, 2], True)
+        else:
+            train_embeddings, train_labels = get_concatenated([1, 2], True)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
-        
-        video3_embeddings, video3_labels = get_embeddings([3], True)
+
+        if type == "embeddings":
+            video3_embeddings, video3_labels = get_embeddings([3], True)
+        elif type == "keypoints":
+            video3_embeddings, video3_labels = get_keypoints([3], True)
+        else:
+            video3_embeddings, video3_labels = get_concatenated([3], True)
+
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set:
                 filtered_test_embeddings.append(emb)
@@ -92,44 +131,51 @@ def get_splits():
 
     return X_train, y_train, X_val, y_val, X_test, y_test, label_encoder
 
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits()
-# Print stats
-print(f"Train samples: {len(X_train)}")
-print(f"Validation samples: {len(X_val) if X_val is not None else 0}")
-print(f"Test samples: {len(X_test)}")
+def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
+    # Print stats
+    print(f"Train samples: {len(X_train)}")
+    print(f"Validation samples: {len(X_val) if X_val is not None else 0}")
+    print(f"Test samples: {len(X_test)}")
 
-plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
-if y_val is not None:
-    plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution")
-plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
+    plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
+    if y_val is not None:
+        plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution")
+    plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
 
-# Train Logistic Regression
-clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
-clf.fit(X_train, y_train)
+    # Train Logistic Regression
+    clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
+    clf.fit(X_train, y_train)
 
-# Validation accuracy
-if X_val is not None:
-    y_val_pred = clf.predict(X_val)
-    val_accuracy = accuracy_score(y_val, y_val_pred)
-    print(f"Validation Accuracy: {val_accuracy:.2f}")
+    # Validation accuracy
+    if X_val is not None:
+        y_val_pred = clf.predict(X_val)
+        val_accuracy = accuracy_score(y_val, y_val_pred)
+        print(f"Validation Accuracy: {val_accuracy:.2f}")
 
-# Test accuracy
-y_test_pred = clf.predict(X_test)
-test_accuracy = accuracy_score(y_test, y_test_pred)
-print(f"Test Accuracy: {test_accuracy:.2f}")
+    # Test accuracy
+    y_test_pred = clf.predict(X_test)
+    test_accuracy = accuracy_score(y_test, y_test_pred)
+    print(f"Test Accuracy: {test_accuracy:.2f}")
 
-# Train Random Forest
-clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
-clf_rf.fit(X_train, y_train)
+    # Train Random Forest
+    clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    clf_rf.fit(X_train, y_train)
 
-if X_val is not None:
-    rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
-    print(f"Random Forest Validation Accuracy: {rf_val_acc:.2f}")
+    if X_val is not None:
+        rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
+        print(f"Random Forest Validation Accuracy: {rf_val_acc:.2f}")
 
-rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-print(f"Random Forest Test Accuracy: {rf_test_acc:.2f}")
+    rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
+    print(f"Random Forest Test Accuracy: {rf_test_acc:.2f}")
 
-# Confusion Matrix
-y_test_decoded = label_encoder.inverse_transform(y_test)
-y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
-plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    # Confusion Matrix
+    y_test_decoded = label_encoder.inverse_transform(y_test)
+    y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
+    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
