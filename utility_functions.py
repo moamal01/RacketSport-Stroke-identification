@@ -126,6 +126,52 @@ def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_
 
         label = value.split(" ")[0]
         label_parts = label.split("_")
+        player = label_parts[0].capitalize()
+        
+        if player != player_to_get and player_to_get != "both":
+            continue
+        
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        event_row = df.loc[df['Event frame'] == int(frame)]
+        keypoint = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
+        keypoint = np.array(keypoint)[:, :2]
+        keypoint_list.append(keypoint.flatten())
+        labels.append(label)
+            
+    return keypoint_list, labels
+
+def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
+    """
+
+    Args:
+        timestamps (_type_): The dictionary containing stroke timestamps and labels
+        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
+
+    Returns:
+        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
+        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
+    """
+    keypoint_list = []
+    labels = []
+    
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+    
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+        
+        if mirror:
+            value = mirror_string(value)
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
         player = label_parts[0]
         
         if player != player_to_get and player_to_get != "both":
@@ -147,6 +193,58 @@ def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_
 
 
 def get_concat_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
+    """
+
+    Args:
+        timestamps (_type_): The dictionary containing stroke timestamps and labels
+        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
+
+    Returns:
+        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
+        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
+    """
+    concat_list = []
+    labels = []
+    mirrored = ""
+    
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+    
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+        
+        if mirror:
+            value = mirror_string(value)
+            mirrored = "m"
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+        player = label_parts[0].capitalize()
+        
+        if player != player_to_get and player_to_get != "both":
+            continue
+        
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+        if os.path.exists(file_path):
+            embedding = np.load(file_path)
+            event_row = df.loc[df['Event frame'] == int(frame)]
+            keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
+            keypoints = np.array(keypoints)[:, :2]
+            concat_list.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
+            labels.append(label)
+            
+    return concat_list, labels
+
+
+def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
 
     Args:
