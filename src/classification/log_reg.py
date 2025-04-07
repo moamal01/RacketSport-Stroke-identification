@@ -13,81 +13,111 @@ sys.path.append(os.path.abspath('../../'))
 from utility_functions import (
     plot_label_distribution,
     plot_confusion_matrix,
-    load_json_with_dicts,
     get_embeddings_and_labels
 )
 
-# Load data for each video
-data1 = load_json_with_dicts(f"data/events/events_markup1.json")
-data2 = load_json_with_dicts(f"data/events/events_markup2.json")
-data3 = load_json_with_dicts(f"data/events/events_markup3.json")
-
-excluded_values = {"empty_event", "bounce", "net"}
-stroke_frames_1 = {k: v for k, v in data1.items() if v not in excluded_values}
-stroke_frames_2 = {k: v for k, v in data2.items() if v not in excluded_values}
-stroke_frames_3 = {k: v for k, v in data3.items() if v not in excluded_values}
+test_on_one = True
+simplify = True
 
 # Get embeddings and labels
-video1_embeddings, video1_labels = get_embeddings_and_labels(1, stroke_frames_1)
-video2_embeddings, video2_labels = get_embeddings_and_labels(2, stroke_frames_2)
-video3_embeddings, video3_labels = get_embeddings_and_labels(3, stroke_frames_3)
+video1_embeddings, video1_labels = get_embeddings_and_labels(1, simplify=True)
+video2_embeddings, video2_labels = get_embeddings_and_labels(2, simplify=True)
+video3_embeddings, video3_labels = get_embeddings_and_labels(3, simplify=True)
 
-# Combine video 1 & 2 for training
-train_embeddings = video1_embeddings + video2_embeddings
-train_labels = video1_labels + video2_labels
+# Combine all data
+all_embeddings = video1_embeddings + video2_embeddings + video3_embeddings
+all_labels = video1_labels + video2_labels + video3_labels
 
-# Ensure test labels exist in training set
-train_label_counts = Counter(train_labels)
-valid_labels = set(train_label_counts.keys())
-filtered_test_embeddings = []
-filtered_test_labels = []
-
-for emb, label in zip(video3_embeddings, video3_labels):
-    if label in valid_labels:
-        filtered_test_embeddings.append(emb)
-        filtered_test_labels.append(label)
-
-# Encode labels
+# Encode all labels
 label_encoder = LabelEncoder()
-y_all_train = label_encoder.fit_transform(train_labels)
-y_test = label_encoder.transform(filtered_test_labels)  # Use same encoder
+all_labels_encoded = label_encoder.fit_transform(all_labels)
+all_embeddings_np = np.vstack(all_embeddings)
 
-# Convert embeddings into arrays
-X_all_train = np.vstack(train_embeddings)
-X_test = np.vstack(filtered_test_embeddings)
+def can_stratify(labels):
+    label_counts = Counter(labels)
+    return all(count >= 2 for count in label_counts.values())
 
-# Split Video 1 & 2 into train (80%) and validation (20%)
-X_train, X_val, y_train, y_val = train_test_split(X_all_train, y_all_train, test_size=0.2, random_state=42)
+if test_on_one:
+    train_embeddings = video1_embeddings + video2_embeddings
+    train_labels = video1_labels + video2_labels
 
-print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val)}, Test samples: {len(X_test)}")
+    # Filter test samples from video 3 that have seen labels
+    train_label_set = set(train_labels)
+    filtered_test_embeddings = []
+    filtered_test_labels = []
+    for emb, label in zip(video3_embeddings, video3_labels):
+        if label in train_label_set:
+            filtered_test_embeddings.append(emb)
+            filtered_test_labels.append(label)
+
+    X_train = np.vstack(train_embeddings)
+    y_train = label_encoder.transform(train_labels)
+
+    X_val, y_val = None, None  # No validation set in this case
+    X_test = np.vstack(filtered_test_embeddings)
+    y_test = label_encoder.transform(filtered_test_labels)
+
+else:
+    # Random 80/10/10 split
+    if can_stratify(all_labels_encoded):
+        strat = all_labels_encoded
+    else:
+        strat = None
+        print("⚠️ Not all classes have ≥2 samples. Falling back to non-stratified split.")
+
+    # First: 90% temp, 10% test
+    X_temp, X_test, y_temp, y_test = train_test_split(
+        all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat
+    )
+
+    if can_stratify(y_temp):
+        strat_temp = y_temp
+    else:
+        strat_temp = None
+        print("⚠️ Not all classes in temp split have ≥2 samples. Validation will be non-stratified.")
+
+    # Then: 10% of 90% (i.e. 10% overall) for validation
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp
+    )
+
+# Print stats
+print(f"Train samples: {len(X_train)}")
+print(f"Validation samples: {len(X_val) if X_val is not None else 0}")
+print(f"Test samples: {len(X_test)}")
+
 plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
-plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution")
+if y_val is not None:
+    plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution")
 plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
 
-# Train logistic regression
-clf = LogisticRegression(max_iter=1000, solver='saga', multi_class='auto', penalty='l2')
+# Train Logistic Regression
+clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
 clf.fit(X_train, y_train)
 
-# Evaluate on validation set
-y_val_pred = clf.predict(X_val)
-val_accuracy = accuracy_score(y_val, y_val_pred)
-print(f"Validation Accuracy: {val_accuracy:.2f}")
+# Validation accuracy
+if X_val is not None:
+    y_val_pred = clf.predict(X_val)
+    val_accuracy = accuracy_score(y_val, y_val_pred)
+    print(f"Validation Accuracy: {val_accuracy:.2f}")
 
-# Final Evaluation on Test Set (Video 3)
+# Test accuracy
 y_test_pred = clf.predict(X_test)
 test_accuracy = accuracy_score(y_test, y_test_pred)
-print(f"Test Accuracy on Video 3: {test_accuracy:.2f}")
+print(f"Test Accuracy: {test_accuracy:.2f}")
 
 # Train Random Forest
 clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf_rf.fit(X_train, y_train)
-rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
+
+if X_val is not None:
+    rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
+    print(f"Random Forest Validation Accuracy: {rf_val_acc:.2f}")
+
 rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
+print(f"Random Forest Test Accuracy: {rf_test_acc:.2f}")
 
-print(f"Random Forest Validation Accuracy: {rf_val_acc:.2f}")
-print(f"Random Forest Test Accuracy on Video 3: {rf_test_acc:.2f}")
-
-# Confusion matrix for test set
+# Confusion Matrix
 y_test_decoded = label_encoder.inverse_transform(y_test)
 y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
 plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)

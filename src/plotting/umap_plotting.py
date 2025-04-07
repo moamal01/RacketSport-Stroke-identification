@@ -9,7 +9,7 @@ plt.rcParams.update({'font.size': 22})
 sns.set_theme()
 
 player = "right"
-video_numbers = [1, 2]
+video_numbers = [1, 2, 3]
 neighbors = 15
 mirror = False
 add_mirror = False
