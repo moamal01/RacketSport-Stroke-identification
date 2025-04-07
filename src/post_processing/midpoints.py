@@ -3,10 +3,10 @@ import ast
 import math
 
 # Load CSV file
-video = 3
+video = 2
 file_path = f"normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = True
+mirrored = False
 
 TABLE_MIDPOINT = (0.5, 0.5)
 
@@ -81,13 +81,24 @@ def calculate_distance(midpoint, keypoint):
     
     return d
 
-def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
+def normalize(left_hip, right_hip, keypoint):    
+    keypoint_x = keypoint[0]
+    keypoint_y = keypoint[1]
+    
+    midpoint_x = (left_hip[0] + right_hip[0]) / 2
+    midpoint_y = (left_hip[1] + right_hip[1]) / 2
+    
+    return [keypoint_x - midpoint_x, keypoint_y - midpoint_y]
+
+def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_right):
     left_player_distance_to_midpoint = []
     right_player_distance_to_midpoint = []
     
     for i in range(len(keypoints_left)):
-        left_hip = ll_hips[i]
-        right_hip = rl_hips[i]
+        left_player_left_hip = ll_hips[i]
+        left_player_right_hip = lr_hips[i]
+        right_player_left_hip = rl_hips[i]
+        right_player_right_hip = rr_hips[i]
         
         left_frame_list = []
         right_frame_list = []
@@ -96,11 +107,11 @@ def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
             left_keypoint = keypoints_left[i][j]
             right_keypoint = keypoints_right[i][j]
             
-            left_d = calculate_distance(left_hip, left_keypoint)
-            right_d = calculate_distance(right_hip, right_keypoint)
+            left_norm = normalize(left_player_left_hip, left_player_right_hip, left_keypoint)
+            right_norm = normalize(right_player_left_hip, right_player_right_hip, right_keypoint)
                         
-            left_frame_list.append(left_d)
-            right_frame_list.append(right_d)
+            left_frame_list.append(left_norm)
+            right_frame_list.append(right_norm)
         
         left_player_distance_to_midpoint.append(left_frame_list)
         right_player_distance_to_midpoint.append(right_frame_list)
@@ -110,10 +121,10 @@ def get_distance(ll_hips, keypoints_left, rl_hips, keypoints_right):
     
 paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
-left_distances, right_distances = get_distance(ll_hip, keypoints_left, rl_hip, keypoints_right)
+left_distances, right_distances = get_distance(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
 
 # Prepare data for saving to CSV
-output_file = f"midpoints_video{video}.csv"
+output_file = f"midpoints_video{video}testtest.csv"
 if mirrored:
     output_file = f"mirrored_midpoints_video{video}.csv"
 
