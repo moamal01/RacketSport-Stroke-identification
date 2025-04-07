@@ -153,9 +153,7 @@ def get_splits(type="embeddings"):
 
 def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Print stats
-    print(f"Train samples: {len(X_train)}")
-    print(f"Validation samples: {len(X_val) if X_val is not None else 0}")
-    print(f"Test samples: {len(X_test)}")
+    print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
 
     plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
     if y_val is not None:
@@ -165,6 +163,11 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Train Logistic Regression
     clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
     clf.fit(X_train, y_train)
+    
+    class_counts = Counter(y_train)
+    most_common_class = max(class_counts, key=class_counts.get)
+    baseline_acc = class_counts[most_common_class] / len(y_train)
+    print(f"Baseline Accuracy: {baseline_acc:.2f}")
 
     # Validation accuracy
     if X_val is not None:
