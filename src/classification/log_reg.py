@@ -18,11 +18,11 @@ from utility_functions import (
     get_concat_and_labels
 )
 
-test_on_one = False
-simplify = False
+test_on_one = True
+simplify = True
 mirrored_only = False
-add_mirrored = False
-videos = [1, 2]
+add_mirrored = True
+videos = [1, 2, 3]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 
@@ -155,10 +155,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Print stats
     print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
 
-    plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution")
+    plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution", simplify=simplify)
     if y_val is not None:
-        plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution")
-    plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution")
+        plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution", simplify=simplify)
+    plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution", simplify=simplify)
 
     # Train Logistic Regression
     clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')

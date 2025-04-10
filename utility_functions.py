@@ -6,6 +6,8 @@ import os
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+plt.rcParams.update({'font.size': 22})
+sns.set_theme()
 
 joint_list = [
     'nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'left_shoulder',
@@ -296,14 +298,16 @@ def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player
     return concat_list, labels
 
 
-def plot_label_distribution(y_data: list, title: str) -> None:
+def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
     """Plots the distribution of labels as a bar plot, showing the frequency of each label in the list.
 
     Args:
         y_data (list): A list of labels
         title (str): The title for the plot
     """
-    plt.figure(figsize=(12, 7))
+    plot_height = 3 if simplify else 8
+    
+    plt.figure(figsize=(16, plot_height))
     sns.countplot(y=y_data, order=np.unique(y_data))
     plt.title(title)
     plt.xlabel("Count")
@@ -347,7 +351,7 @@ def plot_coefficients(coefs, classes):
     plt.show()
     
 
-def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors):
+def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors, type):
     unique_labels = list(set(labels))
     cmap = cm.get_cmap("tab20", len(unique_labels))
     color_dict = {label: cmap(i) for i, label in enumerate(unique_labels)}
@@ -370,7 +374,7 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     #     plt.text(text_embeddings[i, 0] + 1.15, text_embeddings[i, 1], caption, 
     #              fontsize=8, color='black', ha='center', va='center', alpha=0.7)
 
-    plt.title(f"UMAP Projection of Image Embeddings for {player} player in video_{video_number}. Neighbors = {neighbors}")
+    plt.title(f"UMAP Projection of {type} for {player} player in video_{video_number}. Neighbors = {neighbors}")
     plt.xlabel("UMAP Dimension 1")
     plt.ylabel("UMAP Dimension 2")
     plt.legend(markerscale=1, bbox_to_anchor=(0.5, -0.1), loc='upper center', ncol=5)

@@ -8,7 +8,7 @@ from utility_functions import get_embeddings_and_labels, get_keypoints_and_label
 plt.rcParams.update({'font.size': 22})
 sns.set_theme()
 
-player = "right"
+player = "both"
 video_numbers = [1, 2, 3]
 neighbors = 15
 mirror = False
@@ -76,6 +76,6 @@ concat_2d = umap_model_concat.fit_transform(concatenated_featues)
 text_embeddings_concat_2d = umap_model_concat.transform(text_embeddings)
 
 # Plot embeddings UMAP
-plot_umap(all_embedding_labels, cm, embeddings_2d, text_embeddings_embeddings_2d, player, video_numbers[0], neighbors)
-plot_umap(all_keypoints_labels, cm, keypoints_2d, text_embeddings_embeddings_2d, player, video_numbers[0], neighbors)
-plot_umap(concatenated_labels, cm, concat_2d, text_embeddings_concat_2d, player, video_numbers[0], neighbors)
+plot_umap(all_embedding_labels, cm, embeddings_2d, text_embeddings_embeddings_2d, player, video_numbers[0], neighbors, "image embeddings")
+plot_umap(all_keypoints_labels, cm, keypoints_2d, text_embeddings_embeddings_2d, player, video_numbers[0], neighbors, "keypoints")
+plot_umap(concatenated_labels, cm, concat_2d, text_embeddings_concat_2d, player, video_numbers[0], neighbors, "image ebeddings and keypoints")
