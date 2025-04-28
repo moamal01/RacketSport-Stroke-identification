@@ -4,7 +4,7 @@ import math
 
 # Load CSV file
 video = 1
-file_path = f"normalized_data_video{video}.csv"
+file_path = f"../../video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
 mirrored = False
 
@@ -124,9 +124,9 @@ ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_distances, right_distances = get_distance(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
 
 # Prepare data for saving to CSV
-output_file = f"midpoints_video{video}.csv"
+output_file = f"../../video_{video}/midpoints_video{video}.csv"
 if mirrored:
-    output_file = f"mirrored_midpoints_video{video}.csv"
+    output_file = f"../../video_{video}/mirrored_midpoints_video{video}.csv"
 
 data = {
     'Path': paths,

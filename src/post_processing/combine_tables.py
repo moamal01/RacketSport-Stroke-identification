@@ -3,8 +3,8 @@ import ast
 
 # File paths
 video = 3
-keypoints_file = f"keypoints_video{video}.csv"
-bbox_file = f"bbox_video{video}.csv"
+keypoints_file = f"../../data/video_{video}/keypoints_video{video}.csv"
+bbox_file = f"../../data/video_{video}/bbox_video{video}.csv"
 
 # Load the CSV files
 keypoints_df = pd.read_csv(keypoints_file)
@@ -66,6 +66,6 @@ for col in ["Ball boxes", "Ball scores", "Racket boxes", "Racket scores", "Table
     merged_df[col] = merged_df[col].apply(lambda x: x if isinstance(x, list) else [])
 
 # Save to CSV
-merged_df.to_csv(f"merged_output_video{video}.csv", index=False)
+merged_df.to_csv(f"../../data/video_{video}/merged_output_video{video}.csv", index=False)
 
 print(f"Merged dataset saved as 'merged_output{video}.csv'")
