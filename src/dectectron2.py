@@ -6,6 +6,11 @@ from detectron2.data import MetadataCatalog
 import torch
 import cv2
 import csv
+import sys
+import os
+
+sys.path.append(os.path.abspath('../../'))
+
 from utility_functions import load_json_with_dicts
 
 # Load the object detection model
@@ -24,15 +29,21 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 3
-video_path = f"videos/game_{video}.mp4"
+video = 2
+frame_range = 10
+frame_gap = 2
+start_at = 54903
+video_path = f"../../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
+
+# Visualize
+write_video = False
 
 # Thesholds
 min_person_area = 30000
 min_table_area = 400000
 
-data = load_json_with_dicts(f"data/events/events_markup{video}.json")
+data = load_json_with_dicts(f"../../data/events/events_markup{video}.json")
     
 excluded_values = {"empty_event", "bounce", "net"}
 loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
@@ -50,13 +61,14 @@ if width == 0 or height == 0 or fps == 0:
     cap.release()
     exit()
 
-output_path = "test.mp4"
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+if write_video:
+    output_path = "test.mp4"
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-# CSV
-keypoint_filename = f"keypoints_video{video}.csv"
-bbox_filename = f"bbox_video{video}.csv"
+# CSV output files
+keypoint_filename = f"../../data/video_{video}/keypoints_video{video}_p2.csv"
+bbox_filename = f"../../data/video_{video}/bbox_video{video}_p2.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
@@ -67,15 +79,18 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
     for key_frame, value_frame in loaded_keys.items():
+        if key_frame < start_at:
+            continue
+        
         print(key_frame)
-        start_frame = int(key_frame) - 0
+        start_frame = int(key_frame) - frame_range
 
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
 
-        frame_number = 0
+        frame_number = -frame_range
 
         try:
-            while cap.isOpened() and frame_number <= 0:
+            while cap.isOpened() and frame_number <= frame_range:
                 ret, frame = cap.read()
                 if not ret or frame is None:
                     print(f"End of video or error at frame {frame_number}")
@@ -89,42 +104,6 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
 
                 instances = outputs["instances"].to("cpu")
                 keypoint_instances = keypoint_outputs["instances"].to("cpu")
-                
-                player_1_keypoints = []
-                player_2_keypoints = []
-
-                player_1_boxes = []
-                player_2_boxes = []
-
-                player_1_scores = []
-                player_2_scores = []
-
-                for kp, box, score in zip(
-                    keypoint_instances.pred_keypoints, 
-                    keypoint_instances.pred_boxes, 
-                    keypoint_instances.scores
-                ):
-                    if kp[0, 0] < 700:
-                        player_1_keypoints.append(kp)
-                        player_1_boxes.append(box)
-                        player_1_scores.append(score)
-                    elif kp[0, 0] > 1100:
-                        player_2_keypoints.append(kp)
-                        player_2_boxes.append(box)
-                        player_2_scores.append(score)
-
-                # Ensure that lists are not empty
-                default_kp_shape = (1, 17, 3)
-                default_box_shape = (1, 4)
-                default_score_shape = (1,)
-
-                player_1_keypoints = torch.stack(player_1_keypoints) if player_1_keypoints else torch.zeros(default_kp_shape)
-                player_1_boxes = torch.stack(player_1_boxes) if player_1_boxes else torch.zeros(default_box_shape)
-                player_1_scores = torch.tensor(player_1_scores) if player_1_scores else torch.zeros(default_score_shape)
-
-                player_2_keypoints = torch.stack(player_2_keypoints) if player_2_keypoints else torch.zeros(default_kp_shape)
-                player_2_boxes = torch.stack(player_2_boxes) if player_2_boxes else torch.zeros(default_box_shape)
-                player_2_scores = torch.tensor(player_2_scores) if player_2_scores else torch.zeros(default_score_shape)
         
                 # Save keypoints
                 keypoint_writer.writerow([video_path, value_frame, key_frame, frame_number, keypoint_instances.pred_keypoints.tolist(), keypoint_instances.pred_boxes.tensor.tolist(), keypoint_instances.scores.tolist()])
@@ -151,47 +130,49 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 filtered_instances = instances[mask]
                 
                 # Visualize results
-                v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-                vis_det = v_det.draw_instance_predictions(filtered_instances)
-                
-                v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
-                vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
+                # if write_video:
+                #     v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
+                #     vis_det = v_det.draw_instance_predictions(filtered_instances)
+                    
+                #     v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
+                #     vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
-                # Convert back to BGR for OpenCV
-                image_det = vis_det.get_image()
-                image_kp = vis_kp.get_image()
+                #     # Convert back to BGR for OpenCV
+                #     image_det = vis_det.get_image()
+                #     image_kp = vis_kp.get_image()
 
-                # Blend the keypoints visualization with the detection visualization
-                alpha = 0.2  # Adjust transparency as needed
-                blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
+                #     # Blend the keypoints visualization with the detection visualization
+                #     alpha = 0.2  # Adjust transparency as needed
+                #     blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
 
-                # Convert back to BGR for OpenCV
-                result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
+                #     # Convert back to BGR for OpenCV
+                #     result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
 
-                # Ensure correct dtype
-                result_frame = result_frame.astype("uint8")
+                #     # Ensure correct dtype
+                #     result_frame = result_frame.astype("uint8")
 
-                # Resize if necessary
-                if result_frame.shape[:2] != (height, width):
-                    result_frame = cv2.resize(result_frame, (width, height))
+                #     # Resize if necessary
+                #     if result_frame.shape[:2] != (height, width):
+                #         result_frame = cv2.resize(result_frame, (width, height))
 
-                # Write frame to output video
-                out.write(result_frame)
+                #     # Write frame to output video
+                #     out.write(result_frame)
 
-                # Display the frame
-                cv2.imshow("Keypoints Detection", result_frame)
-                key = cv2.waitKey(1) & 0xFF
-                if key == ord("q"):
-                    print("User quit.")
-                    break
+                #     # Display the frame
+                #     cv2.imshow("Keypoints Detection", result_frame)
+                #     key = cv2.waitKey(1) & 0xFF
+                #     if key == ord("q"):
+                #         print("User quit.")
+                #         break
 
-                frame_number += 1
+                frame_number += frame_gap
         except Exception as e:
             print(f"Error during processing: {e}")
 
 
 cap.release()
-out.release()
+if write_video:
+    out.release()
 cv2.destroyAllWindows()
 
 print("Video processing complete.")
