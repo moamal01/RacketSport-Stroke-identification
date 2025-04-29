@@ -79,7 +79,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
     for key_frame, value_frame in loaded_keys.items():
-        if key_frame < start_at:
+        if int(key_frame) < start_at:
             continue
         
         print(key_frame)
