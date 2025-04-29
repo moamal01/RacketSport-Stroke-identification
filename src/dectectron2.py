@@ -29,10 +29,10 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 2
+video = 3
 frame_range = 10
 frame_gap = 2
-start_at = 54903
+start_at = 0
 video_path = f"../../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
 
