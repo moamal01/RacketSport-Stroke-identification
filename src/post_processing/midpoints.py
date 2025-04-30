@@ -3,7 +3,7 @@ import ast
 import math
 
 # Load CSV file
-video = 1
+video = 3
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
 mirrored = False

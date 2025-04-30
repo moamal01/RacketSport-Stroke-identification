@@ -3,8 +3,8 @@ import ast
 
 # Load CSV
 video = 3
-input_file = f"../../video_{video}/merged_output_video{video}.csv"
-output_file = f"../../video_{video}normalized_data_video{video}.csv"
+input_file = f"../../data/video_{video}/merged_output_video{video}.csv"
+output_file = f"../../data/video_{video}/normalized_data_video{video}.csv"
 
 # Read CSV
 df = pd.read_csv(input_file)

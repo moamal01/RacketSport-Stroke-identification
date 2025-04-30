@@ -94,6 +94,10 @@
 ```
 
 ## Order of Execution
+1. Get keypoints and shit
+2. Combine the tables
+3. Normalize
+4. Find midpoints. Can also find mirrored
 
 
 ### Third Party Dependencies and licenses
