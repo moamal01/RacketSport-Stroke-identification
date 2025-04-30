@@ -1,6 +1,5 @@
 import pandas as pd
 import ast
-import math
 
 # Load CSV file
 video = 3
@@ -70,18 +69,17 @@ def get_hips(keypoints_left, keypoints_right):
     
     return ll_hip, lr_hip, rl_hip, rr_hip
 
-def calculate_distance(midpoint, keypoint):    
-    keypoint_x = keypoint[0]
-    keypoint_y = keypoint[1]
+def get_midpoint(left_hips, right_hips):
+    midpoints = []
+    for i in range(len(left_hips)):
+        midpoint_x = (left_hips[i][0] + right_hips[i][0]) / 2
+        midpoint_y = (left_hips[i][1] + right_hips[i][1]) / 2
+        
+        midpoints.append([midpoint_x, midpoint_y])
     
-    midpoint_x = midpoint[0]
-    midpoint_y = midpoint[1]
-    
-    d = math.sqrt((midpoint_x - keypoint_x) ** 2 + (midpoint_y - keypoint_y) ** 2)
-    
-    return d
+    return midpoints
 
-def normalize(left_hip, right_hip, keypoint):    
+def normalize(left_hip, right_hip, keypoint):
     keypoint_x = keypoint[0]
     keypoint_y = keypoint[1]
     
@@ -89,6 +87,14 @@ def normalize(left_hip, right_hip, keypoint):
     midpoint_y = (left_hip[1] + right_hip[1]) / 2
     
     return [keypoint_x - midpoint_x, keypoint_y - midpoint_y]
+
+def normalize_midpoints(midpoints):
+    normalized_midpoints_list = []
+    for midpoint in midpoints:
+        normalized_midpoints_list.append([midpoint[0] - 0.5, midpoint[1] - 0.5])
+        
+    return normalized_midpoints_list
+    
 
 def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_right):
     left_player_distance_to_midpoint = []
@@ -100,8 +106,8 @@ def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_r
         right_player_left_hip = rl_hips[i]
         right_player_right_hip = rr_hips[i]
         
-        left_frame_list = []
-        right_frame_list = []
+        left_dist_frame_list = []
+        right_dist_frame_list = []
 
         for j in range(len(keypoints_left[i])):
             left_keypoint = keypoints_left[i][j]
@@ -110,18 +116,21 @@ def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_r
             left_norm = normalize(left_player_left_hip, left_player_right_hip, left_keypoint)
             right_norm = normalize(right_player_left_hip, right_player_right_hip, right_keypoint)
                         
-            left_frame_list.append(left_norm)
-            right_frame_list.append(right_norm)
+            left_dist_frame_list.append(left_norm)
+            right_dist_frame_list.append(right_norm)
         
-        left_player_distance_to_midpoint.append(left_frame_list)
-        right_player_distance_to_midpoint.append(right_frame_list)
+        # Populate top level lists
+        left_player_distance_to_midpoint.append(left_dist_frame_list)
+        right_player_distance_to_midpoint.append(right_dist_frame_list)
         
     
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
     
 paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
+left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
 left_distances, right_distances = get_distance(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
+left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints), normalize_midpoints(right_midpoints)
 
 # Prepare data for saving to CSV
 output_file = f"../../data/video_{video}/midpoints_video{video}.csv"
@@ -135,14 +144,14 @@ data = {
     'Keypoints left': keypoints_left,
     'Left score': left_score,
     'Left bbox': left_bboxes,
-    'Left player left hip': ll_hip,
-    'Left player right hip': lr_hip,
+    'Left player midpoint': left_midpoints,
+    'Left player normalized midpoint': left_normalized_midpoints,
     'Left distances': left_distances,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
     'Right bbox': right_bboxes,
-    'Right player left hip': rl_hip,
-    'Right player right hip': rr_hip,
+    'Right player midpoint': right_midpoints,
+    'Right player normalized midpoint': right_normalized_midpoints,
     'Right distances': right_distances
 }
 
