@@ -6,8 +6,6 @@ import os
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-plt.rcParams.update({'font.size': 22})
-sns.set_theme()
 
 joint_list = [
     'nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'left_shoulder',
@@ -250,6 +248,61 @@ def get_keypoints_and_labels_time_and_midpoints(video_number, mirror=False, simp
 
     return keypoint_list, labels
 
+def get_keypoints_and_labels_time_and_midpoints_and_table(video_number, mirror=False, simplify=False, player_to_get="both"):
+    keypoint_list = []
+    labels = []
+
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+
+        if mirror:
+            value = mirror_string(value)
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+        player = label_parts[0].capitalize()
+
+        if player != player_to_get and player_to_get != "both":
+            continue
+
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+        event_keypoints = None
+
+        for sequence_frame in sequence_frames:
+            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+            if event_row.empty:
+                continue  # skip missing data
+
+            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
+            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
+            sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"])
+            sequence_table = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
+            
+            key_and_mid_points = np.concatenate((sequence_keypoints, sequence_midpoint))
+            key_and_mid_points_and_tab = np.concatenate((key_and_mid_points, sequence_table))
+
+            if event_keypoints is None:
+                event_keypoints = key_and_mid_points_and_tab
+            else:
+                event_keypoints = np.concatenate((event_keypoints, key_and_mid_points_and_tab))
+
+        if event_keypoints is not None:
+            keypoint_list.append(event_keypoints)
+            labels.append(label)
+
+    return keypoint_list, labels
+
 
 def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
@@ -409,6 +462,8 @@ def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
         y_data (list): A list of labels
         title (str): The title for the plot
     """
+    plt.rcParams.update({'font.size': 22})
+    sns.set_theme()
     plot_height = 3 if simplify else 8
     
     plt.figure(figsize=(16, plot_height))
@@ -428,6 +483,7 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: boo
         pred_labels (list): The predicted labels.
         concatenate (bool): Gather the unique labels of test and prediction labels into one list of unique labels.
     """
+    plt.style.use('default')
     cm = confusion_matrix(test_labels, pred_labels)
     
     if concatenate:

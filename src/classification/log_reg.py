@@ -17,6 +17,7 @@ from utility_functions import (
     get_keypoints_and_labels,
     get_keypoints_and_labels_time,
     get_keypoints_and_labels_time_and_midpoints,
+    get_keypoints_and_labels_time_and_midpoints_and_table,
     get_keypoints_and_labels_raw,
     get_concat_and_labels
 )
@@ -62,6 +63,9 @@ def get_keypoints_time(videos, simplify):
 def get_keypoints_time_and_mid(videos, simplify):
     return process_videos(videos, simplify, get_keypoints_and_labels_time_and_midpoints)
 
+def get_keypoints_time_and_mid_and_tab(videos, simplify):
+    return process_videos(videos, simplify, get_keypoints_and_labels_time_and_midpoints_and_table)
+
 def get_concatenated(videos, simplify):
     return process_videos(videos, simplify, get_concat_and_labels)
 
@@ -78,6 +82,8 @@ def get_splits(type="embeddings"):
         all_data, all_labels = get_keypoints_time(videos, simplify)
     elif type == "keypoint_time_and_mid":
         all_data, all_labels = get_keypoints_time_and_mid(videos, simplify)
+    elif type == "keypoint_time_and_mid_and_tab":
+        all_data, all_labels = get_keypoints_time_and_mid_and_tab(videos, simplify)
     else:
         all_data, all_labels = get_concatenated(videos, simplify)
 
@@ -101,6 +107,8 @@ def get_splits(type="embeddings"):
             train_embeddings, train_labels = get_keypoints_time(train_videos, simplify)
         elif type == "keypoint_time_and_mid":
             train_embeddings, train_labels = get_keypoints_time_and_mid(train_videos, simplify)
+        elif type == "keypoint_time_and_mid_and_tab":
+            train_embeddings, train_labels = get_keypoints_time_and_mid_and_tab(videos, simplify)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -119,6 +127,8 @@ def get_splits(type="embeddings"):
             video3_embeddings, video3_labels = get_keypoints_time(test_videos, simplify)
         elif type == "keypoint_time_and_mid":
             video3_embeddings, video3_labels = get_keypoints_time_and_mid(test_videos, simplify)
+        elif type == "keypoint_time_and_mid_and_tab":
+            video3_embeddings, video3_labels = get_keypoints_time_and_mid_and_tab(test_videos, simplify)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
@@ -223,6 +233,10 @@ classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
 print("Classification on keypoints over time with midpoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+print("Classification on keypoints over time with midpoints along with table midpoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid_and_tab")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
 print("Classification on embeddings and keypoints")
