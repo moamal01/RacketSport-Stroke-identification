@@ -16,6 +16,7 @@ from utility_functions import (
     get_embeddings_and_labels,
     get_keypoints_and_labels,
     get_keypoints_and_labels_time,
+    get_keypoints_and_labels_time_and_midpoints,
     get_keypoints_and_labels_raw,
     get_concat_and_labels
 )
@@ -28,97 +29,55 @@ videos = [1, 2, 3]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 
-# Get embeddings and labels
+# Generic processing function
+def process_videos(videos, simplify, getter_func):
+    results = []
+    labels = []
+
+    for video in videos:
+        data, video_labels = getter_func(video, mirror=mirrored_only, simplify=simplify)
+        results.extend(data)
+        labels.extend(video_labels)
+
+        if add_mirrored and len(videos) > 1:
+            data, video_labels = getter_func(video, mirror=True, simplify=simplify)
+            results.extend(data)
+            labels.extend(video_labels)
+
+    return results, labels
+
+# Specific functions using the generic one
 def get_embeddings(videos, simplify):
-    embeddings = []
-    labels = []
-    
-    for video in videos:
-        video_embeddings, video_labels = get_embeddings_and_labels(video, mirror=mirrored_only, simplify=simplify)
-        embeddings.extend(video_embeddings)
-        labels.extend(video_labels)
-        
-        if add_mirrored and len(videos) > 1:
-            video_embeddings, video_labels = get_embeddings_and_labels(video, mirror=True, simplify=simplify)
-            embeddings.extend(video_embeddings)
-            labels.extend(video_labels)
-            
-    return embeddings, labels
-
-def get_keypoints(videos, simplify):
-    keypoints = []
-    labels = []
-    
-    for video in videos:
-        video_keypoints, video_labels = get_keypoints_and_labels(video, mirror=mirrored_only, simplify=simplify)
-        keypoints.extend(video_keypoints)
-        labels.extend(video_labels)
-    
-        if add_mirrored and len(videos) > 1:
-            video_keypoints, video_labels = get_keypoints_and_labels(video, mirror=True, simplify=simplify)
-            keypoints.extend(video_keypoints)
-            labels.extend(video_labels)
-    
-    return keypoints, labels
-
-def get_keypoints_time(videos, simplify):
-    keypoints = []
-    labels = []
-    
-    for video in videos:
-        video_keypoints, video_labels = get_keypoints_and_labels_time(video, mirror=mirrored_only, simplify=simplify)
-        keypoints.extend(video_keypoints)
-        labels.extend(video_labels)
-    
-        if add_mirrored and len(videos) > 1:
-            video_keypoints, video_labels = get_keypoints_and_labels_time(video, mirror=True, simplify=simplify)
-            keypoints.extend(video_keypoints)
-            labels.extend(video_labels)
-    
-    return keypoints, labels
+    return process_videos(videos, simplify, get_embeddings_and_labels)
 
 def get_keypoints_raw(videos, simplify):
-    keypoints = []
-    labels = []
-    
-    for video in videos:
-        video_keypoints, video_labels = get_keypoints_and_labels_raw(video, mirror=mirrored_only, simplify=simplify)
-        keypoints.extend(video_keypoints)
-        labels.extend(video_labels)
-    
-        if add_mirrored and len(videos) > 1:
-            video_keypoints, video_labels = get_keypoints_and_labels_raw(video, mirror=True, simplify=simplify)
-            keypoints.extend(video_keypoints)
-            labels.extend(video_labels)
-    
-    return keypoints, labels
+    return process_videos(videos, simplify, get_keypoints_and_labels_raw)
+
+def get_keypoints(videos, simplify):
+    return process_videos(videos, simplify, get_keypoints_and_labels)
+
+def get_keypoints_time(videos, simplify):
+    return process_videos(videos, simplify, get_keypoints_and_labels_time)
+
+def get_keypoints_time_and_mid(videos, simplify):
+    return process_videos(videos, simplify, get_keypoints_and_labels_time_and_midpoints)
 
 def get_concatenated(videos, simplify):
-    concatenated = []
-    labels = []
-    
-    for video in videos:
-        video_concatenated, video_labels = get_concat_and_labels(video, mirror=mirrored_only, simplify=simplify)
-        concatenated.extend(video_concatenated)
-        labels.extend(video_labels)
-        
-        if add_mirrored and len(videos) > 1:
-            video_concatenated, video_labels = get_concat_and_labels(video, mirror=True, simplify=simplify)
-            concatenated.extend(video_concatenated)
-            labels.extend(video_labels)
-    
-    return concatenated, labels
+    return process_videos(videos, simplify, get_concat_and_labels)
+
 
 # Combine all data
 def get_splits(type="embeddings"):
     if type == "embeddings":
         all_data, all_labels = get_embeddings(videos, simplify)
+    elif type == "keypoints_raw":
+        all_data, all_labels = get_keypoints_raw(videos, simplify)
     elif type == "keypoints":
         all_data, all_labels = get_keypoints(videos, simplify)
     elif type == "keypoints_time":
         all_data, all_labels = get_keypoints_time(videos, simplify)
-    elif type == "keypoints_raw":
-        all_data, all_labels = get_keypoints_raw(videos, simplify)
+    elif type == "keypoint_time_and_mid":
+        all_data, all_labels = get_keypoints_time_and_mid(videos, simplify)
     else:
         all_data, all_labels = get_concatenated(videos, simplify)
 
@@ -134,12 +93,14 @@ def get_splits(type="embeddings"):
     if test_on_one:
         if type == "embeddings":
             train_embeddings, train_labels = get_embeddings(train_videos, simplify)
+        elif type == "keypoints_raw":
+            train_embeddings, train_labels = get_keypoints_raw(train_videos, simplify)
         elif type == "keypoints":
             train_embeddings, train_labels = get_keypoints(train_videos, simplify)
         elif type == "keypoints_time":
             train_embeddings, train_labels = get_keypoints_time(train_videos, simplify)
-        elif type == "keypoints_raw":
-            train_embeddings, train_labels = get_keypoints_raw(train_videos, simplify)
+        elif type == "keypoint_time_and_mid":
+            train_embeddings, train_labels = get_keypoints_time_and_mid(train_videos, simplify)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -150,12 +111,14 @@ def get_splits(type="embeddings"):
 
         if type == "embeddings":
             video3_embeddings, video3_labels = get_embeddings(test_videos, simplify)
+        elif type == "keypoints_raw":
+            video3_embeddings, video3_labels = get_keypoints_raw(test_videos, simplify)
         elif type == "keypoints":
             video3_embeddings, video3_labels = get_keypoints(test_videos, simplify)
         elif type == "keypoints_time":
             video3_embeddings, video3_labels = get_keypoints_time(test_videos, simplify)
-        elif type == "keypoints_raw":
-            video3_embeddings, video3_labels = get_keypoints_raw(test_videos, simplify)
+        elif type == "keypoint_time_and_mid":
+            video3_embeddings, video3_labels = get_keypoints_time_and_mid(test_videos, simplify)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
@@ -256,6 +219,10 @@ classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
 print("Classification on keypoints over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+print("Classification on keypoints over time with midpoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
 print("Classification on embeddings and keypoints")

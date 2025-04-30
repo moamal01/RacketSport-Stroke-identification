@@ -197,6 +197,59 @@ def get_keypoints_and_labels_time(video_number, mirror=False, simplify=False, pl
 
     return keypoint_list, labels
 
+def get_keypoints_and_labels_time_and_midpoints(video_number, mirror=False, simplify=False, player_to_get="both"):
+    keypoint_list = []
+    labels = []
+
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+
+        if mirror:
+            value = mirror_string(value)
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+        player = label_parts[0].capitalize()
+
+        if player != player_to_get and player_to_get != "both":
+            continue
+
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+        event_keypoints = None
+
+        for sequence_frame in sequence_frames:
+            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+            if event_row.empty:
+                continue  # skip missing data
+
+            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
+            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
+            sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"]) # No need for flattening
+            
+            key_and_mid_points = np.concatenate((sequence_keypoints, sequence_midpoint))
+
+            if event_keypoints is None:
+                event_keypoints = key_and_mid_points
+            else:
+                event_keypoints = np.concatenate((event_keypoints, key_and_mid_points))
+
+        if event_keypoints is not None:
+            keypoint_list.append(event_keypoints)
+            labels.append(label)
+
+    return keypoint_list, labels
+
 
 def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
