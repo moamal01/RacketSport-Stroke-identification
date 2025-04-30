@@ -29,7 +29,7 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 3
+video = 1
 frame_range = 10
 frame_gap = 2
 start_at = 0
