@@ -213,7 +213,7 @@ def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, pla
     labels = []
     
     timestamps = get_timestamps(video_number)
-    keypoints_table = f"midpoints_video{video_number}.csv"
+    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
     
     for frame, value in timestamps.items():

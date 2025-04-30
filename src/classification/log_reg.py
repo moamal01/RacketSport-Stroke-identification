@@ -16,6 +16,7 @@ from utility_functions import (
     get_embeddings_and_labels,
     get_keypoints_and_labels,
     get_keypoints_and_labels_time,
+    get_keypoints_and_labels_raw,
     get_concat_and_labels
 )
 
@@ -76,6 +77,22 @@ def get_keypoints_time(videos, simplify):
     
     return keypoints, labels
 
+def get_keypoints_raw(videos, simplify):
+    keypoints = []
+    labels = []
+    
+    for video in videos:
+        video_keypoints, video_labels = get_keypoints_and_labels_raw(video, mirror=mirrored_only, simplify=simplify)
+        keypoints.extend(video_keypoints)
+        labels.extend(video_labels)
+    
+        if add_mirrored and len(videos) > 1:
+            video_keypoints, video_labels = get_keypoints_and_labels_raw(video, mirror=True, simplify=simplify)
+            keypoints.extend(video_keypoints)
+            labels.extend(video_labels)
+    
+    return keypoints, labels
+
 def get_concatenated(videos, simplify):
     concatenated = []
     labels = []
@@ -100,6 +117,8 @@ def get_splits(type="embeddings"):
         all_data, all_labels = get_keypoints(videos, simplify)
     elif type == "keypoints_time":
         all_data, all_labels = get_keypoints_time(videos, simplify)
+    elif type == "keypoints_raw":
+        all_data, all_labels = get_keypoints_raw(videos, simplify)
     else:
         all_data, all_labels = get_concatenated(videos, simplify)
 
@@ -119,6 +138,8 @@ def get_splits(type="embeddings"):
             train_embeddings, train_labels = get_keypoints(train_videos, simplify)
         elif type == "keypoints_time":
             train_embeddings, train_labels = get_keypoints_time(train_videos, simplify)
+        elif type == "keypoints_raw":
+            train_embeddings, train_labels = get_keypoints_raw(train_videos, simplify)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -133,6 +154,8 @@ def get_splits(type="embeddings"):
             video3_embeddings, video3_labels = get_keypoints(test_videos, simplify)
         elif type == "keypoints_time":
             video3_embeddings, video3_labels = get_keypoints_time(test_videos, simplify)
+        elif type == "keypoints_raw":
+            video3_embeddings, video3_labels = get_keypoints_raw(test_videos, simplify)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
@@ -219,15 +242,23 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
     plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
     
+print("Classification on embeddings")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
+print("Classification on keypoints raw")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_raw")
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+print("Classification on keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
+print("Classification on keypoints over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
+print("Classification on embeddings and keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
