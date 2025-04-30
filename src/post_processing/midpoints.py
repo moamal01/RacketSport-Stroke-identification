@@ -2,14 +2,20 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 3
+video = 1
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
 mirrored = False
 
-TABLE_MIDPOINT = (0.5, 0.5)
+def get_table_midpoints(df):
+    table_midpoints = []
+    for idx, row in df.iterrows():
+        table_boxes_row = ast.literal_eval(row["Table boxes"])
+        table_midpoints.append([(table_boxes_row[0][0] + table_boxes_row[0][2]) / 2, table_boxes_row[0][1]])
 
-def compute_player_midpoints(df):
+    return table_midpoints
+
+def compute_player_midpoints(df, table_midpoints):
     paths = []
     event_frames = []
     sequence_frames = []
@@ -21,14 +27,11 @@ def compute_player_midpoints(df):
     right_bboxes = []
     
     for idx, row in df.iterrows():
-        if isinstance(row["Keypoints"], str):
-            keypoints_row = ast.literal_eval(row["Keypoints"])
-
-        if isinstance(row["People scores"], str):
-            scores_row = ast.literal_eval(row["People scores"])
-            
-        if isinstance(row["People boxes"], str):
-            bboxes_row = ast.literal_eval(row["People boxes"])
+        keypoints_row = ast.literal_eval(row["Keypoints"])
+        scores_row = ast.literal_eval(row["People scores"])
+        people_boxes_row = ast.literal_eval(row["People boxes"])
+        
+        TABLE_MIDPOINT = table_midpoints[idx]
 
         path = row["Path"]
         event_frame = row["Event frame"]
@@ -40,12 +43,12 @@ def compute_player_midpoints(df):
             if keypoints[11][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
-                left_bboxes.append(bboxes_row[i])
+                left_bboxes.append(people_boxes_row[i])
                 added = True
             elif keypoints[11][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
                 keypoints_right.append(keypoints)
                 right_score.append(scores_row[i])
-                right_bboxes.append(bboxes_row[i])
+                right_bboxes.append(people_boxes_row[i])
                 added = True
         
         if added:
@@ -88,10 +91,10 @@ def normalize(left_hip, right_hip, keypoint):
     
     return [keypoint_x - midpoint_x, keypoint_y - midpoint_y]
 
-def normalize_midpoints(midpoints):
+def normalize_midpoints(midpoints, table_midpoints):
     normalized_midpoints_list = []
-    for midpoint in midpoints:
-        normalized_midpoints_list.append([midpoint[0] - 0.5, midpoint[1] - 0.5])
+    for i in range(len(midpoints)):
+        normalized_midpoints_list.append([midpoints[i][0] - table_midpoints[i][0], midpoints[i][1] - table_midpoints[i][1]])
         
     return normalized_midpoints_list
     
@@ -125,12 +128,13 @@ def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_r
         
     
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
-    
-paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df)
+
+table_midpoints = get_table_midpoints(df)
+paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df, table_midpoints)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
 left_distances, right_distances = get_distance(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
-left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints), normalize_midpoints(right_midpoints)
+left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints, table_midpoints), normalize_midpoints(right_midpoints, table_midpoints)
 
 # Prepare data for saving to CSV
 output_file = f"../../data/video_{video}/midpoints_video{video}.csv"
@@ -141,6 +145,7 @@ data = {
     'Path': paths,
     'Event frame': event_frames,
     'Sequence frame': sequence_frames,
+    'Table midpoint': table_midpoints, 
     'Keypoints left': keypoints_left,
     'Left score': left_score,
     'Left bbox': left_bboxes,
