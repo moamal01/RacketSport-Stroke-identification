@@ -118,7 +118,7 @@ def get_splits(type="embeddings"):
         elif type == "keypoints":
             train_embeddings, train_labels = get_keypoints(train_videos, simplify)
         elif type == "keypoints_time":
-            train_embeddings, train_labels = get_keypoints_time(videos, simplify)
+            train_embeddings, train_labels = get_keypoints_time(train_videos, simplify)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -132,7 +132,7 @@ def get_splits(type="embeddings"):
         elif type == "keypoints":
             video3_embeddings, video3_labels = get_keypoints(test_videos, simplify)
         elif type == "keypoints_time":
-            video3_embeddings, video3_labels = get_keypoints_time(videos, simplify)
+            video3_embeddings, video3_labels = get_keypoints_time(test_videos, simplify)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
