@@ -91,9 +91,10 @@ def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player
             else:
                 label = f"{player}_{label_parts[1]}"
 
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-        if os.path.exists(file_path):
-            features.append(np.load(file_path))
+        embeddings = get_embeddings(video_number, frame, player, True, mirror)
+        
+        if embeddings is not None:
+            features.append(embeddings)
             labels.append(label)
     
     return features, labels
@@ -137,10 +138,7 @@ def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_
             else:
                 label = f"{player}_{label_parts[1]}"
 
-        event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
-        keypoint = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-        keypoint = np.array(keypoint)[:, :2]
-        keypoint_list.append(keypoint.flatten())
+        keypoint_list.append(compose_features(df, frame, 0, video_number, player, None))
         labels.append(label)
             
     return keypoint_list, labels
@@ -174,23 +172,13 @@ def get_keypoints_and_labels_time(video_number, mirror=False, simplify=False, pl
                 label = f"{player}_{label_parts[1]}"
 
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        event_keypoints = None
+        features = None
 
         for sequence_frame in sequence_frames:
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
-            if event_row.empty:
-                continue  # skip missing data
+            features = compose_features(df, frame, sequence_frame, video_number, player, features)
 
-            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
-
-            if event_keypoints is None:
-                event_keypoints = sequence_keypoints
-            else:
-                event_keypoints = np.concatenate((event_keypoints, sequence_keypoints))
-
-        if event_keypoints is not None:
-            keypoint_list.append(event_keypoints)
+        if features is not None:
+            keypoint_list.append(features)
             labels.append(label)
 
     return keypoint_list, labels
@@ -224,26 +212,13 @@ def get_keypoints_and_labels_time_and_midpoints(video_number, mirror=False, simp
                 label = f"{player}_{label_parts[1]}"
 
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        event_keypoints = None
+        features = None
 
         for sequence_frame in sequence_frames:
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
-            if event_row.empty:
-                continue  # skip missing data
+            features = compose_features(df, frame, sequence_frame, video_number, player, features, True)
 
-            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
-            sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"]) # No need for flattening
-            
-            key_and_mid_points = np.concatenate((sequence_keypoints, sequence_midpoint))
-
-            if event_keypoints is None:
-                event_keypoints = key_and_mid_points
-            else:
-                event_keypoints = np.concatenate((event_keypoints, key_and_mid_points))
-
-        if event_keypoints is not None:
-            keypoint_list.append(event_keypoints)
+        if features is not None:
+            keypoint_list.append(features)
             labels.append(label)
 
     return keypoint_list, labels
@@ -277,28 +252,13 @@ def get_keypoints_and_labels_time_and_midpoints_and_table(video_number, mirror=F
                 label = f"{player}_{label_parts[1]}"
 
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        event_keypoints = None
+        features = None
 
         for sequence_frame in sequence_frames:
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
-            if event_row.empty:
-                continue  # skip missing data
+            features = compose_features(df, frame, sequence_frame, video_number, player, features, True, True)
 
-            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
-            sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"])
-            sequence_table = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
-            
-            key_and_mid_points = np.concatenate((sequence_keypoints, sequence_midpoint))
-            key_and_mid_points_and_tab = np.concatenate((key_and_mid_points, sequence_table))
-
-            if event_keypoints is None:
-                event_keypoints = key_and_mid_points_and_tab
-            else:
-                event_keypoints = np.concatenate((event_keypoints, key_and_mid_points_and_tab))
-
-        if event_keypoints is not None:
-            keypoint_list.append(event_keypoints)
+        if features is not None:
+            keypoint_list.append(features)
             labels.append(label)
 
     return keypoint_list, labels
@@ -334,38 +294,13 @@ def get_everything(video_number, mirror=False, simplify=False, player_to_get="bo
                 label = f"{player}_{label_parts[1]}"
 
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        event_keypoints = None
+        features = None
 
         for sequence_frame in sequence_frames:
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
-            if event_row.empty:
-                continue  # skip missing data
-            
-            file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-            if not os.path.exists(file_path):
-                continue
-            
-            if mirror:
-                value = mirror_string(value)
-                mirrored = "m"
+            features = compose_features(df, frame, sequence_frame, video_number, player, features, True, True, True)
 
-            sequence_keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-            sequence_keypoints = np.array(sequence_keypoints)[:, :2].flatten()
-            sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"])
-            sequence_table = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
-            embedding = np.load(file_path)
-            
-            key_and_mid_points = np.concatenate((sequence_keypoints, sequence_midpoint))
-            key_and_mid_points_and_tab = np.concatenate((key_and_mid_points, sequence_table))
-            eveything = np.concatenate((key_and_mid_points_and_tab, embedding.squeeze()))
-
-            if event_keypoints is None:
-                event_keypoints = eveything
-            else:
-                event_keypoints = np.concatenate((event_keypoints, eveything))
-
-        if event_keypoints is not None:
-            keypoint_list.append(event_keypoints)
+        if features is not None:
+            keypoint_list.append(features)
             labels.append(label)
 
     return keypoint_list, labels
@@ -579,9 +514,28 @@ def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player
             
     return concat_list, labels
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):        
+def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
+    mirrored = ""
+    if mirror:
+        value = mirror_string(value)
+        mirrored = "m"
+
+    if single_player:
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+        if not os.path.exists(file_path):
+            return None # Is this the right thing to do?
+    else:
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
+        file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
+        if not os.path.exists(file_path) or not os.path.exists(file_path2):
+            return None # Is this the right thing to do?
+
+    return np.load(file_path).squeeze()
+    
+
+def compose_features(df, frame, sequence_frame, video_number, player, features, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
-    if event_row.empty:
+    if (event_row.empty and add_midpoints) or (event_row.empty and add_table):
         return
 
     keypoints = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} distances"])
@@ -601,18 +555,7 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
         features = np.concatenate((features, player_midpoint))
 
     if add_embeddings:
-        mirrored = ""
-        if mirror:
-            value = mirror_string(value)
-            mirrored = "m"
-
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
-        file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
-        if not os.path.exists(file_path) or not os.path.exists(file_path2):
-            return None
-
-        embedding = np.load(file_path)
-        features = np.concatenate((features, embedding.squeeze())) 
+        features = np.concatenate((features, get_embeddings(video_number, frame))) 
     
     return features
 
