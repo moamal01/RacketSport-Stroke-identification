@@ -411,6 +411,9 @@ def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, pla
 
         event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
         keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
+        sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"])
+        
+        
         keypoint = np.array(keypoint)[:, :2]
         keypoint_list.append(keypoint.flatten())
         labels.append(label)
@@ -470,6 +473,61 @@ def get_concat_and_labels(video_number, mirror=False, simplify=False, player_to_
     return concat_list, labels
 
 
+# Keypoints with midpoints. No time and embeddings. # Not finished
+def get_concat_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
+    """
+
+    Args:
+        timestamps (_type_): The dictionary containing stroke timestamps and labels
+        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
+
+    Returns:
+        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
+        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
+    """
+    concat_list = []
+    labels = []
+    mirrored = ""
+    
+    timestamps = get_timestamps(video_number)
+    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+    
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+        
+        if mirror:
+            value = mirror_string(value)
+            mirrored = "m"
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+        player = label_parts[0].capitalize()
+        
+        if player != player_to_get and player_to_get != "both":
+            continue
+        
+        if simplify:
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+        if os.path.exists(file_path):
+            embedding = np.load(file_path)
+            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
+            keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
+            keypoints = np.array(keypoints)[:, :2]
+            concat_list.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
+            labels.append(label)
+            
+    return concat_list, labels
+
+# Keypoints with midpoints and tabble midpoints. No time and embeddings
+
+
 def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
     """
 
@@ -520,6 +578,87 @@ def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player
             labels.append(label)
             
     return concat_list, labels
+
+def compose_features(df, frame, sequence_frame, video_number, player, features, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):        
+    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+    if event_row.empty:
+        return
+
+    keypoints = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} distances"])
+    keypoints = np.array(keypoints)[:, :2].flatten()
+    
+    if features is None:
+        features = keypoints
+    else:
+        features = np.concatenate((features, keypoints)) 
+        
+    if add_table:
+        table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
+        features = np.concatenate((features, table_midpoint))  
+    
+    if add_midpoints:
+        player_midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
+        features = np.concatenate((features, player_midpoint))
+
+    if add_embeddings:
+        mirrored = ""
+        if mirror:
+            value = mirror_string(value)
+            mirrored = "m"
+
+        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
+        file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
+        if not os.path.exists(file_path) or not os.path.exists(file_path2):
+            return None
+
+        embedding = np.load(file_path)
+        features = np.concatenate((features, embedding.squeeze())) 
+    
+    return features
+
+
+def get_features(video_number, simplify=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror= False):
+    features_list = []
+    labels = []
+
+    timestamps = get_timestamps(video_number)
+    data_path = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(data_path)
+
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+
+        if mirror:
+            value = mirror_string(value)
+
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+
+        # Special simplification for serve label
+        if simplify:
+            player = label_parts[0]
+            if "serve" in label:
+                label = f"{player}_{label_parts[2]}"
+            else:
+                label = f"{player}_{label_parts[1]}"
+
+        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+        features = None
+
+        # Left player features
+        for sequence_frame in sequence_frames:            
+            features = compose_features(df, frame, sequence_frame, video_number, "left", features, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
+        
+        # Right player features
+        for sequence_frame in sequence_frames:
+            features = compose_features(df, frame, sequence_frame, video_number, "right", features, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
+        
+        if features is not None:
+            labels.append(label)
+            features_list.append(features)
+
+    return features_list, labels
 
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:

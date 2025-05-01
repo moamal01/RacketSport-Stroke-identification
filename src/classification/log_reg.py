@@ -21,9 +21,11 @@ from utility_functions import (
     get_keypoints_and_labels_raw,
     get_concat_and_labels,
     get_concat_and_labels_raw,
-    get_everything
+    get_everything,
+    get_features,
 )
 
+per_player_classifier = False
 test_on_one = True
 simplify = True
 mirrored_only = False
@@ -77,9 +79,19 @@ def get_keypoints_time_and_mid_and_tab(videos, simplify):
 def get_every_feature(videos, simplify):
     return process_videos(videos, simplify, get_everything)
 
+def get_specified_features(videos, simplify, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
+    results = []
+    labels = []
+    
+    for video in videos:
+        data, video_labels = get_features(video, simplify=simplify, add_midpoints=add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirrored_only)
+        results.extend(data)
+        labels.extend(video_labels)
+        
+    return results, labels
 
 # Combine all data
-def get_splits(type="embeddings"):
+def get_splits(type, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
     if type == "embeddings":
         all_data, all_labels = get_embeddings(videos, simplify)
     elif type == "keypoints_raw":
@@ -96,6 +108,8 @@ def get_splits(type="embeddings"):
         all_data, all_labels = get_keypoints_time_and_mid_and_tab(videos, simplify)
     elif type == "everything":
         all_data, all_labels = get_every_feature(videos, simplify)
+    elif type == "specify":
+        all_data, all_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
     else:
         all_data, all_labels = get_concatenated(videos, simplify)
 
@@ -125,6 +139,8 @@ def get_splits(type="embeddings"):
             train_embeddings, train_labels = get_keypoints_time_and_mid_and_tab(videos, simplify)
         elif type == "everything":
             train_embeddings, train_labels = get_every_feature(videos, simplify)
+        elif type == "specify":
+            train_embeddings, train_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -149,6 +165,8 @@ def get_splits(type="embeddings"):
             video3_embeddings, video3_labels = get_keypoints_time_and_mid_and_tab(test_videos, simplify)
         elif type == "everything":
             video3_embeddings, video3_labels = get_every_feature(test_videos, simplify)
+        elif type == "specify":
+            video3_embeddings, video3_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
@@ -235,39 +253,57 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
     plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
     
-print("Classification on embeddings")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
+if per_player_classifier:
+    print("Classification on embeddings")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints raw")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_raw")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on embeddings and raw keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat_raw")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on embeddings and keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time with midpoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time with midpoints along with table midpoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid_and_tab")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on all features")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("everything")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+
+print("Specify keypoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify")
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Classification on keypoints raw")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_raw")
+print("Specify keypoints, midpoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Classification on embeddings and raw keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat_raw")
+print("Specify keypoints, midpoints and table midpoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True, True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Classification on keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Classification on embeddings and keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Classification on keypoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Classification on keypoints over time with midpoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Classification on keypoints over time with midpoints along with table midpoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid_and_tab")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Classification on all features")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("everything")
+print("Specify keypoints, midpoints, table midpoints, and embeddings")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True, True, True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
