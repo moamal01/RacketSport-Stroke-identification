@@ -51,7 +51,10 @@ def get_timestamps(video_number):
 
     return {k: v for k, v in data.items() if v not in excluded_values}
 
-def get_player_and_label(value, player_to_get, simplify):
+def get_player_and_label(value, player_to_get, simplify, mirror=False):
+    if mirror:
+            value = mirror_string(value)
+
     label = value.split(" ")[0]
     label_parts = label.split("_")
     player = label_parts[0]
@@ -86,9 +89,6 @@ def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player
     for frame, value in timestamps.items():
         if value in {"other", "otherotherother"}:
             continue
-        
-        if mirror:
-            value = mirror_string(value)
 
         player, label = get_player_and_label(value, player_to_get, simplify)
         embeddings = get_embeddings(video_number, frame, player, True, mirror)
@@ -100,9 +100,10 @@ def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player
     return features, labels
 
 
-def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
+def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_midpoints=False,
+                             add_table=False, add_embeddings=False, mirror=False,
+                             simplify=False, player_to_get="both") -> list | list:
     """
-
     Args:
         timestamps (_type_): The dictionary containing stroke timestamps and labels
         mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
@@ -113,27 +114,6 @@ def get_keypoints_and_labels(video_number, mirror=False, simplify=False, player_
     """
     keypoint_list = []
     labels = []
-    
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-    
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-        
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        keypoint_list.append(compose_features(df, frame, 0, video_number, player, None))
-        labels.append(label)
-            
-    return keypoint_list, labels
-
-def get_keypoints_and_labels_time(video_number, mirror=False, simplify=False, player_to_get="both"):
-    keypoint_list = []
-    labels = []
 
     timestamps = get_timestamps(video_number)
     keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
@@ -143,267 +123,18 @@ def get_keypoints_and_labels_time(video_number, mirror=False, simplify=False, pl
         if value in {"other", "otherotherother"}:
             continue
 
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+        player, label = get_player_and_label(value, player_to_get, simplify, mirror)
         features = None
-
+        
         for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features)
-
+            features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_midpoints, add_table, add_embeddings)
+            
         if features is not None:
             keypoint_list.append(features)
             labels.append(label)
-
-    return keypoint_list, labels
-
-def get_keypoints_and_labels_time_and_midpoints(video_number, mirror=False, simplify=False, player_to_get="both"):
-    keypoint_list = []
-    labels = []
-
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        features = None
-
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features, True)
-
-        if features is not None:
-            keypoint_list.append(features)
-            labels.append(label)
-
-    return keypoint_list, labels
-
-def get_keypoints_and_labels_time_and_midpoints_and_table(video_number, mirror=False, simplify=False, player_to_get="both"):
-    keypoint_list = []
-    labels = []
-
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        features = None
-
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features, True, True)
-
-        if features is not None:
-            keypoint_list.append(features)
-            labels.append(label)
-
-    return keypoint_list, labels
-
-
-def get_everything(video_number, mirror=False, simplify=False, player_to_get="both"):
-    keypoint_list = []
-    labels = []
-
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        features = None
-
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features, True, True, True)
-
-        if features is not None:
-            keypoint_list.append(features)
-            labels.append(label)
-
-    return keypoint_list, labels
-
-
-def get_keypoints_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
-    """
-
-    Args:
-        timestamps (_type_): The dictionary containing stroke timestamps and labels
-        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
-
-    Returns:
-        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
-        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
-    """
-    keypoint_list = []
-    labels = []
-    
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-    
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-        
-        if mirror:
-            value = mirror_string(value)
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
-        keypoint = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-        #sequence_midpoint = ast.literal_eval(event_row.iloc[0][f"{player} player midpoint"])
-        
-        
-        keypoint = np.array(keypoint)[:, :2]
-        keypoint_list.append(keypoint.flatten())
-        labels.append(label)
             
     return keypoint_list, labels
 
-
-def get_concat_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
-    """
-
-    Args:
-        timestamps (_type_): The dictionary containing stroke timestamps and labels
-        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
-
-    Returns:
-        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
-        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
-    """
-    concat_list = []
-    labels = []
-    mirrored = ""
-    
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-    
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-        
-        if mirror:
-            value = mirror_string(value)
-            mirrored = "m"
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-        if os.path.exists(file_path):
-            embedding = np.load(file_path)
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
-            keypoints = ast.literal_eval(event_row.iloc[0][f"{player} distances"])
-            keypoints = np.array(keypoints)[:, :2]
-            concat_list.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
-            labels.append(label)
-            
-    return concat_list, labels
-
-
-# Keypoints with midpoints. No time and embeddings. # Not finished
-def get_concat_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
-    """
-
-    Args:
-        timestamps (_type_): The dictionary containing stroke timestamps and labels
-        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
-
-    Returns:
-        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
-        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
-    """
-    concat_list = []
-    labels = []
-    mirrored = ""
-    
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-    
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-        
-        if mirror:
-            value = mirror_string(value)
-            mirrored = "m"
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-        if os.path.exists(file_path):
-            embedding = np.load(file_path)
-            event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
-            keypoints = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} distances"])
-            keypoints = np.array(keypoints)[:, :2]
-            concat_list.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
-            labels.append(label)
-            
-    return concat_list, labels
-
-# Keypoints with midpoints and tabble midpoints. No time and embeddings
-
-
-def get_concat_and_labels_raw(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
-    """
-
-    Args:
-        timestamps (_type_): The dictionary containing stroke timestamps and labels
-        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
-
-    Returns:
-        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
-        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
-    """
-    concat_list = []
-    labels = []
-    mirrored = ""
-    
-    timestamps = get_timestamps(video_number)
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(keypoints_table)
-    
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-        
-        if mirror:
-            value = mirror_string(value)
-            mirrored = "m"
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-        if os.path.exists(file_path):
-            embedding = np.load(file_path)
-            event_row = df.loc[df['Event frame'] == int(frame)]
-            keypoints = ast.literal_eval(event_row.iloc[0][f"Keypoints {player}"])
-            keypoints = np.array(keypoints)[:, :2]
-            concat_list.append(np.concatenate([embedding.squeeze(), keypoints.flatten()]))
-            labels.append(label)
-            
-    return concat_list, labels
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
     mirrored = "m" if mirror else ""
@@ -421,12 +152,14 @@ def get_embeddings(video_number, frame, player=None, single_player=False, mirror
     return np.load(file_path_of_interest).squeeze()
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
+    
+    column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
 
-    keypoints = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} distances"])
+    keypoints = ast.literal_eval(event_row.iloc[0][column])
     keypoints = np.array(keypoints)[:, :2].flatten()
     
     if features is None:

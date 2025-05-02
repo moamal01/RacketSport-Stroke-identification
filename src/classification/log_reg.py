@@ -15,13 +15,6 @@ from utility_functions import (
     plot_confusion_matrix,
     get_embeddings_and_labels,
     get_keypoints_and_labels,
-    get_keypoints_and_labels_time,
-    get_keypoints_and_labels_time_and_midpoints,
-    get_keypoints_and_labels_time_and_midpoints_and_table,
-    get_keypoints_and_labels_raw,
-    get_concat_and_labels,
-    get_concat_and_labels_raw,
-    get_everything,
     get_features,
 )
 
@@ -51,33 +44,49 @@ def process_videos(videos, simplify, getter_func):
 
     return results, labels
 
+def process_videos2(videos, sequence, raw, add_midpoints, add_table, add_embeddings, simplify, getter_func):
+    results = []
+    labels = []
+
+    for video in videos:
+        data, video_labels = getter_func(video, sequence, raw, add_midpoints, add_table, add_embeddings, mirror=mirrored_only, simplify=simplify)
+        results.extend(data)
+        labels.extend(video_labels)
+
+        if add_mirrored and len(videos) > 1:
+            data, video_labels = getter_func(video, sequence, raw, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify)
+            results.extend(data)
+            labels.extend(video_labels)
+
+    return results, labels
+
 # Specific functions using the generic one
 def get_embeddings(videos, simplify):
     return process_videos(videos, simplify, get_embeddings_and_labels)
 
 def get_keypoints_raw(videos, simplify):
-    return process_videos(videos, simplify, get_keypoints_and_labels_raw)
+    return process_videos2(videos, [0], True, False, False, False, simplify, get_keypoints_and_labels)
 
 def get_concatenated_raw(videos, simplify):
-    return process_videos(videos, simplify, get_concat_and_labels_raw)
+    return process_videos2(videos, [0], True, False, False, True, simplify, get_keypoints_and_labels)
 
 def get_keypoints(videos, simplify):
-    return process_videos(videos, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], False, False, False, False, simplify, get_keypoints_and_labels)
 
 def get_concatenated(videos, simplify):
-    return process_videos(videos, simplify, get_concat_and_labels)
+    return process_videos2(videos, [0], False, False, False, True, simplify, get_keypoints_and_labels)
 
 def get_keypoints_time(videos, simplify):
-    return process_videos(videos, simplify, get_keypoints_and_labels_time)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, False, False, False, simplify, get_keypoints_and_labels)
 
 def get_keypoints_time_and_mid(videos, simplify):
-    return process_videos(videos, simplify, get_keypoints_and_labels_time_and_midpoints)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, False, False, simplify, get_keypoints_and_labels)
 
 def get_keypoints_time_and_mid_and_tab(videos, simplify):
-    return process_videos(videos, simplify, get_keypoints_and_labels_time_and_midpoints_and_table)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, False, simplify, get_keypoints_and_labels)
 
 def get_every_feature(videos, simplify):
-    return process_videos(videos, simplify, get_everything)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, simplify, get_keypoints_and_labels)
 
 def get_specified_features(videos, simplify, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
     results = []
