@@ -94,7 +94,7 @@
 ```
 
 ## Order of Execution
-1. Get keypoints and shit
+1. Get keypoints
 2. Combine the tables
 3. Normalize
 4. Find midpoints. Can also find mirrored

@@ -25,7 +25,7 @@ from utility_functions import (
     get_features,
 )
 
-per_player_classifier = True
+per_player_classifiers = True
 test_on_one = True
 simplify = True
 mirrored_only = False
@@ -212,10 +212,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Print stats
     print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
 
-    plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution", simplify=simplify)
-    if y_val is not None:
-        plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution", simplify=simplify)
-    plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution", simplify=simplify)
+    #plot_label_distribution(label_encoder.inverse_transform(y_train), "Train Set Label Distribution", simplify=simplify)
+    #if y_val is not None:
+    #    plot_label_distribution(label_encoder.inverse_transform(y_val), "Validation Set Label Distribution", simplify=simplify)
+    #plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution", simplify=simplify)
 
     # Train Logistic Regression
     clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
@@ -251,33 +251,33 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Confusion Matrix
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
-    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
     
-if per_player_classifier:
+if per_player_classifiers:
     print("Classification on embeddings")
     X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
-    # print("Classification on keypoints raw")
-    # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_raw")
-    # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    # print("-----------")
-    # print("Classification on embeddings and raw keypoints")
-    # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat_raw")
-    # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    # print("-----------")
+    print("Classification on keypoints raw")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_raw")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on embeddings and raw keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat_raw")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
     print("Classification on keypoints")
     X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints")
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
-    # print("Classification on embeddings and keypoints")
-    # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
-    # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    # print("-----------")
-    # print("Classification on keypoints over time")
-    # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
-    # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    # print("-----------")
+    print("Classification on embeddings and keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("concat")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoints_time")
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
     print("Classification on keypoints over time with midpoints")
     X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("keypoint_time_and_mid")
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
