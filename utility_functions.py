@@ -71,7 +71,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_keypoints=False, add_midpoints=False,
+def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, add_midpoints=False,
                              add_table=False, add_embeddings=False, mirror=False,
                              simplify=False, long_edition=False, player_to_get="both") -> list | list:
     """
@@ -114,36 +114,6 @@ def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_keypo
             labels.append(label)
             
     return keypoint_list, labels
-
-
-def get_features(video_number, sequence_frames, simplify=False, add_keypoints=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror= False):
-    features_list = []
-    labels = []
-
-    timestamps = get_timestamps(video_number)
-    data_path = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(data_path)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        _, label = get_player_and_label(value, "both", simplify, mirror)
-        features = None
-
-        # Left player features
-        for sequence_frame in sequence_frames:            
-            features = compose_features(df, frame, sequence_frame, video_number, "left", features, False,  add_keypoints, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
-        
-        # Right player features
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, "right", features, False, add_keypoints, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
-        
-        if features is not None:
-            labels.append(label)
-            features_list.append(features)
-
-    return features_list, labels
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):

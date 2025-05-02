@@ -4,7 +4,7 @@ import umap
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import seaborn as sns
-from utility_functions import get_embeddings_and_labels, get_keypoints_and_labels, get_concat_and_labels, plot_umap
+from utility_functions import get_embeddings_and_labels, get_features, get_concat_and_labels, plot_umap
 plt.rcParams.update({'font.size': 22})
 sns.set_theme()
 
@@ -36,12 +36,12 @@ def process_video_data(video_numbers, get_data_function, all_data_list, all_labe
         all_labels_list.extend(labels)
 
 process_video_data(video_numbers, get_embeddings_and_labels, all_embeddings, all_embedding_labels, player, mirror=mirror, simplify=simplify)
-process_video_data(video_numbers, get_keypoints_and_labels, all_keypoints, all_keypoints_labels, player, mirror=mirror, simplify=simplify)
+process_video_data(video_numbers, get_features, all_keypoints, all_keypoints_labels, player, mirror=mirror, simplify=simplify)
 process_video_data(video_numbers, get_concat_and_labels, concatenated_featues, concatenated_labels, player, mirror=mirror, simplify=simplify)
 
 if add_mirror:
     process_video_data(video_numbers, get_embeddings_and_labels, all_embeddings, all_embedding_labels, player, mirror=True, simplify=simplify)
-    process_video_data(video_numbers, get_keypoints_and_labels, all_keypoints, all_keypoints_labels, player, mirror=True, simplify=simplify)
+    process_video_data(video_numbers, get_features, all_keypoints, all_keypoints_labels, player, mirror=True, simplify=simplify)
     process_video_data(video_numbers, get_concat_and_labels, concatenated_featues, concatenated_labels, player, mirror=True, simplify=simplify)
 
 
