@@ -73,7 +73,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
 
 def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_keypoints=False, add_midpoints=False,
                              add_table=False, add_embeddings=False, mirror=False,
-                             simplify=False, player_to_get="both") -> list | list:
+                             simplify=False, long_edition=False, player_to_get="both") -> list | list:
     """
     Args:
         timestamps (_type_): The dictionary containing stroke timestamps and labels
@@ -97,14 +97,53 @@ def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_keypo
         player, label = get_player_and_label(value, player_to_get, simplify, mirror)
         features = None
         
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
+        if long_edition:
+            # Left player features
+            for sequence_frame in sequence_frames:          
+                features = compose_features(df, frame, sequence_frame, video_number, "left", features, False,  add_keypoints, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
+            
+            # Right player features
+            for sequence_frame in sequence_frames:
+                features = compose_features(df, frame, sequence_frame, video_number, "right", features, False, add_keypoints, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
+        else:
+            for sequence_frame in sequence_frames:
+                features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
             
         if features is not None:
             keypoint_list.append(features)
             labels.append(label)
             
     return keypoint_list, labels
+
+
+def get_features(video_number, sequence_frames, simplify=False, add_keypoints=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror= False):
+    features_list = []
+    labels = []
+
+    timestamps = get_timestamps(video_number)
+    data_path = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(data_path)
+
+    for frame, value in timestamps.items():
+        if value in {"other", "otherotherother"}:
+            continue
+
+        _, label = get_player_and_label(value, "both", simplify, mirror)
+        features = None
+
+        # Left player features
+        for sequence_frame in sequence_frames:            
+            features = compose_features(df, frame, sequence_frame, video_number, "left", features, False,  add_keypoints, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
+        
+        # Right player features
+        for sequence_frame in sequence_frames:
+            features = compose_features(df, frame, sequence_frame, video_number, "right", features, False, add_keypoints, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
+        
+        if features is not None:
+            labels.append(label)
+            features_list.append(features)
+
+    return features_list, labels
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -160,50 +199,6 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
         features = concatenate_features(features, embeddings) 
     
     return features
-
-
-def get_features(video_number, simplify=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror= False):
-    features_list = []
-    labels = []
-
-    timestamps = get_timestamps(video_number)
-    data_path = f"data/video_{video_number}/midpoints_video{video_number}.csv"
-    df = pd.read_csv(data_path)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        if mirror:
-            value = mirror_string(value)
-
-        label = value.split(" ")[0]
-        label_parts = label.split("_")
-
-        # Special simplification for serve label
-        if simplify:
-            player = label_parts[0]
-            if "serve" in label:
-                label = f"{player}_{label_parts[2]}"
-            else:
-                label = f"{player}_{label_parts[1]}"
-
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
-        features = None
-
-        # Left player features
-        for sequence_frame in sequence_frames:            
-            features = compose_features(df, frame, sequence_frame, video_number, "left", features, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
-        
-        # Right player features
-        for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, "right", features, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
-        
-        if features is not None:
-            labels.append(label)
-            features_list.append(features)
-
-    return features_list, labels
 
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:

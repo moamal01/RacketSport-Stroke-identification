@@ -10,14 +10,9 @@ import sys
 
 sys.path.append(os.path.abspath('../../'))
 
-from utility_functions import (
-    plot_label_distribution,
-    plot_confusion_matrix,
-    get_keypoints_and_labels,
-    get_features,
-)
+from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_keypoints_and_labels)
 
-per_player_classifiers = True
+per_player_classifiers = False
 test_on_one = True
 simplify = True
 mirrored_only = False
@@ -27,33 +22,18 @@ train_videos = videos[:-1]
 test_videos = [videos[-1]]
 
 # Generic processing function
-def process_videos(videos, simplify, getter_func):
+
+def process_videos2(videos, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, long_edition=False):
     results = []
     labels = []
 
     for video in videos:
-        data, video_labels = getter_func(video, mirror=mirrored_only, simplify=simplify)
+        data, video_labels = get_keypoints_and_labels(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels = getter_func(video, mirror=True, simplify=simplify)
-            results.extend(data)
-            labels.extend(video_labels)
-
-    return results, labels
-
-def process_videos2(videos, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, getter_func):
-    results = []
-    labels = []
-
-    for video in videos:
-        data, video_labels = getter_func(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=mirrored_only, simplify=simplify)
-        results.extend(data)
-        labels.extend(video_labels)
-
-        if add_mirrored and len(videos) > 1:
-            data, video_labels = getter_func(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify)
+            data, video_labels = get_keypoints_and_labels(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
@@ -61,45 +41,63 @@ def process_videos2(videos, sequence, raw, add_keypoints, add_midpoints, add_tab
 
 # Specific functions using the generic one
 def get_embeddings(videos, simplify):
-    return process_videos2(videos, [0], False, False, False, False, True, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], False, False, False, False, True, simplify)
 
 def get_keypoints_raw(videos, simplify):
-    return process_videos2(videos, [0], True, True, False, False, False, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], True, True, False, False, False, simplify)
 
 def get_concatenated_raw(videos, simplify):
-    return process_videos2(videos, [0], False, True, False, False, True, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], False, True, False, False, True, simplify)
 
 def get_keypoints(videos, simplify):
-    return process_videos2(videos, [0], False, True, False, False, False, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], False, True, False, False, False, simplify)
 
 def get_concatenated(videos, simplify):
-    return process_videos2(videos, [0], False, True, False, False, True, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [0], False, True, False, False, True, simplify)
 
 def get_keypoints_time(videos, simplify):
-    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, False, False, False, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, False, False, False, simplify)
 
 def get_keypoints_time_and_mid(videos, simplify):
-    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, False, False, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, False, False, simplify)
 
 def get_keypoints_time_and_mid_and_tab(videos, simplify):
-    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, False, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, False, simplify)
 
 def get_every_feature(videos, simplify):
-    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, True, simplify, get_keypoints_and_labels)
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, True, simplify)
 
-def get_specified_features(videos, simplify, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
+def get_every_feature(videos, simplify):
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, True, simplify)
+
+def jaja(videos, simplify):
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, False, False, False, simplify, True)
+
+def jaja2(videos, simplify):
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, False, False, simplify, True)
+
+def jaja3(videos, simplify):
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, False, simplify, True)
+
+def jaja4(videos, simplify):
+    return process_videos2(videos, [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10], False, True, True, True, True, simplify, True)
+
+def jaja5(videos, sequences_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify, long_edition=False):
+    return process_videos2(videos, sequences_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify, long_edition=False)
+
+def get_specified_features(videos, sequence_frames, add_keypoints=False, add_midpoints=False, add_table=False, add_embeddings=False, simplify=False, mirror=False):
     results = []
     labels = []
     
     for video in videos:
-        data, video_labels = get_features(video, simplify=simplify, add_midpoints=add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirrored_only)
+        data, video_labels = get_keypoints_and_labels(video, sequence_frames=sequence_frames, raw=False, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_table=add_table, add_embeddings=add_embeddings, simplify=simplify, mirror=mirrored_only)
         results.extend(data)
         labels.extend(video_labels)
         
     return results, labels
 
 # Combine all data
-def get_splits(type, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
+def get_splits(type, sequence_frames, add_keypoints=True, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False):
     if type == "embeddings":
         all_data, all_labels = get_embeddings(videos, simplify)
     elif type == "keypoints_raw":
@@ -117,7 +115,7 @@ def get_splits(type, add_midpoints=False, add_table=False, add_embeddings=False,
     elif type == "everything":
         all_data, all_labels = get_every_feature(videos, simplify)
     elif type == "specify":
-        all_data, all_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
+        all_data, all_labels = jaja5(videos )
     else:
         all_data, all_labels = get_concatenated(videos, simplify)
 
@@ -148,7 +146,7 @@ def get_splits(type, add_midpoints=False, add_table=False, add_embeddings=False,
         elif type == "everything":
             train_embeddings, train_labels = get_every_feature(videos, simplify)
         elif type == "specify":
-            train_embeddings, train_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
+            train_embeddings, train_labels = jaja(videos, simplify)
         else:
             train_embeddings, train_labels = get_concatenated(train_videos, simplify)
 
@@ -174,7 +172,7 @@ def get_splits(type, add_midpoints=False, add_table=False, add_embeddings=False,
         elif type == "everything":
             video3_embeddings, video3_labels = get_every_feature(test_videos, simplify)
         elif type == "specify":
-            video3_embeddings, video3_labels = get_specified_features(videos, simplify, add_midpoints, add_table, add_embeddings, mirror)
+            video3_embeddings, video3_labels = jaja(videos, simplify)
         else:
             video3_embeddings, video3_labels = get_concatenated(test_videos, simplify)
 
@@ -263,7 +261,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     
 if per_player_classifiers:
     print("Classification on embeddings")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("embeddings", False)
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
     print("Classification on keypoints raw")
@@ -295,23 +293,23 @@ if per_player_classifiers:
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
     print("Classification on all features")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("everything")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("everything", True)
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
 
 print("Specify keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify")
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-print("Specify keypoints, midpoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Specify keypoints, midpoints and table midpoints")
+print("Specify keypoints, midpoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True, True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Specify keypoints, midpoints, table midpoints, and embeddings")
+print("Specify keypoints, midpoints and table midpoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True, True, True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+print("Specify keypoints, midpoints, table midpoints, and embeddings")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits("specify", True, True, True, True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
