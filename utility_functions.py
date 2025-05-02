@@ -71,36 +71,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_embeddings_and_labels(video_number, mirror=False, simplify=False, player_to_get="both") -> list | list:
-    """
-
-    Args:
-        timestamps (_type_): The dictionary containing stroke timestamps and labels
-        mirror (bool, optional): Set to true to get mirrored data. Defaults to False.
-
-    Returns:
-        features (list): A list of numpy arrays, where each array is the embedding corresponding to a label.
-        labels (list): A list of strings, where each string is the label corresponding to the respective embedding.
-    """
-    features = []
-    labels = []
-    timestamps = get_timestamps(video_number)
-
-    for frame, value in timestamps.items():
-        if value in {"other", "otherotherother"}:
-            continue
-
-        player, label = get_player_and_label(value, player_to_get, simplify)
-        embeddings = get_embeddings(video_number, frame, player, True, mirror)
-
-        if embeddings is not None:
-            features.append(embeddings)
-            labels.append(label)
-
-    return features, labels
-
-
-def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_midpoints=False,
+def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_keypoints=False, add_midpoints=False,
                              add_table=False, add_embeddings=False, mirror=False,
                              simplify=False, player_to_get="both") -> list | list:
     """
@@ -127,7 +98,7 @@ def get_keypoints_and_labels(video_number, sequence_frames, raw=False, add_midpo
         features = None
         
         for sequence_frame in sequence_frames:
-            features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_midpoints, add_table, add_embeddings)
+            features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
             
         if features is not None:
             keypoint_list.append(features)
@@ -152,35 +123,41 @@ def get_embeddings(video_number, frame, player=None, single_player=False, mirror
     return np.load(file_path_of_interest).squeeze()
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
+def concatenate_features(features, new_features):
+    if features is None:
+        features = new_features
+    else:
+        features = np.concatenate((features, new_features))
+
+    return features
+
+
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
     
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
 
-    keypoints = ast.literal_eval(event_row.iloc[0][column])
-    keypoints = np.array(keypoints)[:, :2].flatten()
-    
-    if features is None:
-        features = keypoints
-    else:
-        features = np.concatenate((features, keypoints)) 
+    if add_keypoints:
+        keypoints = ast.literal_eval(event_row.iloc[0][column])
+        keypoints = np.array(keypoints)[:, :2].flatten()
+        features = concatenate_features(features, keypoints)
+        
+    if add_midpoints:
+        player_midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
+        features = concatenate_features(features, player_midpoint) 
         
     if add_table:
         table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
-        features = np.concatenate((features, table_midpoint))  
-    
-    if add_midpoints:
-        player_midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-        features = np.concatenate((features, player_midpoint))
+        features = concatenate_features(features, table_midpoint) 
 
     if add_embeddings:
         embeddings = get_embeddings(video_number, frame, player)
         if embeddings is None:
             return None
         
-        features = np.concatenate((features, embeddings))
+        features = concatenate_features(features, embeddings) 
     
     return features
 
