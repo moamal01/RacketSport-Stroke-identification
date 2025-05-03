@@ -99,12 +99,18 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         
         if long_edition:
             # Left player features
-            for sequence_frame in sequence_frames:          
-                features = compose_features(df, frame, sequence_frame, video_number, "left", features, False,  add_keypoints, add_midpoints, add_table=False, add_embeddings=add_embeddings, mirror=mirror)
-            
+            for sequence_frame in sequence_frames: 
+                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw,  add_keypoints, add_midpoints, add_table, add_embeddings=add_embeddings, mirror=mirror)
+                if frame_feature is None:
+                    features = None
+                    break
+                features = frame_feature
             # Right player features
-            for sequence_frame in sequence_frames:
-                features = compose_features(df, frame, sequence_frame, video_number, "right", features, False, add_keypoints, add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df, frame, sequence_frame, video_number, "right", features, raw,  add_keypoints, add_midpoints, add_table, add_embeddings=add_embeddings, mirror=mirror)
+                if frame_feature is None:
+                    features = None
+                    break
+                features = frame_feature
         else:
             for sequence_frame in sequence_frames:
                 features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
@@ -114,6 +120,17 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             labels.append(label)
             
     return keypoint_list, labels
+
+
+def get_keypoints(event_row, column):
+    
+    score1 = event_row.iloc[0]["Left score"]
+    score2 = event_row.iloc[0]["Right score"]
+    
+    if score1 < 0.9 or score2 < 0.9:
+        return None
+    
+    return ast.literal_eval(event_row.iloc[0][column])
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -149,7 +166,10 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
 
     if add_keypoints:
-        keypoints = ast.literal_eval(event_row.iloc[0][column])
+        keypoints = get_keypoints(event_row, column)
+        if keypoints is None:
+            return None
+
         keypoints = np.array(keypoints)[:, :2].flatten()
         features = concatenate_features(features, keypoints)
         

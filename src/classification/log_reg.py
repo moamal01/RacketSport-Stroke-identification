@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath('../../'))
 
 from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_features)
 
-per_player_classifiers = True
+per_player_classifiers = False
 test_on_one = True
 simplify = True
 mirrored_only = False
@@ -27,7 +27,7 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_tabl
     labels = []
 
     for video in videos:
-        data, video_labels = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
@@ -191,20 +191,47 @@ if per_player_classifiers:
     classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
     print("-----------")
 
-# Add raw first
-print("Specify keypoints")
+print("Raw keypoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+
+print("Raw keypoints over time")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+
+print("Embeddings")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+
+print("Embeddings over time")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_embeddings=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+
+print("Normalized keypoints")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
+
+print("Normalized keypoints over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Specify keypoints, midpoints")
+
+print("Normalized keypoints and player midpoints over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Specify keypoints, midpoints and table midpoints")
+
+print("Normalized keypoints, player midpoints and table position over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, process_both_players=True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
-print("Specify keypoints, midpoints, table midpoints, and embeddings")
+
+print("Normalized keypoints, player midpoints, table position and embeddings over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True, process_both_players=True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
