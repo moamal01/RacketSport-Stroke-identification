@@ -1,4 +1,6 @@
 # Racket sport stroke identification
+![screenshot](figures/high-level_overview.png)
+
 
 ## Project Structure
 
