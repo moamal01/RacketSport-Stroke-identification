@@ -71,15 +71,25 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(event_row, column):
+def get_keypoints(event_row, raw, player, missing_strat="replace"):
     
     score1 = event_row.iloc[0]["Left score"]
     score2 = event_row.iloc[0]["Right score"]
     
-    if score1 < 0.9 or score2 < 0.9:
-        return None
-    
-    return ast.literal_eval(event_row.iloc[0][column])
+    column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
+    score = event_row.iloc[0][f"{player.capitalize()} score"]
+        
+    if missing_strat == "default":
+        if score1 < 0.9 or score2 < 0.9:
+            return None
+        
+    elif missing_strat == "replace":
+        if score < 0.9:
+            keypoints = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
+            return keypoints
+
+    keypoints = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
+    return keypoints
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -111,17 +121,14 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
-    
-    column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
 
     if add_keypoints:
-        keypoints = get_keypoints(event_row, column)
+        if frame == "14460":
+            pass
+        keypoints = get_keypoints(event_row, raw, player)
         if keypoints is None:
-#            print("keypoint_removed")
-#            print("---")
             return None
 
-        keypoints = np.array(keypoints)[:, :2].flatten()
         features = concatenate_features(features, keypoints)
         
     if add_midpoints:
@@ -135,8 +142,8 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     if add_embeddings:
         embeddings = get_embeddings(video_number, frame, player)
         if embeddings is None:
-            print("embedding_removed")
-            print("---")
+            #print("embedding_removed")
+            #print("---")
             return None
         
         features = concatenate_features(features, embeddings) 
@@ -156,6 +163,9 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
     skipped_frames = 0
 
     for frame, value in timestamps.items():
+        if frame == "14460":
+            pass
+
         if value in {"other", "otherotherother"}:
             continue
 
@@ -165,14 +175,23 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         if long_edition:
             # Left player features
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw,  add_keypoints, add_midpoints, add_table, add_embeddings=add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw, add_keypoints, add_midpoints, False, add_embeddings, mirror=mirror)
+                if frame_feature is None:
+                    skipped_frames += 1
+                    features = None
+                    break
+                features = frame_feature
+            # Table
+            for sequence_frame in sequence_frames: 
+                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw, False, False, add_table, False, mirror=mirror)
                 if frame_feature is None:
                     skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
             # Right player features
-                frame_feature = compose_features(df, frame, sequence_frame, video_number, "right", features, raw,  add_keypoints, add_midpoints, add_table, add_embeddings=add_embeddings, mirror=mirror)
+            for sequence_frame in sequence_frames: 
+                frame_feature = compose_features(df, frame, sequence_frame, video_number, "right", features, raw, add_keypoints, add_midpoints, False, add_embeddings, mirror=mirror)
                 if frame_feature is None:
                     skipped_frames += 1
                     features = None
@@ -186,7 +205,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             keypoint_list.append(features)
             labels.append(label)
             
-    print(skipped_frames)
+    #print(skipped_frames)
             
     return keypoint_list, labels
 
