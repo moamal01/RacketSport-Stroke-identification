@@ -153,6 +153,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
             probabilities.append({
                 "predicted_class": class_names[j],
                 "probability": y_test_probs[i][j],
+                "probabilities": y_test_probs[i],
                 "true_class": class_names[y_test[i]]
             })
 
@@ -170,51 +171,36 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Confusion Matrix
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
-    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
     
     return probabilities
-
-if per_player_classifiers:
-    print("Classification on embeddings")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on keypoints raw")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on embeddings and raw keypoints")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_embeddings=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on keypoints")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on embeddings and keypoints")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, add_embeddings=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on keypoints over time")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on keypoints over time with midpoints")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on keypoints over time with midpoints along with table midpoints")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
-    print("Classification on all features")
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True)
-    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-    print("-----------")
 
 print("Raw keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
 probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+
+num_samples = len(X_test)
+num_classes = len(label_encoder.classes_)
+
+sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
+highest_probs = [max(p) for p in sample_probs]
+lowest_probs = [min(p) for p in sample_probs]
+
+x = np.arange(len(X_test))
+width = 0.4
+
+plt.figure(figsize=(16, 5))
+plt.bar(x - width/2, highest_probs, width, label='Highest Probability', color='skyblue')
+plt.bar(x + width/2, lowest_probs, width, label='Lowest Probability', color='orange')
+
+plt.xlabel("Test samples")
+plt.ylabel("Probability")
+plt.title("Highest vs. Lowest Class Probabilities per Prediction")
+plt.xticks(ticks=np.arange(0, len(x), step=max(1, len(x)//20)))  # Reduce clutter
+plt.ylim(0, 1.05)
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 confidences = [entry['probability'] for entry in probs if entry['predicted_class'] == entry['true_class']]
 plt.hist(confidences, bins=20, color='skyblue', edgecolor='black')
@@ -296,3 +282,42 @@ print("Normalized keypoints, player midpoints, table position and embeddings ove
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True, process_both_players=True)
 classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 print("-----------")
+
+
+if per_player_classifiers:
+    print("Classification on embeddings")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints raw")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on embeddings and raw keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_embeddings=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on embeddings and keypoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, add_embeddings=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time with midpoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on keypoints over time with midpoints along with table midpoints")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
+    print("Classification on all features")
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True)
+    classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    print("-----------")
