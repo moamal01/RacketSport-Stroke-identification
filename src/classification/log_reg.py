@@ -7,6 +7,11 @@ from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 import os
 import sys
+import matplotlib.pyplot as plt
+from collections import defaultdict
+import seaborn as sns
+import pandas as pd
+
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -109,6 +114,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
     return X_train, y_train, X_val, y_val, X_test, y_test, label_encoder
 
 def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
+    probabilities = []
     # Print stats
     print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
 
@@ -136,6 +142,19 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     y_test_pred = clf.predict(X_test)
     test_accuracy = accuracy_score(y_test, y_test_pred)
     print(f"Test Accuracy: {test_accuracy:.2f}")
+    
+    # --- Softmax outputs ---
+    y_test_probs = clf.predict_proba(X_test)  # shape: (num_samples, num_classes)
+    class_names = label_encoder.classes_
+
+    for i in range(len(X_test)):
+        for j in range(len(y_test_probs[i])):
+            # probs, true_label
+            probabilities.append({
+                "predicted_class": class_names[j],
+                "probability": y_test_probs[i][j],
+                "true_class": class_names[y_test[i]]
+            })
 
     # Train Random Forest
     clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -151,7 +170,9 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # Confusion Matrix
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
-    #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
+    
+    return probabilities
 
 if per_player_classifiers:
     print("Classification on embeddings")
@@ -193,7 +214,47 @@ if per_player_classifiers:
 
 print("Raw keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+
+confidences = [entry['probability'] for entry in probs if entry['predicted_class'] == entry['true_class']]
+plt.hist(confidences, bins=20, color='skyblue', edgecolor='black')
+plt.title("Histogram of Model Confidence for Correct Class")
+plt.xlabel("Predicted Probability for True Class")
+plt.ylabel("Number of Samples")
+plt.show()
+
+bin_data = []
+for entry in probs:
+    is_correct = entry['predicted_class'] == entry['true_class']
+    confidence = entry['probability']
+    bin_data.append({
+        'confidence_bin': round(confidence, 1),
+        'correct': is_correct
+    })
+
+df = pd.DataFrame(bin_data)
+acc_by_bin = df.groupby('confidence_bin')['correct'].mean().reset_index()
+
+sns.barplot(x='confidence_bin', y='correct', data=acc_by_bin)
+plt.title("Accuracy by Confidence Bin")
+plt.xlabel("Confidence Bin")
+plt.ylabel("Accuracy")
+plt.ylim(0, 1)
+plt.show()
+
+class_conf = defaultdict(list)
+
+for entry in probs:
+    class_conf[entry['predicted_class']].append(entry['probability'])
+
+avg_conf = {cls: np.mean(confs) for cls, confs in class_conf.items()}
+plt.bar(avg_conf.keys(), avg_conf.values())
+plt.xticks(rotation=90)
+plt.title("Average Confidence per Predicted Class")
+plt.ylabel("Average Confidence")
+plt.tight_layout()
+plt.show()
+
 print("-----------")
 
 print("Raw keypoints over time")
