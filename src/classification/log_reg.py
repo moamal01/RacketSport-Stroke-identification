@@ -15,7 +15,7 @@ import pandas as pd
 
 sys.path.append(os.path.abspath('../../'))
 
-from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_features)
+from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_features, plot_probabilities)
 
 per_player_classifiers = False
 test_on_one = True
@@ -178,104 +178,43 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
 print("Raw keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
 probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-
-num_samples = len(X_test)
-num_classes = len(label_encoder.classes_)
-
-sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
-highest_probs = [max(p) for p in sample_probs]
-lowest_probs = [min(p) for p in sample_probs]
-
-x = np.arange(len(X_test))
-width = 0.4
-
-plt.figure(figsize=(16, 5))
-plt.bar(x - width/2, highest_probs, width, label='Highest Probability', color='skyblue')
-plt.bar(x + width/2, lowest_probs, width, label='Lowest Probability', color='orange')
-
-plt.xlabel("Test samples")
-plt.ylabel("Probability")
-plt.title("Highest vs. Lowest Class Probabilities per Prediction")
-plt.xticks(ticks=np.arange(0, len(x), step=max(1, len(x)//20)))  # Reduce clutter
-plt.ylim(0, 1.05)
-plt.legend()
-plt.tight_layout()
-plt.show()
-
-confidences = [entry['probability'] for entry in probs if entry['predicted_class'] == entry['true_class']]
-plt.hist(confidences, bins=20, color='skyblue', edgecolor='black')
-plt.title("Histogram of Model Confidence for Correct Class")
-plt.xlabel("Predicted Probability for True Class")
-plt.ylabel("Number of Samples")
-plt.show()
-
-bin_data = []
-for entry in probs:
-    is_correct = entry['predicted_class'] == entry['true_class']
-    confidence = entry['probability']
-    bin_data.append({
-        'confidence_bin': round(confidence, 1),
-        'correct': is_correct
-    })
-
-df = pd.DataFrame(bin_data)
-acc_by_bin = df.groupby('confidence_bin')['correct'].mean().reset_index()
-
-sns.barplot(x='confidence_bin', y='correct', data=acc_by_bin)
-plt.title("Accuracy by Confidence Bin")
-plt.xlabel("Confidence Bin")
-plt.ylabel("Accuracy")
-plt.ylim(0, 1)
-plt.show()
-
-class_conf = defaultdict(list)
-
-for entry in probs:
-    class_conf[entry['predicted_class']].append(entry['probability'])
-
-avg_conf = {cls: np.mean(confs) for cls, confs in class_conf.items()}
-plt.bar(avg_conf.keys(), avg_conf.values())
-plt.xticks(rotation=90)
-plt.title("Average Confidence per Predicted Class")
-plt.ylabel("Average Confidence")
-plt.tight_layout()
-plt.show()
-
+plot_probabilities(probs, len(X_test), label_encoder)
 print("-----------")
 
-print("Raw keypoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Raw keypoints over time")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
-print("Embeddings")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Embeddings")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
-print("Embeddings over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Embeddings over time")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_embeddings=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
-print("Normalized keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Normalized keypoints")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
-print("Normalized keypoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Normalized keypoints over time")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
-print("Normalized keypoints and player midpoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Normalized keypoints and player midpoints over time")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
 print("Normalized keypoints, player midpoints and table position over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+plot_probabilities(probs, len(X_test), label_encoder)
 print("-----------")
 
 print("Normalized keypoints, player midpoints, table position and embeddings over time")

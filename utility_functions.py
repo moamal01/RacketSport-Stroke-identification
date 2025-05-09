@@ -298,3 +298,30 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     #plt.savefig(f"figures/umaps/cleaned/LALALALAred_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
 
     plt.show()
+    
+    
+def plot_probabilities(probs, num_samples, label_encoder):
+    num_classes = len(label_encoder.classes_)
+
+    sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
+    highest_probs = [max(p) for p in sample_probs]
+    lowest_probs = [min(p) for p in sample_probs]
+    diff_probs = [high - low for high, low in zip(highest_probs, lowest_probs)]
+
+    x = np.arange(num_samples)
+
+    plt.rcParams.update({'font.size': 22})
+    sns.set_theme()
+    
+    plt.figure(figsize=(16, 5))
+    plt.bar(x, lowest_probs, label='Lowest Probability', color='orange')
+    plt.bar(x, diff_probs, bottom=lowest_probs, label='Difference to Highest', color='skyblue')
+
+    plt.xlabel("Test samples")
+    plt.ylabel("Probability")
+    plt.title("Highest vs. Lowest Class Probabilities per Prediction")
+    plt.xticks(ticks=np.arange(0, len(x), step=max(1, len(x)//20)))
+    plt.ylim(0, 1.05)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
