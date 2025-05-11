@@ -2,14 +2,22 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 1
+video = 3
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = False
+mirrored = True
 
 def get_table_midpoints(df):
     table_midpoints = []
-    for idx, row in df.iterrows():
+    for _, row in df.iterrows():
+        table_boxes_row = ast.literal_eval(row["Table boxes"])
+        table_midpoints.append([(table_boxes_row[0][0] + table_boxes_row[0][2]) / 2, table_boxes_row[0][1]])
+
+    return table_midpoints
+
+def get_ball_midpoints(df):
+    table_midpoints = []
+    for _, row in df.iterrows():
         table_boxes_row = ast.literal_eval(row["Table boxes"])
         table_midpoints.append([(table_boxes_row[0][0] + table_boxes_row[0][2]) / 2, table_boxes_row[0][1]])
 
@@ -25,11 +33,18 @@ def compute_player_midpoints(df, table_midpoints):
     right_score = []
     left_bboxes = []
     right_bboxes = []
+    left_racket_boxes = []
+    right_racket_boxes = []
+    left_racket_scores = []
+    right_racket_scores = []
+    
     
     for idx, row in df.iterrows():
         keypoints_row = ast.literal_eval(row["Keypoints"])
         scores_row = ast.literal_eval(row["People scores"])
         people_boxes_row = ast.literal_eval(row["People boxes"])
+        racket_boxes_row = ast.literal_eval(row["Racket boxes"])
+        racket_scores_row = ast.literal_eval(row["Racket scores"])
         
         TABLE_MIDPOINT = table_midpoints[idx]
 
@@ -39,6 +54,7 @@ def compute_player_midpoints(df, table_midpoints):
         
         added = False
             
+        # Keypoints
         for i, keypoints in enumerate(keypoints_row):
             if keypoints[11][0] < TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_left) <= idx:
                 keypoints_left.append(keypoints)
@@ -50,13 +66,31 @@ def compute_player_midpoints(df, table_midpoints):
                 right_score.append(scores_row[i])
                 right_bboxes.append(people_boxes_row[i])
                 added = True
+               
+        # Rackets 
+        for i, box in enumerate(racket_boxes_row):
+            if box[0] < TABLE_MIDPOINT[0] and len(left_racket_boxes) <= idx:
+                left_racket_boxes.append(box)
+                left_racket_scores.append(racket_scores_row[i])
+            elif box[0] > TABLE_MIDPOINT[0] and len(right_racket_boxes) <= idx:
+                right_racket_boxes.append(box)
+                right_racket_scores.append(racket_scores_row[i])
+                
+        if len(left_racket_boxes) <= idx:
+            left_racket_boxes.append([])
+        if len(left_racket_scores) <= idx:
+            left_racket_scores.append([])
+        if len(right_racket_boxes) <= idx:
+            right_racket_boxes.append([])
+        if len(right_racket_scores) <= idx:
+            right_racket_scores.append([])
         
         if added:
             paths.append(path)
             event_frames.append(event_frame)
             sequence_frames.append(sequence_frame)
     
-    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes
+    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores
 
 def get_hips(keypoints_left, keypoints_right):
     ll_hip = []     # Left player, left hip
@@ -99,7 +133,7 @@ def normalize_midpoints(midpoints, table_midpoints):
     return normalized_midpoints_list
     
 
-def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_right):
+def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_right):
     left_player_distance_to_midpoint = []
     right_player_distance_to_midpoint = []
     
@@ -130,10 +164,10 @@ def get_distance(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints_r
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
 
 table_midpoints = get_table_midpoints(df)
-paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes = compute_player_midpoints(df, table_midpoints)
+paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores = compute_player_midpoints(df, table_midpoints)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
-left_distances, right_distances = get_distance(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
+left_mid_normalized, right_mid_normalized = get_normalized(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
 left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints, table_midpoints), normalize_midpoints(right_midpoints, table_midpoints)
 
 # Prepare data for saving to CSV
@@ -146,18 +180,23 @@ data = {
     'Event frame': event_frames,
     'Sequence frame': sequence_frames,
     'Table midpoint': table_midpoints, 
+    #'Ball position': ,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
     'Left bbox': left_bboxes,
     'Left player midpoint': left_midpoints,
     'Left player normalized midpoint': left_normalized_midpoints,
-    'Left distances': left_distances,
+    'Left mid-normalized': left_mid_normalized,
+    'Left racket': left_racket_boxes,
+    'Left racket score': left_racket_scores,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
     'Right bbox': right_bboxes,
     'Right player midpoint': right_midpoints,
     'Right player normalized midpoint': right_normalized_midpoints,
-    'Right distances': right_distances
+    'Right mid-normalized': right_mid_normalized,
+    'Right racket': right_racket_boxes,
+    'Right racket score': right_racket_scores
 }
 
 # Create DataFrame from the data
