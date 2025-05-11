@@ -131,7 +131,7 @@ def concatenate_features(features, new_features):
     return features
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_racket=False, add_table=False, add_ball=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
@@ -139,7 +139,7 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     if add_keypoints:
         if frame == "14460":
             pass
-        keypoints = get_keypoints(event_row, raw, add_midpoints, player)
+        keypoints = get_keypoints(event_row, raw, player, add_midpoints)
         if keypoints is None:
             return None
 
@@ -163,13 +163,13 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
 
 
 def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, add_midpoints=False,
-                             add_table=False, add_embeddings=False, mirror=False,
-                             simplify=False, long_edition=False, player_to_get="both"):
-    keypoint_list = []
+                        add_rackets=False, add_table=False, add_ball=False, add_embeddings=False,
+                        mirror=False, simplify=False, long_edition=False, player_to_get="both"):
+    feature_list = []
     labels = []
 
     if video_number == 1:
-        timestamps = get_timestamps2(video_number)
+        timestamps = get_timestamps(video_number)
     else:
         timestamps = get_timestamps(video_number)
 
@@ -190,7 +190,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         if long_edition:
             # Left player features
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw, add_keypoints, add_midpoints, False, add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
                     skipped_frames += 1
                     features = None
@@ -198,7 +198,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                 features = frame_feature
             # Table
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df, frame, sequence_frame, video_number, "left", features, raw, False, False, add_table, False, mirror=mirror)
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=add_table, add_ball=False, add_embeddings=False, mirror=mirror)
                 if frame_feature is None:
                     skipped_frames += 1
                     features = None
@@ -206,7 +206,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                 features = frame_feature
             # Right player features
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df, frame, sequence_frame, video_number, "right", features, raw, add_keypoints, add_midpoints, False, add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
                     skipped_frames += 1
                     features = None
@@ -217,12 +217,12 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                 features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
             
         if features is not None:
-            keypoint_list.append(features)
+            feature_list.append(features)
             labels.append(label)
             
     #print(skipped_frames)
             
-    return keypoint_list, labels
+    return feature_list, labels
 
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:

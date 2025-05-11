@@ -17,39 +17,40 @@ test_on_one = True
 simplify = True
 mirrored_only = False
 add_mirrored = False
-videos = [2, 3, 1]
+videos = [1, 2, 3]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
+test_on_no_stroke = False
 
 # Generic processing function
-def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, long_edition=False):
+def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, long_edition=False):
     results = []
     labels = []
 
     for video in videos:
-        data, video_labels = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_table=add_table, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_table, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
+            data, video_labels = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
     return results, labels
 
 
-def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify=simplify, long_edition=False):
-    return process_videos(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify=simplify, long_edition=long_edition)
+def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=False):
+    return process_videos(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=long_edition)
 
 # Combine all data
-def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_table=False, add_embeddings=False, process_both_players=False):
+def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_embeddings=False, process_both_players=False):
     if long_sequence:
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
     else:
         sequence_frames = [0]
     
-    all_data, all_labels = get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, process_both_players)
+    all_data, all_labels = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -61,14 +62,14 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set or label in "no_stroke": # Change this
@@ -143,17 +144,28 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     class_names = label_encoder.classes_
     
     # Find the index of "no_stroke" in class_names
-    no_stroke_index = class_names.tolist().index('no_stroke')
+    if test_on_no_stroke:
+        no_stroke_index = class_names.tolist().index('no_stroke')
 
-    for i in range(len(X_test)):
-        for j in range(len(y_test_probs[i])):
-            # probs, true_label
-            probabilities.append({
-                "predicted_class": class_names[j],
-                "probability": y_test_probs[i][j],
-                "probabilities": [prob for k, prob in enumerate(y_test_probs[i]) if k != no_stroke_index],
-                "true_class": class_names[y_test[i]]
-            })
+        for i in range(len(X_test)):
+            for j in range(len(y_test_probs[i])):
+                # probs, true_label
+                probabilities.append({
+                    "predicted_class": class_names[j],
+                    "probability": y_test_probs[i][j],
+                    "probabilities": [prob for k, prob in enumerate(y_test_probs[i]) if k != no_stroke_index],
+                    "true_class": class_names[y_test[i]]
+                })
+    else:
+        for i in range(len(X_test)):
+            for j in range(len(y_test_probs[i])):
+                # probs, true_label
+                probabilities.append({
+                    "predicted_class": class_names[j],
+                    "probability": y_test_probs[i][j],
+                    "probabilities": y_test_probs[i],
+                    "true_class": class_names[y_test[i]]
+                })
 
     # Train Random Forest
     clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -204,10 +216,10 @@ print("-----------")
 # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 # print("-----------")
 
-# print("Normalized keypoints and player midpoints over time")
-# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
-# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-# print("-----------")
+print("Normalized keypoints and player midpoints over time")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
 
 print("Normalized keypoints, player midpoints and table position over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, process_both_players=True)
@@ -215,10 +227,10 @@ probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 plot_probabilities(probs, len(X_test), label_encoder)
 print("-----------")
 
-print("Normalized keypoints, player midpoints, table position and embeddings over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+# print("Normalized keypoints, player midpoints, table position and embeddings over time")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True, process_both_players=True)
+# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# print("-----------")
 
 
 if per_player_classifiers:
