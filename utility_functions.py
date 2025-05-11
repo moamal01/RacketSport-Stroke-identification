@@ -77,12 +77,12 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(event_row, raw, player, missing_strat="replace"):
+def get_keypoints(event_row, raw, player, add_midpoints, missing_strat="replace"):
     
     score1 = event_row.iloc[0]["Left score"]
     score2 = event_row.iloc[0]["Right score"]
     
-    column = f"Keypoints {player}" if raw else f"{player.capitalize()} distances"
+    column = f"Keypoints {player}" if raw else f"{player.capitalize()} mid-normalized"
     score = event_row.iloc[0][f"{player.capitalize()} score"]
         
     if missing_strat == "default":
@@ -92,10 +92,18 @@ def get_keypoints(event_row, raw, player, missing_strat="replace"):
     elif missing_strat == "replace":
         if score < 0.9:
             keypoints = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
-            return keypoints
+            if add_midpoints:
+                midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
+                return np.concatenate((keypoints, midpoint))
+            else:
+                return keypoints
 
     keypoints = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
-    return keypoints
+    if add_midpoints:
+        midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
+        return np.concatenate((keypoints, midpoint))
+    else:
+        return keypoints
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -123,7 +131,7 @@ def concatenate_features(features, new_features):
     return features
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_table=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_racket=False, add_table=False, add_ball=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
@@ -131,28 +139,25 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     if add_keypoints:
         if frame == "14460":
             pass
-        keypoints = get_keypoints(event_row, raw, player)
+        keypoints = get_keypoints(event_row, raw, add_midpoints, player)
         if keypoints is None:
             return None
 
         features = concatenate_features(features, keypoints)
         
-    if add_midpoints: # Should be moved into get keypoints function, as midpoint should also be dependent on score.
-        player_midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-        features = concatenate_features(features, player_midpoint) 
+    if add_embeddings:
+        embeddings = get_embeddings(video_number, frame, player)
+        if embeddings is None:
+            return None
+        
+        features = concatenate_features(features, embeddings) 
         
     if add_table:
         table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
         features = concatenate_features(features, table_midpoint) 
-
-    if add_embeddings:
-        embeddings = get_embeddings(video_number, frame, player)
-        if embeddings is None:
-            #print("embedding_removed")
-            #print("---")
-            return None
         
-        features = concatenate_features(features, embeddings) 
+    #if add_ball:
+        
     
     return features
 
