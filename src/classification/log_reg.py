@@ -7,11 +7,6 @@ from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 import os
 import sys
-import matplotlib.pyplot as plt
-from collections import defaultdict
-import seaborn as sns
-import pandas as pd
-
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -22,7 +17,7 @@ test_on_one = True
 simplify = True
 mirrored_only = False
 add_mirrored = False
-videos = [1, 2, 3]
+videos = [2, 3, 1]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 
@@ -76,7 +71,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         video3_embeddings, video3_labels = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_table, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
-            if label in train_label_set:
+            if label in train_label_set or label in "no_stroke": # Change this
                 filtered_test_embeddings.append(emb)
                 filtered_test_labels.append(label)
 
@@ -146,6 +141,9 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     # --- Softmax outputs ---
     y_test_probs = clf.predict_proba(X_test)  # shape: (num_samples, num_classes)
     class_names = label_encoder.classes_
+    
+    # Find the index of "no_stroke" in class_names
+    no_stroke_index = class_names.tolist().index('no_stroke')
 
     for i in range(len(X_test)):
         for j in range(len(y_test_probs[i])):
@@ -153,7 +151,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
             probabilities.append({
                 "predicted_class": class_names[j],
                 "probability": y_test_probs[i][j],
-                "probabilities": y_test_probs[i],
+                "probabilities": [prob for k, prob in enumerate(y_test_probs[i]) if k != no_stroke_index],
                 "true_class": class_names[y_test[i]]
             })
 

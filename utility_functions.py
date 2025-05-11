@@ -51,6 +51,12 @@ def get_timestamps(video_number):
 
     return {k: v for k, v in data.items() if v not in excluded_values}
 
+def get_timestamps2(video_number):
+    with open(f"data/extended_events/events_markup{video_number}.json", "r") as file:
+        data = json.load(file)
+
+    return {k: v for k, v in data.items() if v in "no_stroke"}
+
 def get_player_and_label(value, player_to_get, simplify, mirror=False):
     if mirror:
             value = mirror_string(value)
@@ -131,7 +137,7 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
 
         features = concatenate_features(features, keypoints)
         
-    if add_midpoints:
+    if add_midpoints: # Should be moved into get keypoints function, as midpoint should also be dependent on score.
         player_midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
         features = concatenate_features(features, player_midpoint) 
         
@@ -157,7 +163,11 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
     keypoint_list = []
     labels = []
 
-    timestamps = get_timestamps(video_number)
+    if video_number == 1:
+        timestamps = get_timestamps2(video_number)
+    else:
+        timestamps = get_timestamps(video_number)
+
     keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
     skipped_frames = 0
@@ -303,7 +313,7 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
 def plot_probabilities(probs, num_samples, label_encoder):
     num_classes = len(label_encoder.classes_)
 
-    sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
+    sample_probs = [probs[i * 6]['probabilities'] for i in range(num_samples)]
     highest_probs = [max(p) for p in sample_probs]
     lowest_probs = [min(p) for p in sample_probs]
     diff_probs = [high - low for high, low in zip(highest_probs, lowest_probs)]
