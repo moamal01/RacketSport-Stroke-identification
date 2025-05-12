@@ -75,11 +75,11 @@ def compute_player_midpoints(df, table_midpoints):
         if len(left_racket_boxes) <= idx:
             left_racket_boxes.append([])
         if len(left_racket_scores) <= idx:
-            left_racket_scores.append([])
+            left_racket_scores.append(0)
         if len(right_racket_boxes) <= idx:
             right_racket_boxes.append([])
         if len(right_racket_scores) <= idx:
-            right_racket_scores.append([])
+            right_racket_scores.append(0)
             
         # Ball
         for i, ball in enumerate(ball_boxes_row):
@@ -90,8 +90,7 @@ def compute_player_midpoints(df, table_midpoints):
         if len(ball_boxes) <= idx:
             ball_boxes.append([])
         if len(ball_scores) <= idx:
-            ball_scores.append([])
-        
+            ball_scores.append(0)
 
         if added:
             paths.append(path)
