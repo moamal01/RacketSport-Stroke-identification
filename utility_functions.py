@@ -77,7 +77,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="default"):
+def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="last"):
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     
     score1 = event_row.iloc[0]["Left score"]
@@ -110,30 +110,37 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
                 if not racket:
                     racket = np.array([-1, -1, -1, -1])
                 features = np.concatenate((features, racket))
-                
+
             return features
-        
-    elif missing_strat == "last":
+
+    elif missing_strat == "last": # instead of this, could the function be called recursively?
         if score < 0.9:
-            features = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
-            if add_midpoints:
-                midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-                features = np.concatenate((features, midpoint))
+            idx = event_row.index[0]
+            pos = df.index.get_loc(idx)
+            not_found = True
+            rows_back = 1
+
+            while not_found:
+                prev_row = df.iloc[pos - rows_back]
+                prev_score = prev_row[f"{player.capitalize()} score"]
+
+                if prev_score > 0.9:
+                    features = np.array(ast.literal_eval(prev_row[column]))[:, :2].flatten()
+                    not_found = False
+
+                    if add_midpoints:
+                        midpoint = ast.literal_eval(prev_row[f"{player.capitalize()} player midpoint"])
+                        features = np.concatenate((features, midpoint))
+                else:
+                    rows_back += 1
 
             if add_rackets:
-                idx = event_row.index[0]
-                pos = df.index.get_loc(idx)
-
-                not_found = True
-                rows_back = 0
-                while not_found:
-                    prev_row = df.iloc[pos - rows_back]
-                    racket = ast.literal_eval(prev_row.iloc[0][f"{player.capitalize()} racket"])
-                    
-                    if not racket:
-                        rows_back += 1
-                    else:
-                        not_found = False
+                racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
+                
+                if not racket:
+                    rows_back += 1
+                else:
+                    not_found = False
                     
                 features = np.concatenate((features, racket))
             

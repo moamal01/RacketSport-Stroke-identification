@@ -197,10 +197,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
 # #plot_probabilities(probs, len(X_test), label_encoder)
 # print("-----------")
 
-# print("Raw keypoints over time")
-# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
-# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-# print("-----------")
+print("Raw keypoints over time")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
 
 # print("Embeddings")
 # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True, process_both_players=True)
@@ -217,10 +217,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
 # classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
 # print("-----------")
 
-# print("Normalized keypoints over time")
-# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
-# classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-# print("-----------")
+print("Normalized keypoints over time")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
+classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+print("-----------")
 
 print("Normalized keypoints and player midpoints over time")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
