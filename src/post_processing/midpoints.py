@@ -15,14 +15,6 @@ def get_table_midpoints(df):
 
     return table_midpoints
 
-def get_ball_midpoints(df):
-    table_midpoints = []
-    for _, row in df.iterrows():
-        table_boxes_row = ast.literal_eval(row["Table boxes"])
-        table_midpoints.append([(table_boxes_row[0][0] + table_boxes_row[0][2]) / 2, table_boxes_row[0][1]])
-
-    return table_midpoints
-
 def compute_player_midpoints(df, table_midpoints):
     paths = []
     event_frames = []
@@ -37,6 +29,8 @@ def compute_player_midpoints(df, table_midpoints):
     right_racket_boxes = []
     left_racket_scores = []
     right_racket_scores = []
+    ball_boxes = []
+    ball_scores = []
     
     
     for idx, row in df.iterrows():
@@ -45,6 +39,8 @@ def compute_player_midpoints(df, table_midpoints):
         people_boxes_row = ast.literal_eval(row["People boxes"])
         racket_boxes_row = ast.literal_eval(row["Racket boxes"])
         racket_scores_row = ast.literal_eval(row["Racket scores"])
+        ball_boxes_row = ast.literal_eval(row["Ball boxes"])
+        ball_scores_row = ast.literal_eval(row["Ball scores"])
         
         TABLE_MIDPOINT = table_midpoints[idx]
 
@@ -84,13 +80,25 @@ def compute_player_midpoints(df, table_midpoints):
             right_racket_boxes.append([])
         if len(right_racket_scores) <= idx:
             right_racket_scores.append([])
+            
+        # Ball
+        for i, ball in enumerate(ball_boxes_row):
+            if len(ball_boxes) <= idx:
+                ball_boxes.append(ball)
+                ball_scores.append(ball_scores_row[i])
         
+        if len(ball_boxes) <= idx:
+            ball_boxes.append([])
+        if len(ball_scores) <= idx:
+            ball_scores.append([])
+        
+
         if added:
             paths.append(path)
             event_frames.append(event_frame)
             sequence_frames.append(sequence_frame)
     
-    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores
+    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores
 
 def get_hips(keypoints_left, keypoints_right):
     ll_hip = []     # Left player, left hip
@@ -164,7 +172,7 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
 
 table_midpoints = get_table_midpoints(df)
-paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores = compute_player_midpoints(df, table_midpoints)
+paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores = compute_player_midpoints(df, table_midpoints)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
 left_mid_normalized, right_mid_normalized = get_normalized(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
@@ -180,7 +188,8 @@ data = {
     'Event frame': event_frames,
     'Sequence frame': sequence_frames,
     'Table midpoint': table_midpoints, 
-    #'Ball position': ,
+    'Ball boxes': ball_boxes,
+    'Ball scores': ball_scores,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
     'Left bbox': left_bboxes,
