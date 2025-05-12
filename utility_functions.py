@@ -78,13 +78,23 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
 
 
 def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="last"):
+    if frame == '9226':
+         pass
+    
+    
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+    idx = event_row.index[0]
+    pos = df.index.get_loc(idx)
     
     score1 = event_row.iloc[0]["Left score"]
     score2 = event_row.iloc[0]["Right score"]
     
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} mid-normalized"
     features = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
+    if add_midpoints:
+        midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
+        features = np.concatenate((features, midpoint))
+
     score = event_row.iloc[0][f"{player.capitalize()} score"]
         
     if missing_strat == "default":
@@ -115,8 +125,6 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
 
     elif missing_strat == "last": # instead of this, could the function be called recursively?
         if score < 0.9:
-            idx = event_row.index[0]
-            pos = df.index.get_loc(idx)
             not_found = True
             rows_back = 1
 
@@ -133,25 +141,24 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
                         features = np.concatenate((features, midpoint))
                 else:
                     rows_back += 1
-
-            if add_rackets:
-                racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
-                
-                if not racket:
-                    rows_back += 1
-                else:
-                    not_found = False
-                    
-                features = np.concatenate((features, racket))
-            
-            return features
-            
-    if add_midpoints:
-        midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-        features = np.concatenate((features, midpoint))
     
     if add_rackets:
-        racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
+        not_found = True
+        rows_back = 0
+        
+        while not_found:
+            prev_row = df.iloc[pos - rows_back]
+            racket = ast.literal_eval(prev_row[f"{player.capitalize()} racket"])
+            
+            if racket:
+                not_found = False
+            else:
+                rows_back += 1
+                
+            if pos - rows_back < 0:
+                racket = np.array([-1, -1, -1, -1])
+                not_found = False
+        
         features = np.concatenate((features, racket))
     
     return features
@@ -267,12 +274,14 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         else:
             for sequence_frame in sequence_frames:
                 features = compose_features(df, frame, sequence_frame, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_embeddings)
-            
+        
         if features is not None:
             feature_list.append(features)
             labels.append(label)
             
     #print(skipped_frames)
+    
+    
             
     return feature_list, labels
 
