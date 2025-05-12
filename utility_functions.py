@@ -77,33 +77,77 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(event_row, raw, player, add_midpoints, missing_strat="replace"):
+def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="default"):
+    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     
     score1 = event_row.iloc[0]["Left score"]
     score2 = event_row.iloc[0]["Right score"]
     
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} mid-normalized"
+    features = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
     score = event_row.iloc[0][f"{player.capitalize()} score"]
         
     if missing_strat == "default":
         if score1 < 0.9 or score2 < 0.9:
             return None
         
+        if add_rackets:
+            racket1 = ast.literal_eval(event_row.iloc[0]["Left racket"])
+            racket2 = ast.literal_eval(event_row.iloc[0]["Right racket"])
+            if not racket1 or not racket2:
+                return None
+            
     elif missing_strat == "replace":
         if score < 0.9:
-            keypoints = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
+            features = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
+
+            if add_midpoints:
+                midpoint = np.array([-1, -1])
+                features = np.concatenate((features, midpoint))
+
+            if add_rackets:
+                racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
+                if not racket:
+                    racket = np.array([-1, -1, -1, -1])
+                features = np.concatenate((features, racket))
+                
+            return features
+        
+    elif missing_strat == "last":
+        if score < 0.9:
+            features = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
             if add_midpoints:
                 midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-                return np.concatenate((keypoints, midpoint))
-            else:
-                return keypoints
+                features = np.concatenate((features, midpoint))
 
-    keypoints = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
+            if add_rackets:
+                idx = event_row.index[0]
+                pos = df.index.get_loc(idx)
+
+                not_found = True
+                rows_back = 0
+                while not_found:
+                    prev_row = df.iloc[pos - rows_back]
+                    racket = ast.literal_eval(prev_row.iloc[0][f"{player.capitalize()} racket"])
+                    
+                    if not racket:
+                        rows_back += 1
+                    else:
+                        not_found = False
+                    
+                features = np.concatenate((features, racket))
+            
+            return features
+            
     if add_midpoints:
         midpoint = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} player midpoint"])
-        return np.concatenate((keypoints, midpoint))
-    else:
-        return keypoints
+        features = np.concatenate((features, midpoint))
+    
+    if add_rackets:
+        racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
+        features = np.concatenate((features, racket))
+    
+    return features
 
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -112,7 +156,7 @@ def get_embeddings(video_number, frame, player=None, single_player=False, mirror
     file_path_of_interest = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
     if single_player:
         if not os.path.exists(file_path_of_interest):
-            return None # Is this the right thing to do?
+            return None
     else:
         file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
         file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
@@ -139,7 +183,7 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
     if add_keypoints:
         if frame == "14460":
             pass
-        keypoints = get_keypoints(event_row, raw, player, add_midpoints)
+        keypoints = get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets)
         if keypoints is None:
             return None
 
@@ -156,9 +200,10 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
         table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
         features = concatenate_features(features, table_midpoint) 
         
-    #if add_ball:
+    if add_ball:
+        ball = ast.literal_eval(event_row.iloc[0][f"Ball boxes"])
+        features = concatenate_features(features, ball)
         
-    
     return features
 
 

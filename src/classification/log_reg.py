@@ -182,14 +182,20 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
     #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
-    
+
     return probabilities
 
-print("Raw keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
+# print("Raw keypoints")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
+# probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# #plot_probabilities(probs, len(X_test), label_encoder)
+# print("-----------")
+
+# print("Raw keypoints with rackets")
+# X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_rackets=True, process_both_players=True)
+# probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+# #plot_probabilities(probs, len(X_test), label_encoder)
+# print("-----------")
 
 # print("Raw keypoints over time")
 # X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
