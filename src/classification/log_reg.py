@@ -188,7 +188,13 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
 print("Raw keypoints")
 X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
 probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-#plot_probabilities(probs, len(X_test), label_encoder)
+plot_probabilities(probs, len(X_test), label_encoder)
+print("-----------")
+
+print("Raw keypoints with ball")
+X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_ball=True, process_both_players=True)
+probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+plot_probabilities(probs, len(X_test), label_encoder)
 print("-----------")
 
 print("Raw keypoints with rackets")

@@ -77,7 +77,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="last"):
+def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="default"):
     if frame == '9226':
          pass
     
@@ -163,6 +163,30 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
     
     return features
 
+def get_ball(df, frame, sequence_frame, features):
+    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+    idx = event_row.index[0]
+    pos = df.index.get_loc(idx)
+    not_found = True
+    rows_back = 0
+        
+    while not_found:
+        prev_row = df.iloc[pos - rows_back]
+        ball = ast.literal_eval(prev_row['Ball midpoints'])
+        
+        if ball:
+            not_found = False
+        else:
+            rows_back += 1
+            
+        if pos - rows_back < 0:
+            ball = np.array([-1, -1])
+            not_found = False
+    
+    features = concatenate_features(features, ball)
+    
+    return features
+    
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
     mirrored = "m" if mirror else ""
@@ -214,10 +238,6 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
         table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
         features = concatenate_features(features, table_midpoint) 
         
-    if add_ball:
-        ball = ast.literal_eval(event_row.iloc[0][f"Ball boxes"])
-        features = concatenate_features(features, ball)
-        
     return features
 
 
@@ -255,6 +275,15 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                     features = None
                     break
                 features = frame_feature
+            # Ball
+            if add_ball:
+                for sequence_frame in sequence_frames:
+                    frame_feature = get_ball(df=df, frame=frame, sequence_frame=sequence_frame, features=features)
+                    if frame is None:
+                        skipped_frames += 1
+                        features = None
+                        break
+                    features = frame_feature
             # Table
             for sequence_frame in sequence_frames: 
                 frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=add_table, add_ball=False, add_embeddings=False, mirror=mirror)
