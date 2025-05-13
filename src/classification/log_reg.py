@@ -185,70 +185,30 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
 
     return probabilities
 
-print("Raw keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
+experiments = [
+    {"desc": "Raw keypoints", "kwargs":                                 {"raw": True, "add_keypoints": True}},
+    {"desc": "Raw keypoints with rackets", "kwargs":                    {"raw": True, "add_keypoints": True, "add_rackets": True}},
+    {"desc": "Raw keypoints with ball", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "Raw keypoints over time", "kwargs":                       {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    {"desc": "Raw keypoints, rackets, and ball over time", "kwargs":    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "norm keypoints", "kwargs":                                {"add_keypoints": True}},
+    {"desc": "norm keypoints with rackets", "kwargs":                   {"add_keypoints": True, "add_rackets": True}},
+    {"desc": "norm keypoints with ball", "kwargs":                      {"add_keypoints": True, "add_ball": True}},
+    {"desc": "norm keypoints with midpoints", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    {"desc": "norm keypoints, midpoints, and table", "kwargs":          {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}}, # Best with default replace strategy, suggesting that if data was accurate, this would be best
+    {"desc": "norm keypoints over time", "kwargs":                      {"long_sequence": True, "add_keypoints": True}},
+    {"desc": "norm keypoints, rackets, and ball over time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "norm keypoints, midpoints, table, rackets, and ball over time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "Embeddings", "kwargs":                                    {"add_embeddings": True}},
+]
 
-print("Raw keypoints with ball")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_ball=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
-
-print("Raw keypoints with rackets")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(raw=True, add_keypoints=True, add_rackets=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-#plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
-
-print("Raw keypoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, raw=True, add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Embeddings")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Embeddings over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Normalized keypoints")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Normalized keypoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Normalized keypoints and player midpoints over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
-
-print("Normalized keypoints, player midpoints and table position over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
-
-print("Normalized keypoints, player midpoints, table position and rackets over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_rackets=True, add_table=True, process_both_players=True)
-probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-plot_probabilities(probs, len(X_test), label_encoder)
-print("-----------")
-
-print("Normalized keypoints, player midpoints, table position and embeddings over time")
-X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(long_sequence=True, add_keypoints=True, add_midpoints=True, add_table=True, add_embeddings=True, process_both_players=True)
-classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
-print("-----------")
+for exp in experiments:
+    print(exp["desc"])
+    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
+    probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    if "probs" in locals():
+        plot_probabilities(probs, len(X_test), label_encoder)
+    print("-----------")
 
 
 if per_player_classifiers:
