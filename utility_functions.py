@@ -418,11 +418,8 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     plt.show()
     
     
-def plot_probabilities(probs, num_samples, label_encoder):
-    #num_classes = len(label_encoder.classes_)
-    num_classes = 6
-    
-    sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
+def plot_probabilities(probs, num_samples):
+    sample_probs = [list(map(float, entry['probabilities'].values())) for entry in probs]
     highest_probs = [max(p) for p in sample_probs]
     lowest_probs = [min(p) for p in sample_probs]
     diff_probs = [high - low for high, low in zip(highest_probs, lowest_probs)]

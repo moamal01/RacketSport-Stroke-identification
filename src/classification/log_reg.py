@@ -209,7 +209,7 @@ for exp in experiments:
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower() + ".json"
     save_predictions(probs, filename, ".")
     if "probs" in locals():
-        plot_probabilities(probs, len(X_test), label_encoder)
+        plot_probabilities(probs, len(X_test))
     print("-----------")
 
 
