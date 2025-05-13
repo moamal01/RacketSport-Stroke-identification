@@ -84,7 +84,7 @@ def compute_player_midpoints(df, table_midpoints):
         # Ball
         for i, ball in enumerate(ball_boxes_row):
             if len(ball_boxes) <= idx:
-                ball_boxes.append(ball)
+                ball_boxes.append(get_center(ball))
                 ball_scores.append(ball_scores_row[i])
         
         if len(ball_boxes) <= idx:
@@ -112,6 +112,12 @@ def get_hips(keypoints_left, keypoints_right):
         rr_hip.append(keypoints_right[i][12])
     
     return ll_hip, lr_hip, rl_hip, rr_hip
+
+def get_center(box):
+    center_x = (box[0] + box[2]) / 2
+    center_y = (box[1] + box[3]) / 2
+    
+    return [center_x, center_y]
 
 def get_midpoint(left_hips, right_hips):
     midpoints = []
@@ -187,7 +193,7 @@ data = {
     'Event frame': event_frames,
     'Sequence frame': sequence_frames,
     'Table midpoint': table_midpoints, 
-    'Ball boxes': ball_boxes,
+    'Ball midpoints': ball_boxes,
     'Ball scores': ball_scores,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
