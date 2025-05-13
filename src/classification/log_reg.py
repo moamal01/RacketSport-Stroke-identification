@@ -7,6 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from collections import Counter
 import os
 import sys
+import json
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -28,16 +29,16 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rack
     labels = []
 
     for video in videos:
-        data, video_labels = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels, frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
+            data, video_labels, frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
-    return results, labels
+    return results, labels, frames
 
 
 def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=False):
@@ -50,7 +51,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
     else:
         sequence_frames = [0]
     
-    all_data, all_labels = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+    all_data, all_labels, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -62,14 +63,14 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels, frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set or label in "no_stroke": # Change this
@@ -92,9 +93,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
             print("⚠️ Not all classes have ≥2 samples. Falling back to non-stratified split.")
 
         # First: 90% temp, 10% test
-        X_temp, X_test, y_temp, y_test = train_test_split(
-            all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat
-        )
+        X_temp, X_test, y_temp, y_test = train_test_split(all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat)
 
         if can_stratify(y_temp):
             strat_temp = y_temp
@@ -103,13 +102,11 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
             print("⚠️ Not all classes in temp split have ≥2 samples. Validation will be non-stratified.")
 
         # Then: 10% of 90% (i.e. 10% overall) for validation
-        X_train, X_val, y_train, y_val = train_test_split(
-            X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp
-        )
+        X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp)
 
-    return X_train, y_train, X_val, y_val, X_test, y_test, label_encoder
+    return X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder
 
-def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
+def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder):
     probabilities = []
     # Print stats
     print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
@@ -158,14 +155,13 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
                 })
     else:
         for i in range(len(X_test)):
-            for j in range(len(y_test_probs[i])):
-                # probs, true_label
-                probabilities.append({
-                    "predicted_class": class_names[j],
-                    "probability": y_test_probs[i][j],
-                    "probabilities": y_test_probs[i],
-                    "true_class": class_names[y_test[i]]
-                })
+            most_probable_index = np.argmax(y_test_probs[i])
+            probabilities.append({
+                "true_class": class_names[y_test[i]],
+                "frame": frames[i],
+                "predicted_class": class_names[most_probable_index],
+                "probabilities": dict(zip(class_names, y_test_probs[i].tolist()))
+            })
 
     # Train Random Forest
     clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
@@ -184,6 +180,10 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder):
     #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
 
     return probabilities
+
+def save_predictions(data, filename, output_dir):
+    with open(os.path.join(output_dir, filename), "w") as f:
+        json.dump(data, f, indent=2)
 
 experiments = [
     {"desc": "Raw keypoints", "kwargs":                                 {"raw": True, "add_keypoints": True}},
@@ -204,8 +204,10 @@ experiments = [
 
 for exp in experiments:
     print(exp["desc"])
-    X_train, y_train, X_val, y_val, X_test, y_test, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
-    probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, label_encoder)
+    X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
+    probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
+    filename = exp["desc"].replace(" ", "_").replace(",", "").lower() + ".json"
+    save_predictions(probs, filename, ".")
     if "probs" in locals():
         plot_probabilities(probs, len(X_test), label_encoder)
     print("-----------")

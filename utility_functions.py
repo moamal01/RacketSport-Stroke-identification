@@ -268,10 +268,10 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
     keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
     skipped_frames = 0
+    frames = []
 
     for frame, value in timestamps.items():
-        if frame == "14460":
-            pass
+        frames.append(int(frame))
 
         if value in {"other", "otherotherother"}:
             continue
@@ -325,7 +325,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
     
     
             
-    return feature_list, labels
+    return feature_list, labels, frames
 
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
