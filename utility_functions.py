@@ -186,6 +186,19 @@ def get_ball(df, frame, sequence_frame, features):
     features = concatenate_features(features, ball)
     
     return features
+
+def cheat_ball(video_number, frame, features):
+    with open(f"data/video_{video_number}/ball_markup.json", "r") as file:
+        data = json.load(file)
+
+    frame_str = str(frame)
+    ball = data.get(frame_str)
+    
+    if ball:
+        features = concatenate_features(features, ball)
+
+    return features
+    
     
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
@@ -406,9 +419,10 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     
     
 def plot_probabilities(probs, num_samples, label_encoder):
-    num_classes = len(label_encoder.classes_)
-
-    sample_probs = [probs[i * 6]['probabilities'] for i in range(num_samples)]
+    #num_classes = len(label_encoder.classes_)
+    num_classes = 6
+    
+    sample_probs = [probs[i * num_classes]['probabilities'] for i in range(num_samples)]
     highest_probs = [max(p) for p in sample_probs]
     lowest_probs = [min(p) for p in sample_probs]
     diff_probs = [high - low for high, low in zip(highest_probs, lowest_probs)]
