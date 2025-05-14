@@ -127,7 +127,6 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encod
     most_common_class = max(class_counts, key=class_counts.get)
     baseline_acc = class_counts[most_common_class] / len(y_train)
     print(f"Baseline Accuracy: {baseline_acc:.2f}")
-    joblib.dump(clf, "logistic_regression_model.joblib")
 
     # Validation accuracy
     if X_val is not None:
@@ -181,7 +180,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encod
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
 
-    return probabilities, y_test_decoded, y_test_pred_decoded
+    return probabilities, y_test_decoded, y_test_pred_decoded, clf, clf_rf
 
 def save_predictions(data, filename, output_dir):
     """Saves the prediction data as a JSON file."""
@@ -215,7 +214,7 @@ for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
     
     X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
-    probs, y_test_decoded, y_test_pred_decoded = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
+    probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
     
     # Prepare filenames and directories
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
@@ -223,6 +222,8 @@ for exp in experiments:
 
     plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
     save_predictions(probs, f"{save_dir}/{filename}.json", ".")
+    joblib.dump(log_clf, f"{save_dir}/logistic_regression_model.joblib")
+    joblib.dump(rf_clf, f"{save_dir}/random_forrest_model.joblib")
 
     if "probs" in locals():
         plot_probabilities(probs, len(X_test))
