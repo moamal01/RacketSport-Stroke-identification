@@ -10,6 +10,7 @@ import sys
 import json
 import joblib
 import time
+from contextlib import redirect_stdout
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -213,22 +214,37 @@ experiments = [
 for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
     
-    X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
-    probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
-    
     # Prepare filenames and directories
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-    save_dir = f"results/default/{timestamp}/{filename}"  # The directory where plots will be saved
+    save_dir = f"results/default/{timestamp}/{filename}"
+    os.makedirs(save_dir, exist_ok=True)
 
-    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
-    save_predictions(probs, f"{save_dir}/{filename}.json", ".")
-    joblib.dump(log_clf, f"{save_dir}/logistic_regression_model.joblib")
-    joblib.dump(rf_clf, f"{save_dir}/random_forrest_model.joblib")
+    log_path = os.path.join(f"results/default/{timestamp}", "log.txt")
+    
+    # Open the log file in append mode ("a") to avoid overwriting
+    with open(log_path, "a") as log_file, redirect_stdout(log_file):
+        print(f"Running experiment: {exp['desc']}")
+        
+        X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(
+            **exp["kwargs"], process_both_players=True
+        )
 
-    if "probs" in locals():
-        plot_probabilities(probs, len(X_test))
+        probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(
+            X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder
+        )
 
-    print("-----------")
+        plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
+        save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
+        joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
+        joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
+
+        if "probs" in locals():
+            plot_probabilities(probs, len(X_test))
+
+        print("-----------")  # This also goes to the file
+
+    print(f"Finished: {exp['desc']}, log saved to: {log_path}")
+
 
 
 if per_player_classifiers:
