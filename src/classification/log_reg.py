@@ -8,6 +8,8 @@ from collections import Counter
 import os
 import sys
 import json
+import joblib
+import time
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -22,6 +24,7 @@ videos = [1, 2, 3]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 test_on_no_stroke = False
+timestamp = time.strftime("%Y%m%d_%H%M%S")
 
 # Generic processing function
 def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, long_edition=False):
@@ -124,6 +127,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encod
     most_common_class = max(class_counts, key=class_counts.get)
     baseline_acc = class_counts[most_common_class] / len(y_train)
     print(f"Baseline Accuracy: {baseline_acc:.2f}")
+    joblib.dump(clf, "logistic_regression_model.joblib")
 
     # Validation accuracy
     if X_val is not None:
@@ -173,43 +177,56 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encod
 
     rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
     print(f"Random Forest Test Accuracy: {rf_test_acc:.2f}")
-
-    # Confusion Matrix
+    
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
-    #plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, True)
 
-    return probabilities
+    return probabilities, y_test_decoded, y_test_pred_decoded
 
 def save_predictions(data, filename, output_dir):
+    """Saves the prediction data as a JSON file."""
+    os.makedirs(output_dir, exist_ok=True)
     with open(os.path.join(output_dir, filename), "w") as f:
         json.dump(data, f, indent=2)
 
-experiments = [
-    {"desc": "Raw keypoints", "kwargs":                                 {"raw": True, "add_keypoints": True}},
-    {"desc": "Raw keypoints with rackets", "kwargs":                    {"raw": True, "add_keypoints": True, "add_rackets": True}},
-    {"desc": "Raw keypoints with ball", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "Raw keypoints over time", "kwargs":                       {"long_sequence": True, "raw": True, "add_keypoints": True}},
-    {"desc": "Raw keypoints, rackets, and ball over time", "kwargs":    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "norm keypoints", "kwargs":                                {"add_keypoints": True}},
-    {"desc": "norm keypoints with rackets", "kwargs":                   {"add_keypoints": True, "add_rackets": True}},
-    {"desc": "norm keypoints with ball", "kwargs":                      {"add_keypoints": True, "add_ball": True}},
-    {"desc": "norm keypoints with midpoints", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-    {"desc": "norm keypoints, midpoints, and table", "kwargs":          {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}}, # Best with default replace strategy, suggesting that if data was accurate, this would be best
-    {"desc": "norm keypoints over time", "kwargs":                      {"long_sequence": True, "add_keypoints": True}},
-    {"desc": "norm keypoints, rackets, and ball over time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "norm keypoints, midpoints, table, rackets, and ball over time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "Embeddings", "kwargs":                                    {"add_embeddings": True}},
-]
+    #print(f"Predictions saved to {os.path.join(output_dir, filename)}")
 
+experiments = [
+    {"desc": "embeddings", "kwargs":                            {"add_embeddings": True}},
+    {"desc": "raw_keypoints", "kwargs":                         {"raw": True, "add_keypoints": True}},
+    {"desc": "raw_keypoints_rackets", "kwargs":                 {"raw": True, "add_keypoints": True, "add_rackets": True}},
+    {"desc": "raw_keypoints_ball", "kwargs":                    {"raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "raw_keypoints_embeddings", "kwargs":              {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    {"desc": "raw_keypoints_time", "kwargs":                    {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    {"desc": "raw_keypoints_rackets_ball_time", "kwargs":       {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "norm_keypoints", "kwargs":                        {"add_keypoints": True}},
+    {"desc": "norm_keypoints_rackets", "kwargs":                {"add_keypoints": True, "add_rackets": True}},
+    {"desc": "norm_keypoints_ball", "kwargs":                   {"add_keypoints": True, "add_ball": True}},
+    {"desc": "norm_keypoints_embeddings", "kwargs":             {"add_keypoints": True, "add_embeddings": True}},
+    {"desc": "norm_keypoints_time", "kwargs":                   {"long_sequence": True, "add_keypoints": True}},
+    {"desc": "norm_keypoints_midpoints_time", "kwargs":         {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    {"desc": "norm_keypoints_midpoints_table_time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+    {"desc": "norm_keypoints_rackets_ball_time", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "norm_keypoints_all_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "norm_keypoints_all_embeddings_time", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
+]
+    
 for exp in experiments:
-    print(exp["desc"])
+    print(f"Running experiment: {exp['desc']}")
+    
     X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(**exp["kwargs"], process_both_players=True)
-    probs = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
-    filename = exp["desc"].replace(" ", "_").replace(",", "").lower() + ".json"
-    save_predictions(probs, filename, ".")
+    probs, y_test_decoded, y_test_pred_decoded = classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder)
+    
+    # Prepare filenames and directories
+    filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
+    save_dir = f"results/default/{timestamp}/{filename}"  # The directory where plots will be saved
+
+    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
+    save_predictions(probs, f"{save_dir}/{filename}.json", ".")
+
     if "probs" in locals():
         plot_probabilities(probs, len(X_test))
+
     print("-----------")
 
 

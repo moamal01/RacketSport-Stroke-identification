@@ -348,7 +348,7 @@ def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
 
 
 
-def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: bool=False) -> None:
+def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", concatenate: bool=False) -> None:
     """Plots a confusion matrix comparing predicted labels to test labels.
 
     Args:
@@ -370,7 +370,14 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, concatenate: boo
 
     plt.xticks(rotation=45, ha="right")
     plt.tight_layout()
-    plt.show()
+    
+    if save_dir:
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, "confusion_matrix.png")
+        plt.savefig(save_path)
+        #print(f"Confusion matrix saved to {save_path}")
+    
+    #plt.show()
 
 
 
@@ -440,4 +447,4 @@ def plot_probabilities(probs, num_samples):
     plt.ylim(0, 1.05)
     plt.legend()
     plt.tight_layout()
-    plt.show()
+    #plt.show()
