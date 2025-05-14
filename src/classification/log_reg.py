@@ -216,10 +216,10 @@ for exp in experiments:
     
     # Prepare filenames and directories
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-    save_dir = f"results/replace/{timestamp}/{filename}"
+    save_dir = f"results/fall_back/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
 
-    log_path = os.path.join(f"results/replace/{timestamp}", "log.txt")
+    log_path = os.path.join(f"results/fall_back/{timestamp}", "log.txt")
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
