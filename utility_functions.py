@@ -61,6 +61,9 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     if mirror:
             value = mirror_string(value)
 
+    if value == "right_forehand_loop right_leaning left_foot_lifted":
+        pass
+
     label = value.split(" ")[0]
     label_parts = label.split("_")
     player = label_parts[0]
@@ -267,8 +270,10 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
 
     keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
-    skipped_frames = 0
+    num_skipped_frames = 0
     frames = []
+    skipped_frames = []
+    
 
     for frame, value in timestamps.items():
         frames.append(int(frame))
@@ -284,7 +289,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             for sequence_frame in sequence_frames: 
                 frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
-                    skipped_frames += 1
+                    num_skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
@@ -293,7 +298,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                 for sequence_frame in sequence_frames:
                     frame_feature = get_ball(df=df, frame=frame, sequence_frame=sequence_frame, features=features)
                     if frame is None:
-                        skipped_frames += 1
+                        num_skipped_frames += 1
                         features = None
                         break
                     features = frame_feature
@@ -301,7 +306,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             for sequence_frame in sequence_frames: 
                 frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=add_table, add_ball=False, add_embeddings=False, mirror=mirror)
                 if frame_feature is None:
-                    skipped_frames += 1
+                    num_skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
@@ -309,7 +314,7 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             for sequence_frame in sequence_frames: 
                 frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
-                    skipped_frames += 1
+                    num_skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
@@ -320,12 +325,15 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         if features is not None:
             feature_list.append(features)
             labels.append(label)
+        else:
+            skipped_frames.append(int(frame))
+            
             
     #print(skipped_frames)
     
     
             
-    return feature_list, labels, frames
+    return feature_list, labels, frames, skipped_frames
 
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
