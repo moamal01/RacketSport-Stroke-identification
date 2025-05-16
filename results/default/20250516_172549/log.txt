@@ -190,3 +190,9 @@ Baseline Accuracy: 0.28
 Test Accuracy: 0.42
 Random Forest Test Accuracy: 0.67
 -----------
+Running experiment: 17_norm_keypoints_all_embeddings_time_add_scores
+Train samples: 69, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.28
+Test Accuracy: 0.42
+Random Forest Test Accuracy: 0.67
+-----------

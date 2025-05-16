@@ -80,7 +80,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="default"):
+def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="replace"):
     Threshold = 0.9
         
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
@@ -102,7 +102,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
     if add_scores:
         features = np.concatenate((features, np.array([score])))
 
-
+    # Missing strategies
     if missing_strat == "default":
         if score1 < Threshold or score2 < Threshold:
             return None
@@ -132,17 +132,17 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
                 score = np.array([-1])
                 features = np.concatenate((features, score))
 
-            if add_rackets:
-                racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
-                if not racket:
-                    racket = np.array([-1, -1, -1, -1])
-                features = np.concatenate((features, racket))
-                
-                if add_scores:
-                    racket_score = np.array([-1])
-                    features = np.concatenate((features, racket_score))
-                    
-            return features
+        if add_rackets:
+            racket = ast.literal_eval(event_row.iloc[0][f"{player.capitalize()} racket"])
+            if not racket:
+                racket = np.array([-1, -1, -1, -1])
+            features = np.concatenate((features, racket))
+            
+            if add_scores:
+                racket_score = np.array([-1])
+                features = np.concatenate((features, racket_score))
+             
+        return features
 
     elif missing_strat == "last":
         if score < Threshold:
