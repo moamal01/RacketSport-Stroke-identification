@@ -80,18 +80,16 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="default"):
-    if frame == '9226':
-         pass
-    
-    
+def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, missing_strat="default"):
+    Threshold = 0.9
+        
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     idx = event_row.index[0]
     pos = df.index.get_loc(idx)
-    
+
     score1 = event_row.iloc[0]["Left score"]
     score2 = event_row.iloc[0]["Right score"]
-    
+
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} mid-normalized"
     features = np.array(ast.literal_eval(event_row.iloc[0][column]))[:, :2].flatten()
     if add_midpoints:
@@ -99,19 +97,19 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
         features = np.concatenate((features, midpoint))
 
     score = event_row.iloc[0][f"{player.capitalize()} score"]
-        
+
     if missing_strat == "default":
-        if score1 < 0.9 or score2 < 0.9:
+        if score1 < Threshold or score2 < Threshold:
             return None
-        
+
         if add_rackets:
             racket1 = ast.literal_eval(event_row.iloc[0]["Left racket"])
             racket2 = ast.literal_eval(event_row.iloc[0]["Right racket"])
             if not racket1 or not racket2:
                 return None
-            
+
     elif missing_strat == "replace":
-        if score < 0.9:
+        if score < Threshold:
             features = np.array([[-1, -1] for _ in range(17)])[:, :2].flatten()
 
             if add_midpoints:
@@ -126,8 +124,8 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
 
             return features
 
-    elif missing_strat == "last": # instead of this, could the function be called recursively?
-        if score < 0.9:
+    elif missing_strat == "last":
+        if score < Threshold:
             not_found = True
             rows_back = 1
 
@@ -135,7 +133,7 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
                 prev_row = df.iloc[pos - rows_back]
                 prev_score = prev_row[f"{player.capitalize()} score"]
 
-                if prev_score > 0.9:
+                if prev_score > Threshold:
                     features = np.array(ast.literal_eval(prev_row[column]))[:, :2].flatten()
                     not_found = False
 
@@ -144,11 +142,11 @@ def get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rac
                         features = np.concatenate((features, midpoint))
                 else:
                     rows_back += 1
-    
+
     if add_rackets:
         not_found = True
         rows_back = 0
-        
+
         while not_found:
             prev_row = df.iloc[pos - rows_back]
             racket = ast.literal_eval(prev_row[f"{player.capitalize()} racket"])
@@ -176,18 +174,18 @@ def get_ball(df, frame, sequence_frame, features):
     while not_found:
         prev_row = df.iloc[pos - rows_back]
         ball = ast.literal_eval(prev_row['Ball midpoints'])
-        
+
         if ball:
             not_found = False
         else:
             rows_back += 1
-            
+
         if pos - rows_back < 0:
             ball = np.array([-1, -1])
             not_found = False
-    
+
     features = concatenate_features(features, ball)
-    
+
     return features
 
 def cheat_ball(video_number, frame, features):
@@ -196,13 +194,20 @@ def cheat_ball(video_number, frame, features):
 
     frame_str = str(frame)
     ball = data.get(frame_str)
-    
+
     if ball:
         features = concatenate_features(features, ball)
 
     return features
+
+
+def get_table(df, frame, sequence_frame, features):
+    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
+    table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
+    features = concatenate_features(features, table_midpoint) 
     
-    
+    return features
+
 
 def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
     mirrored = "m" if mirror else ""
@@ -229,15 +234,13 @@ def concatenate_features(features, new_features):
     return features
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_embeddings=False, mirror=False): # Should have add_keypoints as well       
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == sequence_frame)]
     if event_row.empty:
         return
 
     if add_keypoints:
-        if frame == "14460":
-            pass
-        keypoints = get_keypoints(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets)
+        keypoints = get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets)
         if keypoints is None:
             return None
 
@@ -249,10 +252,6 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
             return None
         
         features = concatenate_features(features, embeddings) 
-        
-    if add_table:
-        table_midpoint = ast.literal_eval(event_row.iloc[0][f"Table midpoint"])
-        features = concatenate_features(features, table_midpoint) 
         
     return features
 
@@ -270,7 +269,6 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
 
     keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
-    num_skipped_frames = 0
     frames = []
     skipped_frames = []
     
@@ -287,9 +285,8 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
         if long_edition:
             # Left player features
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
-                    num_skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
@@ -298,23 +295,21 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
                 for sequence_frame in sequence_frames:
                     frame_feature = get_ball(df=df, frame=frame, sequence_frame=sequence_frame, features=features)
                     if frame is None:
-                        num_skipped_frames += 1
                         features = None
                         break
                     features = frame_feature
             # Table
-            for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="left", features=features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_table=add_table, add_ball=False, add_embeddings=False, mirror=mirror)
-                if frame_feature is None:
-                    num_skipped_frames += 1
-                    features = None
-                    break
-                features = frame_feature
+            if add_table:
+                for sequence_frame in sequence_frames: 
+                    frame_feature = get_table(df=df, frame=frame, sequence_frame=sequence_frame, features=features)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
             # Right player features
             for sequence_frame in sequence_frames: 
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=False, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirror)
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=sequence_frame, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_embeddings=add_embeddings, mirror=mirror)
                 if frame_feature is None:
-                    num_skipped_frames += 1
                     features = None
                     break
                 features = frame_feature
@@ -327,11 +322,6 @@ def get_features(video_number, sequence_frames, raw=False, add_keypoints=False, 
             labels.append(label)
         else:
             skipped_frames.append(int(frame))
-            
-            
-    #print(skipped_frames)
-    
-    
             
     return feature_list, labels, frames, skipped_frames
 

@@ -1,8 +1,6 @@
 /videos
 /cropped
-/cropped_old
 /embeddings
-/embeddings_old
 /plots
 .DS_Store
 __pycache__

@@ -2,7 +2,7 @@ import cv2
 import json
 
 # File paths
-json_path = "data/events/events_markup2.json"
+json_path = "data/extended_events/events_markup2.json"
 video_path = "videos/game_2f.mp4"
 
 # Load the event frames from JSON
@@ -18,7 +18,7 @@ if not cap.isOpened():
 
 # Process each event frame
 for frame_num, label in sorted(event_frames.items(), key=lambda x: int(x[0])):
-    if "right_forehand_loop" not in label :
+    if "no_stroke" not in label :
         continue  # Skip other events
 
     start_frame = max(0, int(frame_num) - 20)  # Ensure start frame is non-negative
