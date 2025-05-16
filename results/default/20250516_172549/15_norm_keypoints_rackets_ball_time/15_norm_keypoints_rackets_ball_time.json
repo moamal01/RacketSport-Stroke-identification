@@ -1,0 +1,431 @@
+[
+  {
+    "true_class": "left_forehand",
+    "frame": 5210,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.4430412081580804,
+      "left_forehand": 0.32214999228306135,
+      "left_serve": 0.05473981961630284,
+      "right_backhand": 0.06552651192337583,
+      "right_forehand": 0.03510923836901686,
+      "right_serve": 0.07943322965016282
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 5356,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.08523487916743373,
+      "left_forehand": 0.5420419958057668,
+      "left_serve": 0.08982553987236144,
+      "right_backhand": 0.14334215619313334,
+      "right_forehand": 0.10601060502938817,
+      "right_serve": 0.033544823931916413
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 6624,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.054920393150261634,
+      "left_forehand": 0.16892438558219264,
+      "left_serve": 0.3899322721525318,
+      "right_backhand": 0.2747487709220191,
+      "right_forehand": 0.06760341032236661,
+      "right_serve": 0.04387076787062828
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 8268,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.2848989721052313,
+      "left_forehand": 0.2507429440349999,
+      "left_serve": 0.029475790621870814,
+      "right_backhand": 0.22464222543912993,
+      "right_forehand": 0.07034867080379188,
+      "right_serve": 0.13989139699497613
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 9705,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.5144763969453477,
+      "left_forehand": 0.06343675442965614,
+      "left_serve": 0.06704516975405468,
+      "right_backhand": 0.11357971535967294,
+      "right_forehand": 0.04697457813471046,
+      "right_serve": 0.1944873853765581
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 14021,
+    "predicted_class": "right_backhand",
+    "probabilities": {
+      "left_backhand": 0.1993907032749165,
+      "left_forehand": 0.07835032522604136,
+      "left_serve": 0.25938157905067244,
+      "right_backhand": 0.3642225261849636,
+      "right_forehand": 0.04582695339415428,
+      "right_serve": 0.05282791286925175
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 14203,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.08367750626256927,
+      "left_forehand": 0.45453638226755566,
+      "left_serve": 0.09724187630552399,
+      "right_backhand": 0.22751684086869048,
+      "right_forehand": 0.08463518722508594,
+      "right_serve": 0.052392207070574716
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 15333,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.2987256694935967,
+      "left_forehand": 0.3626434012295406,
+      "left_serve": 0.09384400773342856,
+      "right_backhand": 0.054448650826534994,
+      "right_forehand": 0.04107304181055263,
+      "right_serve": 0.14926522890634655
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 16385,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.4077068196290958,
+      "left_forehand": 0.24913146683055915,
+      "left_serve": 0.061257149601607226,
+      "right_backhand": 0.09492927683449492,
+      "right_forehand": 0.05941809426901585,
+      "right_serve": 0.12755719283522715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 21109,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.5276005321690749,
+      "left_forehand": 0.07214476455722543,
+      "left_serve": 0.053783811721105634,
+      "right_backhand": 0.12425894959453784,
+      "right_forehand": 0.04711343929716191,
+      "right_serve": 0.17509850266089416
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 23909,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.3223511357475646,
+      "left_forehand": 0.13387727366765872,
+      "left_serve": 0.09752423648823515,
+      "right_backhand": 0.18622482743086932,
+      "right_forehand": 0.0816129650267862,
+      "right_serve": 0.178409561638886
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 25947,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.3676504003847559,
+      "left_forehand": 0.18580104277734036,
+      "left_serve": 0.04296576853022523,
+      "right_backhand": 0.1858062706044842,
+      "right_forehand": 0.06021973359235267,
+      "right_serve": 0.15755678411084156
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 27379,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.44190366829210986,
+      "left_forehand": 0.07729356400079099,
+      "left_serve": 0.06532498277996904,
+      "right_backhand": 0.2609366119055704,
+      "right_forehand": 0.060202238032643275,
+      "right_serve": 0.0943389349889166
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 32535,
+    "predicted_class": "right_backhand",
+    "probabilities": {
+      "left_backhand": 0.17677409165200864,
+      "left_forehand": 0.09256857382368498,
+      "left_serve": 0.25901778082912774,
+      "right_backhand": 0.3696602597535439,
+      "right_forehand": 0.03873460188904079,
+      "right_serve": 0.063244692052594
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 32708,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.0906599803161312,
+      "left_forehand": 0.46133945122471065,
+      "left_serve": 0.06959292790412132,
+      "right_backhand": 0.15764417947881826,
+      "right_forehand": 0.08061643120161417,
+      "right_serve": 0.14014702987460417
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 32831,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.018850082225430064,
+      "left_forehand": 0.558921518630661,
+      "left_serve": 0.029285226843228186,
+      "right_backhand": 0.045210245701115384,
+      "right_forehand": 0.061361380091320916,
+      "right_serve": 0.2863715465082444
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 33796,
+    "predicted_class": "right_backhand",
+    "probabilities": {
+      "left_backhand": 0.15807789929691385,
+      "left_forehand": 0.10601702956425013,
+      "left_serve": 0.031435754989718054,
+      "right_backhand": 0.5731917233517576,
+      "right_forehand": 0.0621142579436933,
+      "right_serve": 0.06916333485366714
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 33959,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.34877867107926563,
+      "left_forehand": 0.22002209924726068,
+      "left_serve": 0.03071009486953754,
+      "right_backhand": 0.19945259257392434,
+      "right_forehand": 0.06282569702028505,
+      "right_serve": 0.13821084520972668
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 38938,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.24374815796135055,
+      "left_forehand": 0.18092274290895774,
+      "left_serve": 0.07069507698896353,
+      "right_backhand": 0.22062342767848742,
+      "right_forehand": 0.10513842525797845,
+      "right_serve": 0.1788721692042623
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 43196,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.050476574590847104,
+      "left_forehand": 0.271968704927931,
+      "left_serve": 0.49160797364480013,
+      "right_backhand": 0.057769960012717544,
+      "right_forehand": 0.02435482497482873,
+      "right_serve": 0.10382196184887556
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 43358,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.05774918017916387,
+      "left_forehand": 0.47211328630229504,
+      "left_serve": 0.19644941310427086,
+      "right_backhand": 0.10580418324392127,
+      "right_forehand": 0.04954938409332913,
+      "right_serve": 0.11833455307701989
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 48858,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.032320817863784455,
+      "left_forehand": 0.2516251263220891,
+      "left_serve": 0.6063007101160565,
+      "right_backhand": 0.028421110731402723,
+      "right_forehand": 0.01918542594398962,
+      "right_serve": 0.062146809022677635
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 49064,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.06435245114960268,
+      "left_forehand": 0.45861427520389625,
+      "left_serve": 0.14664888828809342,
+      "right_backhand": 0.2129272867078554,
+      "right_forehand": 0.03771447657590356,
+      "right_serve": 0.07974262207464858
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 51428,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.3356569105298549,
+      "left_forehand": 0.3029269753579875,
+      "left_serve": 0.06317894427565758,
+      "right_backhand": 0.1334063202308086,
+      "right_forehand": 0.04726585423464231,
+      "right_serve": 0.11756499537104903
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 51634,
+    "predicted_class": "right_backhand",
+    "probabilities": {
+      "left_backhand": 0.13949234223418586,
+      "left_forehand": 0.187989851335064,
+      "left_serve": 0.07908850215896797,
+      "right_backhand": 0.44722765234814316,
+      "right_forehand": 0.08895485486117051,
+      "right_serve": 0.05724679706246848
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 54508,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.05733751006496914,
+      "left_forehand": 0.16681793160469632,
+      "left_serve": 0.6450431662773696,
+      "right_backhand": 0.02613135722589447,
+      "right_forehand": 0.027233407251404364,
+      "right_serve": 0.07743662757566622
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 54591,
+    "predicted_class": "right_backhand",
+    "probabilities": {
+      "left_backhand": 0.09515831969000454,
+      "left_forehand": 0.13281823089869604,
+      "left_serve": 0.0935084722224691,
+      "right_backhand": 0.5401664656920985,
+      "right_forehand": 0.07488192003899802,
+      "right_serve": 0.06346659145773394
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 58361,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.026091460319384238,
+      "left_forehand": 0.7143225955542607,
+      "left_serve": 0.05550604312896769,
+      "right_backhand": 0.07564812274412742,
+      "right_forehand": 0.04322728674435929,
+      "right_serve": 0.08520449150890076
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 59186,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.30291332445703867,
+      "left_forehand": 0.19881835493355923,
+      "left_serve": 0.06244398349464803,
+      "right_backhand": 0.14767935903296636,
+      "right_forehand": 0.1505062357957285,
+      "right_serve": 0.13763874228605907
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 62835,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.06599965478481122,
+      "left_forehand": 0.23808474049436154,
+      "left_serve": 0.5129715046138451,
+      "right_backhand": 0.043260001557110184,
+      "right_forehand": 0.03901883836777875,
+      "right_serve": 0.10066526018209321
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 62995,
+    "predicted_class": "left_backhand",
+    "probabilities": {
+      "left_backhand": 0.2889407683685775,
+      "left_forehand": 0.22002679300169703,
+      "left_serve": 0.09588729992797466,
+      "right_backhand": 0.16169922664730796,
+      "right_forehand": 0.059621699441248614,
+      "right_serve": 0.17382421261319425
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 63168,
+    "predicted_class": "left_forehand",
+    "probabilities": {
+      "left_backhand": 0.15042521906948209,
+      "left_forehand": 0.4897626283999508,
+      "left_serve": 0.17476348853196597,
+      "right_backhand": 0.0667152740112264,
+      "right_forehand": 0.046586347671085646,
+      "right_serve": 0.07174704231628902
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 68367,
+    "predicted_class": "left_serve",
+    "probabilities": {
+      "left_backhand": 0.04992846656068903,
+      "left_forehand": 0.1370752936239723,
+      "left_serve": 0.691660723017308,
+      "right_backhand": 0.03995561515932359,
+      "right_forehand": 0.022513279064381397,
+      "right_serve": 0.05886662257432551
+    }
+  }
+]

@@ -100,7 +100,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
     score = event_row.iloc[0][f"{player.capitalize()} score"]
     
     if add_scores:
-        features = concatenate_features((features, score))
+        features = np.concatenate((features, np.array([score])))
 
 
     if missing_strat == "default":

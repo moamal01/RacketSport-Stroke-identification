@@ -28,34 +28,34 @@ test_on_no_stroke = False
 timestamp = time.strftime("%Y%m%d_%H%M%S")
 
 # Generic processing function
-def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, long_edition=False):
+def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, long_edition=False):
     results = []
     labels = []
 
     for video in videos:
-        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels, frames, skipped_frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
+            data, video_labels, frames, skipped_frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
     return results, labels, frames, skipped_frames
 
 
-def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=False):
-    return process_videos(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=long_edition)
+def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify=simplify, long_edition=False):
+    return process_videos(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify=simplify, long_edition=long_edition)
 
 # Combine all data
-def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_embeddings=False, process_both_players=False):
+def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False, process_both_players=False):
     if long_sequence:
         sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
     else:
         sequence_frames = [0]
     
-    all_data, all_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+    all_data, all_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -67,14 +67,14 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels, frames, skipped_frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels, frames, skipped_frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set or label in "no_stroke": # Change this
@@ -194,24 +194,61 @@ def save_predictions(data, filename, output_dir):
 
     #print(f"Predictions saved to {os.path.join(output_dir, filename)}")
 
+# experiments = [
+#     {"desc": "embeddings", "kwargs":                            {"add_embeddings": True}},
+#     {"desc": "raw_keypoints", "kwargs":                         {"raw": True, "add_keypoints": True}},
+#     {"desc": "raw_keypoint_scores", "kwargs":                   {"raw": True, "add_keypoints": True, "add_scores": True}},
+#     {"desc": "raw_keypoints_rackets", "kwargs":                 {"raw": True, "add_keypoints": True, "add_rackets": True}},
+#     {"desc": "raw_keypoints_ball", "kwargs":                    {"raw": True, "add_keypoints": True, "add_ball": True}},
+#     {"desc": "raw_keypoints_embeddings", "kwargs":              {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+#     {"desc": "raw_keypoints_time", "kwargs":                    {"long_sequence": True, "raw": True, "add_keypoints": True}},
+#     {"desc": "raw_keypoints_rackets_ball_time", "kwargs":       {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+#     {"desc": "norm_keypoints", "kwargs":                        {"add_keypoints": True}},
+#     {"desc": "norm_keypoints_rackets", "kwargs":                {"add_keypoints": True, "add_rackets": True}},
+#     {"desc": "norm_keypoints_ball", "kwargs":                   {"add_keypoints": True, "add_ball": True}},
+#     {"desc": "norm_keypoints_embeddings", "kwargs":             {"add_keypoints": True, "add_embeddings": True}},
+#     {"desc": "norm_keypoints_time", "kwargs":                   {"long_sequence": True, "add_keypoints": True}},
+#     {"desc": "norm_keypoints_midpoints_time", "kwargs":         {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+#     {"desc": "norm_keypoints_midpoints_table_time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+#     {"desc": "norm_keypoints_rackets_ball_time", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+#     {"desc": "norm_keypoints_all_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
+#     {"desc": "norm_keypoints_all_embeddings_time", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
+# ]
+
 experiments = [
-    {"desc": "embeddings", "kwargs":                            {"add_embeddings": True}},
-    {"desc": "raw_keypoints", "kwargs":                         {"raw": True, "add_keypoints": True}},
-    {"desc": "raw_keypoints_rackets", "kwargs":                 {"raw": True, "add_keypoints": True, "add_rackets": True}},
-    {"desc": "raw_keypoints_ball", "kwargs":                    {"raw": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "raw_keypoints_embeddings", "kwargs":              {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-    {"desc": "raw_keypoints_time", "kwargs":                    {"long_sequence": True, "raw": True, "add_keypoints": True}},
-    {"desc": "raw_keypoints_rackets_ball_time", "kwargs":       {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "norm_keypoints", "kwargs":                        {"add_keypoints": True}},
-    {"desc": "norm_keypoints_rackets", "kwargs":                {"add_keypoints": True, "add_rackets": True}},
-    {"desc": "norm_keypoints_ball", "kwargs":                   {"add_keypoints": True, "add_ball": True}},
-    {"desc": "norm_keypoints_embeddings", "kwargs":             {"add_keypoints": True, "add_embeddings": True}},
-    {"desc": "norm_keypoints_time", "kwargs":                   {"long_sequence": True, "add_keypoints": True}},
-    {"desc": "norm_keypoints_midpoints_time", "kwargs":         {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-    {"desc": "norm_keypoints_midpoints_table_time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-    {"desc": "norm_keypoints_rackets_ball_time", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "norm_keypoints_all_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "norm_keypoints_all_embeddings_time", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
+    {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
+    {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
+    {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
+    {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
+    {"desc": "04_raw_keypoints_ball", "kwargs":                             {"raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "04_raw_keypoints_ball_add_scores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "05_raw_keypoints_embeddings", "kwargs":                       {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    {"desc": "05_raw_keypoints_embeddings_add_scores", "kwargs":            {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True}},
+    {"desc": "06_raw_keypoints_time", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    {"desc": "06_raw_keypoints_time_add_scores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "07_raw_keypoints_rackets_ball_time", "kwargs":                {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "07_raw_keypoints_rackets_ball_time_add_scores", "kwargs":     {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "08_norm_keypoints", "kwargs":                                 {"add_keypoints": True}},
+    {"desc": "08_norm_keypoints_add_scores", "kwargs":                      {"add_keypoints": True, "add_scores": True}},
+    {"desc": "09_norm_keypoints_rackets", "kwargs":                         {"add_keypoints": True, "add_rackets": True}},
+    {"desc": "09_norm_keypoints_rackets_add_scores", "kwargs":              {"add_keypoints": True, "add_rackets": True, "add_scores": True}},
+    {"desc": "10_norm_keypoints_ball", "kwargs":                            {"add_keypoints": True, "add_ball": True}},
+    {"desc": "10_norm_keypoints_ball_add_scores", "kwargs":                 {"add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "11_norm_keypoints_embeddings", "kwargs":                      {"add_keypoints": True, "add_embeddings": True}},
+    {"desc": "11_norm_keypoints_embeddings_add_scores", "kwargs":           {"add_keypoints": True, "add_embeddings": True, "add_scores": True}},
+    {"desc": "12_norm_keypoints_time", "kwargs":                            {"long_sequence": True, "add_keypoints": True}},
+    {"desc": "12_norm_keypoints_time_add_scores", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "13_norm_keypoints_midpoints_time", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    {"desc": "13_norm_keypoints_midpoints_time_add_scores", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True}},
+    {"desc": "14_norm_keypoints_midpoints_table_time", "kwargs":            {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+    {"desc": "14_norm_keypoints_midpoints_table_time_add_scores", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+    {"desc": "15_norm_keypoints_rackets_ball_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "15_norm_keypoints_rackets_ball_time_add_scores", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "16_norm_keypoints_all_time", "kwargs":                        {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
+    {"desc": "16_norm_keypoints_all_time_add_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "17_norm_keypoints_all_embeddings_time", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
+    {"desc": "17_norm_keypoints_all_embeddings_time_add_scores", "kwargs":  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True, "add_scores": True}},
 ]
     
 for exp in experiments:

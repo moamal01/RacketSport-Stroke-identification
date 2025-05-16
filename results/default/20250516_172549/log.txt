@@ -1,0 +1,192 @@
+Running experiment: 01_embeddings
+Train samples: 488, Validation samples: 0, Test samples: 142
+Baseline Accuracy: 0.22
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.56
+-----------
+Running experiment: 02_raw_keypoints
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.64
+Random Forest Test Accuracy: 0.57
+-----------
+Running experiment: 02_raw_keypoints_add_scores
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.64
+Random Forest Test Accuracy: 0.57
+-----------
+Running experiment: 03_raw_keypoints_rackets
+Train samples: 255, Validation samples: 0, Test samples: 81
+Baseline Accuracy: 0.25
+Test Accuracy: 0.54
+Random Forest Test Accuracy: 0.57
+-----------
+Running experiment: 03_raw_keypoints_rackets_add_scores
+Train samples: 255, Validation samples: 0, Test samples: 81
+Baseline Accuracy: 0.25
+Test Accuracy: 0.54
+Random Forest Test Accuracy: 0.57
+-----------
+Running experiment: 04_raw_keypoints_ball
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.63
+-----------
+Running experiment: 04_raw_keypoints_ball_add_scores
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.63
+-----------
+Running experiment: 05_raw_keypoints_embeddings
+Train samples: 488, Validation samples: 0, Test samples: 142
+Baseline Accuracy: 0.22
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.58
+-----------
+Running experiment: 05_raw_keypoints_embeddings_add_scores
+Train samples: 488, Validation samples: 0, Test samples: 142
+Baseline Accuracy: 0.22
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.58
+-----------
+Running experiment: 06_raw_keypoints_time
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.85
+Random Forest Test Accuracy: 0.67
+-----------
+Running experiment: 06_raw_keypoints_time_add_scores
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.85
+Random Forest Test Accuracy: 0.67
+-----------
+Running experiment: 07_raw_keypoints_rackets_ball_time
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.58
+Random Forest Test Accuracy: 0.39
+-----------
+Running experiment: 07_raw_keypoints_rackets_ball_time_add_scores
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.58
+Random Forest Test Accuracy: 0.39
+-----------
+Running experiment: 08_norm_keypoints
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.73
+Random Forest Test Accuracy: 0.62
+-----------
+Running experiment: 08_norm_keypoints_add_scores
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.73
+Random Forest Test Accuracy: 0.62
+-----------
+Running experiment: 09_norm_keypoints_rackets
+Train samples: 255, Validation samples: 0, Test samples: 81
+Baseline Accuracy: 0.25
+Test Accuracy: 0.62
+Random Forest Test Accuracy: 0.63
+-----------
+Running experiment: 09_norm_keypoints_rackets_add_scores
+Train samples: 255, Validation samples: 0, Test samples: 81
+Baseline Accuracy: 0.25
+Test Accuracy: 0.62
+Random Forest Test Accuracy: 0.63
+-----------
+Running experiment: 10_norm_keypoints_ball
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.70
+Random Forest Test Accuracy: 0.59
+-----------
+Running experiment: 10_norm_keypoints_ball_add_scores
+Train samples: 499, Validation samples: 0, Test samples: 143
+Baseline Accuracy: 0.21
+Test Accuracy: 0.70
+Random Forest Test Accuracy: 0.59
+-----------
+Running experiment: 11_norm_keypoints_embeddings
+Train samples: 488, Validation samples: 0, Test samples: 142
+Baseline Accuracy: 0.22
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.56
+-----------
+Running experiment: 11_norm_keypoints_embeddings_add_scores
+Train samples: 488, Validation samples: 0, Test samples: 142
+Baseline Accuracy: 0.22
+Test Accuracy: 0.61
+Random Forest Test Accuracy: 0.56
+-----------
+Running experiment: 12_norm_keypoints_time
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.84
+Random Forest Test Accuracy: 0.73
+-----------
+Running experiment: 12_norm_keypoints_time_add_scores
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.84
+Random Forest Test Accuracy: 0.73
+-----------
+Running experiment: 13_norm_keypoints_midpoints_time
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.87
+Random Forest Test Accuracy: 0.72
+-----------
+Running experiment: 13_norm_keypoints_midpoints_time_add_scores
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.87
+Random Forest Test Accuracy: 0.72
+-----------
+Running experiment: 14_norm_keypoints_midpoints_table_time
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.89
+Random Forest Test Accuracy: 0.77
+-----------
+Running experiment: 14_norm_keypoints_midpoints_table_time_add_scores
+Train samples: 482, Validation samples: 0, Test samples: 132
+Baseline Accuracy: 0.22
+Test Accuracy: 0.89
+Random Forest Test Accuracy: 0.77
+-----------
+Running experiment: 15_norm_keypoints_rackets_ball_time
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.76
+Random Forest Test Accuracy: 0.79
+-----------
+Running experiment: 15_norm_keypoints_rackets_ball_time_add_scores
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.76
+Random Forest Test Accuracy: 0.79
+-----------
+Running experiment: 16_norm_keypoints_all_time
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.76
+Random Forest Test Accuracy: 0.79
+-----------
+Running experiment: 16_norm_keypoints_all_time_add_scores
+Train samples: 70, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.27
+Test Accuracy: 0.76
+Random Forest Test Accuracy: 0.79
+-----------
+Running experiment: 17_norm_keypoints_all_embeddings_time
+Train samples: 69, Validation samples: 0, Test samples: 33
+Baseline Accuracy: 0.28
+Test Accuracy: 0.42
+Random Forest Test Accuracy: 0.67
+-----------
