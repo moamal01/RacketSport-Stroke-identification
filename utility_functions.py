@@ -200,7 +200,8 @@ def get_ball(df, frame, sequence_frame, features, add_scores):
     while not_found:
         prev_row = df.iloc[pos - rows_back]
         ball = ast.literal_eval(prev_row['Ball midpoints'])
-
+        score =prev_row['Ball scores']
+        
         if ball:
             not_found = False
         else:
@@ -211,6 +212,9 @@ def get_ball(df, frame, sequence_frame, features, add_scores):
             not_found = False
 
     features = concatenate_features(features, ball)
+    
+    if add_scores:
+        features = np.concatenate((features, np.array([score])))
 
     return features
 
