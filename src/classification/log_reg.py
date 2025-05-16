@@ -33,16 +33,16 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rack
     labels = []
 
     for video in videos:
-        data, video_labels, frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels, frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
+            data, video_labels, frames, skipped_frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
-    return results, labels, frames
+    return results, labels, frames, skipped_frames
 
 
 def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify=simplify, long_edition=False):
@@ -55,7 +55,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
     else:
         sequence_frames = [0]
     
-    all_data, all_labels, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+    all_data, all_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -67,14 +67,14 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels, frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels, frames, skipped_frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set or label in "no_stroke": # Change this
@@ -108,10 +108,13 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         # Then: 10% of 90% (i.e. 10% overall) for validation
         X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp)
 
-    return X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder
+    return X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
 
-def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder):
+def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder):
     probabilities = []
+    # Filter out skipped frames from the original `frames` list
+    filtered_frames = [f for f in frames if f not in skipped_frames]
+
     # Print stats
     print(f"Train samples: {len(X_train)}, Validation samples: {len(X_val) if X_val is not None else 0}, Test samples: {len(X_test)}")
 
@@ -162,7 +165,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encod
             most_probable_index = np.argmax(y_test_probs[i])
             probabilities.append({
                 "true_class": class_names[y_test[i]],
-                "frame": frames[i],
+                "frame": filtered_frames[i],
                 "predicted_class": class_names[most_probable_index],
                 "probabilities": dict(zip(class_names, y_test_probs[i].tolist()))
             })
@@ -216,21 +219,21 @@ for exp in experiments:
     
     # Prepare filenames and directories
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-    save_dir = f"results/fall_back/{timestamp}/{filename}"
+    save_dir = f"results/default/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
 
-    log_path = os.path.join(f"results/fall_back/{timestamp}", "log.txt")
+    log_path = os.path.join(f"results/default/{timestamp}", "log.txt")
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
         print(f"Running experiment: {exp['desc']}")
         
-        X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder = get_splits(
+        X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
             **exp["kwargs"], process_both_players=True
         )
 
         probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(
-            X_train, y_train, X_val, y_val, X_test, y_test, frames, label_encoder
+            X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
         )
 
         plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
@@ -239,7 +242,8 @@ for exp in experiments:
         joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
 
         if "probs" in locals():
-            plot_probabilities(probs, len(X_test))
+            pass
+            #plot_probabilities(probs, len(X_test))
 
         print("-----------")  # This also goes to the file
 

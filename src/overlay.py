@@ -1,18 +1,18 @@
 import json
 import cv2
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 # Video properties
-cap = cv2.VideoCapture("../videos/game_3.mp4")
+cap = cv2.VideoCapture("../videos/game_3f.mp4")
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 fps = cap.get(cv2.CAP_PROP_FPS)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-out = cv2.VideoWriter("Result.mp4", fourcc, fps, (width, height))
+out = cv2.VideoWriter("../videos/result.mp4", fourcc, fps, (width, height))
 
-with open(f"../raw_keypoints.json", "r") as file:
+with open(f"../results/default/20250516_115935/norm_keypoints_midpoints_table_time/norm_keypoints_midpoints_table_time.json", "r") as file:
         data = json.load(file)
 
 # Prepare mappings    
@@ -26,7 +26,7 @@ points = 0
 all_classes = ["left_backhand", "left_forehand", "left_serve", "right_backhand", "right_forehand", "right_serve"]
 stroke_probabilities = {cls: 0.0 for cls in all_classes}
 
-for frame_number in tqdm(range(frame_count), desc="Processing Frames", ncols=100, unit="frame"):
+for frame_number in tqdm(range(frame_count), desc="Processing Frames", ncols=100, unit="frame", position=0, leave=False):
     ret, frame = cap.read()
     
     if frame_number - last_stroke_frame > 150:
@@ -41,13 +41,16 @@ for frame_number in tqdm(range(frame_count), desc="Processing Frames", ncols=100
         if pause and "serve" in last_stroke:
             points += 1
             
+        if "right_backhand" in last_stroke:
+            print(frame_number)
+            
         pause = False
 
     # Show last predicted stroke (top right)
     cv2.putText(
         frame,
         f"Last stroke: {last_stroke}",
-        (width - 420, 35),
+        (width - 420, 20),
         cv2.FONT_HERSHEY_SIMPLEX,
         1,
         (0, 255, 0),
