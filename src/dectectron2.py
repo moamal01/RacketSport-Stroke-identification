@@ -9,7 +9,7 @@ import csv
 import sys
 import os
 
-sys.path.append(os.path.abspath('../../'))
+sys.path.append(os.path.abspath('../'))
 
 from utility_functions import load_json_with_dicts
 
@@ -33,7 +33,7 @@ video = 1
 frame_range = 10
 frame_gap = 2
 start_at = 0
-video_path = f"../../videos/game_{video}.mp4"
+video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Visualize
@@ -43,7 +43,7 @@ write_video = False
 min_person_area = 30000
 min_table_area = 400000
 
-data = load_json_with_dicts(f"../../data/events/events_markup{video}.json")
+data = load_json_with_dicts(f"../data/events/events_markup{video}.json")
     
 excluded_values = {"empty_event", "bounce", "net"}
 loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
@@ -62,13 +62,13 @@ if width == 0 or height == 0 or fps == 0:
     exit()
 
 if write_video:
-    output_path = "test.mp4"
+    output_path = f"../videos/game{video}-detections.mp4"
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV output files
-keypoint_filename = f"../../data/video_{video}/keypoints_video{video}_p2.csv"
-bbox_filename = f"../../data/video_{video}/bbox_video{video}_p2.csv"
+keypoint_filename = f"../data/video_{video}/keypoints_video{video}_p2.csv"
+bbox_filename = f"../data/video_{video}/bbox_video{video}_p2.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
@@ -130,40 +130,40 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 filtered_instances = instances[mask]
                 
                 # Visualize results
-                # if write_video:
-                #     v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-                #     vis_det = v_det.draw_instance_predictions(filtered_instances)
+                if write_video:
+                    v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
+                    vis_det = v_det.draw_instance_predictions(filtered_instances)
                     
-                #     v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
-                #     vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
+                    v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
+                    vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
 
-                #     # Convert back to BGR for OpenCV
-                #     image_det = vis_det.get_image()
-                #     image_kp = vis_kp.get_image()
+                    # Convert back to BGR for OpenCV
+                    image_det = vis_det.get_image()
+                    image_kp = vis_kp.get_image()
 
-                #     # Blend the keypoints visualization with the detection visualization
-                #     alpha = 0.2  # Adjust transparency as needed
-                #     blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
+                    # Blend the keypoints visualization with the detection visualization
+                    alpha = 0.2  # Adjust transparency as needed
+                    blended_image = cv2.addWeighted(image_det, 1 - alpha, image_kp, alpha, 0)
 
-                #     # Convert back to BGR for OpenCV
-                #     result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
+                    # Convert back to BGR for OpenCV
+                    result_frame = cv2.cvtColor(blended_image, cv2.COLOR_RGB2BGR)
 
-                #     # Ensure correct dtype
-                #     result_frame = result_frame.astype("uint8")
+                    # Ensure correct dtype
+                    result_frame = result_frame.astype("uint8")
 
-                #     # Resize if necessary
-                #     if result_frame.shape[:2] != (height, width):
-                #         result_frame = cv2.resize(result_frame, (width, height))
+                    # Resize if necessary
+                    if result_frame.shape[:2] != (height, width):
+                        result_frame = cv2.resize(result_frame, (width, height))
 
-                #     # Write frame to output video
-                #     out.write(result_frame)
+                    # Write frame to output video
+                    out.write(result_frame)
 
-                #     # Display the frame
-                #     cv2.imshow("Keypoints Detection", result_frame)
-                #     key = cv2.waitKey(1) & 0xFF
-                #     if key == ord("q"):
-                #         print("User quit.")
-                #         break
+                    # Display the frame
+                    cv2.imshow("Keypoints Detection", result_frame)
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord("q"):
+                        print("User quit.")
+                        break
 
                 frame_number += frame_gap
         except Exception as e:

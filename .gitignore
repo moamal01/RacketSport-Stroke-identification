@@ -2,5 +2,6 @@
 /cropped
 /embeddings
 /plots
+/results
 .DS_Store
 __pycache__
