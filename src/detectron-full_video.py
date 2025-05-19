@@ -16,12 +16,15 @@ sys.path.append(os.path.abspath('../'))
 
 from utility_functions import load_json_with_dicts
 
+# Check if CUDA is available
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 # Load the object detection model
 cfg_det = get_cfg()
 cfg_det.merge_from_file(get_config_file("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml"))
 cfg_det.MODEL.WEIGHTS = get_checkpoint_url("COCO-Detection/faster_rcnn_R_50_FPN_3x.yaml")
 cfg_det.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
-cfg_det.MODEL.DEVICE = "cpu"
+cfg_det.MODEL.DEVICE = device
 detector = DefaultPredictor(cfg_det)
 
 # Load the keypoint detection model
@@ -29,7 +32,7 @@ cfg_kp = get_cfg()
 cfg_kp.merge_from_file(get_config_file("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml"))
 cfg_kp.MODEL.WEIGHTS = get_checkpoint_url("COCO-Keypoints/keypoint_rcnn_R_50_FPN_3x.yaml")
 cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
-cfg_kp.MODEL.DEVICE = "cpu"
+cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
 video = 1
@@ -37,6 +40,8 @@ frame_gap = 2
 start_at = 0
 video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
+
+print(device)
 
 # Visualize
 write_video = False
