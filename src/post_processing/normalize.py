@@ -2,7 +2,7 @@ import pandas as pd
 import ast
 
 # Load CSV
-video = 3
+video = 4
 input_file = f"../../data/video_{video}/merged_output_video{video}.csv"
 output_file = f"../../data/video_{video}/normalized_data_video{video}.csv"
 
