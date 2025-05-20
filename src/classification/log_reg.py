@@ -33,7 +33,7 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rack
     labels = []
 
     for video in videos:
-        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_frames=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_range=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
@@ -51,9 +51,9 @@ def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midp
 # Combine all data
 def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False, process_both_players=False):
     if long_sequence:
-        sequence_frames = [-10, -8, -6, -4, -2, 0, 2, 4, 6, 8, 10]
+        sequence_frames = 5
     else:
-        sequence_frames = [0]
+        sequence_frames = 0
     
     all_data, all_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
@@ -194,26 +194,6 @@ def save_predictions(data, filename, output_dir):
 
     #print(f"Predictions saved to {os.path.join(output_dir, filename)}")
 
-# experiments = [
-#     {"desc": "embeddings", "kwargs":                            {"add_embeddings": True}},
-#     {"desc": "raw_keypoints", "kwargs":                         {"raw": True, "add_keypoints": True}},
-#     {"desc": "raw_keypoint_scores", "kwargs":                   {"raw": True, "add_keypoints": True, "add_scores": True}},
-#     {"desc": "raw_keypoints_rackets", "kwargs":                 {"raw": True, "add_keypoints": True, "add_rackets": True}},
-#     {"desc": "raw_keypoints_ball", "kwargs":                    {"raw": True, "add_keypoints": True, "add_ball": True}},
-#     {"desc": "raw_keypoints_embeddings", "kwargs":              {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-#     {"desc": "raw_keypoints_time", "kwargs":                    {"long_sequence": True, "raw": True, "add_keypoints": True}},
-#     {"desc": "raw_keypoints_rackets_ball_time", "kwargs":       {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-#     {"desc": "norm_keypoints", "kwargs":                        {"add_keypoints": True}},
-#     {"desc": "norm_keypoints_rackets", "kwargs":                {"add_keypoints": True, "add_rackets": True}},
-#     {"desc": "norm_keypoints_ball", "kwargs":                   {"add_keypoints": True, "add_ball": True}},
-#     {"desc": "norm_keypoints_embeddings", "kwargs":             {"add_keypoints": True, "add_embeddings": True}},
-#     {"desc": "norm_keypoints_time", "kwargs":                   {"long_sequence": True, "add_keypoints": True}},
-#     {"desc": "norm_keypoints_midpoints_time", "kwargs":         {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-#     {"desc": "norm_keypoints_midpoints_table_time", "kwargs":   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-#     {"desc": "norm_keypoints_rackets_ball_time", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-#     {"desc": "norm_keypoints_all_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
-#     {"desc": "norm_keypoints_all_embeddings_time", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
-# ]
 
 experiments = [
     {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
