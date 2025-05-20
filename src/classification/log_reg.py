@@ -255,11 +255,12 @@ for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
     
     # Prepare filenames and directories
+    strat = "default"
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-    save_dir = f"results/default/{timestamp}/{filename}"
+    save_dir = f"results/{strat}/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
 
-    log_path = os.path.join(f"results/default/{timestamp}", "log.txt")
+    log_path = os.path.join(f"results/{strat}/{timestamp}", "log.txt")
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):

@@ -18,6 +18,7 @@ from utility_functions import load_json_with_dicts
 
 # Check if CUDA is available
 device = "cuda" if torch.cuda.is_available() else "cpu"
+print(device)
 
 # Load the object detection model
 cfg_det = get_cfg()
@@ -35,10 +36,10 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 1
+video = 3
 frame_gap = 2
 start_at = 0
-video_path = f"../videos/game_{video}.mp4"
+video_path = f"../videos/testvid.mp4"
 cap = cv2.VideoCapture(video_path)
 
 print(device)
@@ -80,7 +81,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Keypoints", "People boxes", "People scores"])
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
-    for frame_number in tqdm(range(frame_count), desc="Processing Frames", ncols=100, unit="frame", position=0, leave=False):
+    for frame_number in tqdm(range(frame_count), desc="Processing frames"):
         if int(frame_number) < start_at:
             continue
         
@@ -95,8 +96,6 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 break
 
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            
-            print(frame_number)
 
             # Run inference
             keypoint_outputs = keypoint_detector(frame_rgb)
