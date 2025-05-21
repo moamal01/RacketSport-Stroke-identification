@@ -25,11 +25,11 @@ for i in tqdm(range(start_frame, end_frame), desc="Processing Frames"):
     x = get_feature(4, [i], 5, 1, False, True, True, False, True,
                     False, False, False, False, True, True)
     if x is None:
-        continue                         # skip frames with missing features
+        continue
 
     frames_kept.append(i)
-    x = x.reshape(1, -1)                 # (1, n_features)
-    prob = model.predict_proba(x)[0]     # (n_classes,) – drop the 1-row axis
+    x = x.reshape(1, -1)
+    prob = model.predict_proba(x)[0]
     probabilities.append(prob)
 
 probabilities = np.vstack(probabilities) # (n_frames_kept, n_classes)
