@@ -258,6 +258,7 @@ for exp in experiments:
         save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
         joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
         joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
+        joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
 
         if "probs" in locals():
             pass

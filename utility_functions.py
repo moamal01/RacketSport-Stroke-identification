@@ -362,6 +362,55 @@ def get_features(video_number, sequence_range, sequence_gap=1, raw=False, add_ke
             
     return feature_list, labels, frames, skipped_frames
 
+def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False, add_keypoints=False, add_midpoints=False,
+                        add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False,
+                        mirror=False, simplify=False, long_edition=False, player_to_get="both"):
+
+    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    df = pd.read_csv(keypoints_table)
+
+    for frame in frames:
+        player, label = get_player_and_label("Unknown_unknown_unknown unknown unknown", player_to_get, simplify, mirror)
+        features = None
+        
+        if long_edition:
+            # Left player features
+            for i in range(-sequence_range, sequence_range + sequence_gap):
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirror)
+                if frame_feature is None:
+                    features = None
+                    break
+                features = frame_feature
+            # Ball
+            if add_ball:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = get_ball(df=df, frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
+                    if frame is None:
+                        features = None
+                        break
+                    features = frame_feature
+            # Table
+            if add_table:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = get_table(df=df, frame=frame, sequence_frame=i, features=features)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
+            # Right player features
+            for i in range(-sequence_range, sequence_range + sequence_gap):
+                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirror)
+                if frame_feature is None:
+                    features = None
+                    break
+                features = frame_feature
+        else:
+            for i in range(-sequence_range, sequence_range + sequence_gap):
+                features = compose_features(df, frame, i, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_scores, add_embeddings)
+        
+        if features is not None:
+            return features
+
 
 def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
     """Plots the distribution of labels as a bar plot, showing the frequency of each label in the list.
