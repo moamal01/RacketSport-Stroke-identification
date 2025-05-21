@@ -2,10 +2,10 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 3
+video = 4
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = True
+mirrored = False
 
 def get_table_midpoints(df):
     table_midpoints = []
@@ -84,7 +84,7 @@ def compute_player_midpoints(df, table_midpoints):
         # Ball
         for i, ball in enumerate(ball_boxes_row):
             if len(ball_boxes) <= idx:
-                ball_boxes.append(get_center(ball))
+                ball_boxes.append(ball)
                 ball_scores.append(ball_scores_row[i])
         
         if len(ball_boxes) <= idx:
@@ -113,11 +113,6 @@ def get_hips(keypoints_left, keypoints_right):
     
     return ll_hip, lr_hip, rl_hip, rr_hip
 
-def get_center(box):
-    center_x = (box[0] + box[2]) / 2
-    center_y = (box[1] + box[3]) / 2
-    
-    return [center_x, center_y]
 
 def get_midpoint(left_hips, right_hips):
     midpoints = []
@@ -128,6 +123,22 @@ def get_midpoint(left_hips, right_hips):
         midpoints.append([midpoint_x, midpoint_y])
     
     return midpoints
+
+def get_box_midpoint(boxes):
+    midpoints = []
+    
+    for box in boxes:
+        if box == []:
+            midpoints.append([])
+        else:
+            x_min, y_min, x_max, y_max = box
+            midpoint_x = (x_min + x_max) / 2
+            midpoint_y = (y_min + y_max) / 2
+            midpoints.append([midpoint_x, midpoint_y])
+            
+
+    return midpoints
+    
 
 def normalize(left_hip, right_hip, keypoint):
     keypoint_x = keypoint[0]
@@ -141,7 +152,10 @@ def normalize(left_hip, right_hip, keypoint):
 def normalize_midpoints(midpoints, table_midpoints):
     normalized_midpoints_list = []
     for i in range(len(midpoints)):
-        normalized_midpoints_list.append([midpoints[i][0] - table_midpoints[i][0], midpoints[i][1] - table_midpoints[i][1]])
+        if midpoints[i] == []:
+            normalized_midpoints_list.append([])
+        else:
+            normalized_midpoints_list.append([midpoints[i][0] - table_midpoints[i][0], midpoints[i][1] - table_midpoints[i][1]])
         
     return normalized_midpoints_list
     
@@ -179,9 +193,16 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
 table_midpoints = get_table_midpoints(df)
 paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores = compute_player_midpoints(df, table_midpoints)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
+# midpoints
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
+left_racket_midpoints, right_racket_midpoints = get_box_midpoint(left_racket_boxes), get_box_midpoint(right_racket_boxes)
+ball_midpoints = get_box_midpoint(ball_boxes)
+
+# Normalized midpoints
 left_mid_normalized, right_mid_normalized = get_normalized(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
 left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints, table_midpoints), normalize_midpoints(right_midpoints, table_midpoints)
+normalized_left_racket_midpoint, normalized_right_left_racket_midpoint = normalize_midpoints(left_racket_midpoints, left_midpoints), normalize_midpoints(right_racket_midpoints, right_midpoints)
+normalized_ball_midpoints = normalize_midpoints(ball_midpoints, table_midpoints)
 
 # Prepare data for saving to CSV
 output_file = f"../../data/video_{video}/midpoints_video{video}.csv"
@@ -193,15 +214,17 @@ data = {
     'Event frame': event_frames,
     'Sequence frame': sequence_frames,
     'Table midpoint': table_midpoints, 
-    'Ball midpoints': ball_boxes,
-    'Ball scores': ball_scores,
+    'Ball midpoint': ball_midpoints,
+    'Normalized ball midpoints': normalized_ball_midpoints,
+    'Ball score': ball_scores,
     'Keypoints left': keypoints_left,
     'Left score': left_score,
     'Left bbox': left_bboxes,
     'Left player midpoint': left_midpoints,
     'Left player normalized midpoint': left_normalized_midpoints,
     'Left mid-normalized': left_mid_normalized,
-    'Left racket': left_racket_boxes,
+    'Left racket': left_racket_midpoints,
+    'Left normalized racket': left_normalized_midpoints,
     'Left racket score': left_racket_scores,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
@@ -209,7 +232,8 @@ data = {
     'Right player midpoint': right_midpoints,
     'Right player normalized midpoint': right_normalized_midpoints,
     'Right mid-normalized': right_mid_normalized,
-    'Right racket': right_racket_boxes,
+    'Right racket': right_racket_midpoints,
+    'Right normalized racket': right_racket_midpoints,
     'Right racket score': right_racket_scores
 }
 

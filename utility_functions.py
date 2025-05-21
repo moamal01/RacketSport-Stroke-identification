@@ -80,7 +80,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="default"):
+def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="replace"):
     Threshold = 0.9
         
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
@@ -137,7 +137,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
         if add_rackets:
             racket = ast.literal_eval(event_row[f"{player.capitalize()} racket"])
             if not racket:
-                racket = np.array([-1, -1, -1, -1])
+                racket = np.array([-1, -1])
             features = np.concatenate((features, racket))
             
             if add_scores:
@@ -183,7 +183,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
                         rows_back += 1
                         
                     if pos - rows_back < 0: # Move check up
-                        racket = np.array([-1, -1, -1, -1])
+                        racket = np.array([-1, -1])
                         prev_score = np.array([-1])
                         not_found = False
                 
@@ -204,8 +204,8 @@ def get_ball(df, frame, sequence_frame, features, add_scores):
         
     while not_found:
         prev_row = df.iloc[pos - rows_back]
-        ball = ast.literal_eval(prev_row['Ball midpoints'])
-        score =prev_row['Ball scores']
+        ball = ast.literal_eval(prev_row['Ball midpoint'])
+        score =prev_row['Ball score']
         
         if ball:
             not_found = False
