@@ -5,25 +5,24 @@ import numpy as np
 sys.path.append(os.path.abspath('../..'))
 frames = 5369
 from utility_functions import get_feature
-import cv2
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 import seaborn as sns
 plt.rcParams.update({'font.size': 22})
 sns.set_theme()
 
-model = joblib.load('results/default/20250521_144847/14_norm_keypoints_midpoints_table_time/logistic_regression_model.joblib')
-label_encoder = joblib.load('results/default/20250521_144847/14_norm_keypoints_midpoints_table_time/label_encoder.joblib')
+model = joblib.load('results/default/20250522_002633/14_norm_keypoints_midpoints_table_time_ball/logistic_regression_model.joblib')
+label_encoder = joblib.load('results/default/20250522_002633/14_norm_keypoints_midpoints_table_time_ball/label_encoder.joblib')
 
 start_frame = 5
-end_frame = 785
+end_frame = 1020
 frames_kept = []
 
 probabilities = []
 
 for i in tqdm(range(start_frame, end_frame), desc="Processing Frames"):
     x = get_feature(4, [i], 5, 1, False, True, True, False, True,
-                    False, False, False, False, True, True)
+                    True, False, False, False, True, True)
     if x is None:
         continue
 
