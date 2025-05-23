@@ -21,7 +21,7 @@ test_on_one = True
 simplify = True
 mirrored_only = False
 add_mirrored = False
-videos = [1, 2, 3]
+videos = [1, 2, 3, 4]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 test_on_no_stroke = False
@@ -44,10 +44,6 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rack
 
     return results, labels, frames, skipped_frames
 
-
-def get_specified_features(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify=simplify, long_edition=False):
-    return process_videos(videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify=simplify, long_edition=long_edition)
-
 # Combine all data
 def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False, process_both_players=False):
     if long_sequence:
@@ -55,7 +51,7 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
     else:
         sequence_frames = 0
     
-    all_data, all_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+    all_data, all_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -67,17 +63,17 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels, _, _ = get_specified_features(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels, frames, skipped_frames = get_specified_features(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels, frames, skipped_frames = process_videos(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
-            if label in train_label_set or label in "no_stroke": # Change this
+            if label in train_label_set or label in 'left_forhand': # Change this
                 filtered_test_embeddings.append(emb)
                 filtered_test_labels.append(label)
 
@@ -144,7 +140,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     print(f"Test Accuracy: {test_accuracy:.2f}")
     
     # --- Softmax outputs ---
-    y_test_probs = clf.predict_proba(X_test)  # shape: (num_samples, num_classes)
+    y_test_probs = clf.predict_proba(X_test)
     class_names = label_encoder.classes_
     
     # Find the index of "no_stroke" in class_names
@@ -196,7 +192,7 @@ def save_predictions(data, filename, output_dir):
 
 
 experiments = [
-    {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
+    #{"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
     {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
     {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
     {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
@@ -223,6 +219,7 @@ experiments = [
     {"desc": "13_norm_keypoints_midpoints_time_add_scores", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True}},
     {"desc": "14_norm_keypoints_midpoints_table_time", "kwargs":            {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
     {"desc": "14_norm_keypoints_midpoints_table_time_add_scores", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+    {"desc": "14_norm_keypoints_midpoints_table_time_ball", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_ball": True}},
     {"desc": "15_norm_keypoints_rackets_ball_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
     {"desc": "15_norm_keypoints_rackets_ball_time_add_scores", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
     {"desc": "16_norm_keypoints_all_time", "kwargs":                        {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
@@ -235,7 +232,7 @@ for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
     
     # Prepare filenames and directories
-    strat = "replace"
+    strat = "default"
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
     save_dir = f"results/{strat}/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
