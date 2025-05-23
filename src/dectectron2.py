@@ -30,8 +30,8 @@ cfg_kp.MODEL.DEVICE = "cpu"
 keypoint_detector = DefaultPredictor(cfg_kp)
 
 video = 1
-frame_range = 10
-frame_gap = 2
+frame_range = 120
+frame_gap = 1
 start_at = 0
 video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
@@ -39,14 +39,7 @@ cap = cv2.VideoCapture(video_path)
 # Visualize
 write_video = False
 
-# Thesholds
-min_person_area = 30000
-min_table_area = 400000
-
-data = load_json_with_dicts(f"../data/events/events_markup{video}.json")
-    
-excluded_values = {"empty_event", "bounce", "net"}
-loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
+data = load_json_with_dicts(f"../data/extended_events/events_markup{video}.json")
     
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -78,7 +71,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Keypoints", "People boxes", "People scores"])
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
-    for key_frame, value_frame in loaded_keys.items():
+    for key_frame, value_frame in data.items():
         if int(key_frame) < start_at:
             continue
         
@@ -121,18 +114,10 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                     class_id = correct_instances.pred_classes[i].item()
                     bbox_writer.writerow([key_frame, frame_number, class_id, score, box.tolist()])
                 
-                # Table filter
-                box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
-                table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
-                mask = mask & ~table_mask
-
-                # Apply the mask to filter instances
-                filtered_instances = instances[mask]
-                
                 # Visualize results
                 if write_video:
                     v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-                    vis_det = v_det.draw_instance_predictions(filtered_instances)
+                    vis_det = v_det.draw_instance_predictions(correct_instances)
                     
                     v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
                     vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))

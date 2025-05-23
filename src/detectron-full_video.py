@@ -36,20 +36,33 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 3
-frame_gap = 2
+video = 2
 start_at = 0
-video_path = f"../videos/testvid.mp4"
+video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
+efficient = True
+threshold = 180
 
 print(device)
 
 # Visualize
 write_video = False
 
-# Thesholds
-min_person_area = 30000
-min_table_area = 400000
+# Timestamps
+data = load_json_with_dicts(f"../data/extended_events/events_markup{video}.json")
+key_frames = sorted(int(k) for k in data.keys())
+
+intervals = []
+for k in key_frames:
+    lo = max(0, k - threshold)
+    hi = k + threshold
+    if not intervals or lo > intervals[-1][1]:
+        intervals.append([lo, hi])
+    else:
+        intervals[-1][1] = max(intervals[-1][1], hi)
+
+print(intervals)
+
     
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -70,24 +83,38 @@ if write_video:
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV output files
-keypoint_filename = f"../data/video_{video}/keypoints_video{video}_full.csv"
-bbox_filename = f"../data/video_{video}/bbox_video{video}_full.csv"
+keypoint_filename = f"../data/video_{video}/keypoints_video{video}_fullasdf.csv"
+bbox_filename = f"../data/video_{video}/bbox_video{video}_fullasdf.csv"
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
     keypoint_writer = csv.writer(keypoint_file)
     bbox_writer = csv.writer(bbox_file)
 
-    keypoint_writer.writerow(["Path", "Type", "Event frame", "Sequence frame", "Keypoints", "People boxes", "People scores"])
+    keypoint_writer.writerow(["Path", "Event frame", "Keypoints", "People boxes", "People scores"])
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
     
+    interval_idx = 0
+    num_intervals = len(intervals)
+
     for frame_number in tqdm(range(frame_count), desc="Processing frames"):
         if int(frame_number) < start_at:
             continue
         
-        start_frame = int(frame_number)
+        if efficient:
+            if interval_idx >= num_intervals:
+                break
+            
+            current_start, current_end = intervals[interval_idx]
+            if frame_number < current_start:
+                cap.grab()
+                continue
+            
+            if frame_number > current_end:
+                interval_idx += 1
+                continue
 
-        cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int(frame_number))
 
         try:
             ret, frame = cap.read()
@@ -105,7 +132,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
             keypoint_instances = keypoint_outputs["instances"].to("cpu")
     
             # Save keypoints
-            keypoint_writer.writerow([video_path, "Unknown", frame_number, 0, keypoint_instances.pred_keypoints.tolist(), keypoint_instances.pred_boxes.tensor.tolist(), keypoint_instances.scores.tolist()])
+            keypoint_writer.writerow([video_path, frame_number, keypoint_instances.pred_keypoints.tolist(), keypoint_instances.pred_boxes.tensor.tolist(), keypoint_instances.scores.tolist()])
 
             class_filter = torch.tensor([32, 38, 60])
             
@@ -118,20 +145,12 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
                 score = float(correct_instances.scores[i])
 
                 class_id = correct_instances.pred_classes[i].item()
-                bbox_writer.writerow([frame_number, 0, class_id, score, box.tolist()])
-            
-            # Table filter
-            box_areas = (instances.pred_boxes.tensor[:, 2] - instances.pred_boxes.tensor[:, 0]) * (instances.pred_boxes.tensor[:, 3] - instances.pred_boxes.tensor[:, 1])
-            table_mask = (instances.pred_classes == 60) & (box_areas < min_table_area)
-            mask = mask & ~table_mask
-
-            # Apply the mask to filter instances
-            filtered_instances = instances[mask]
+                bbox_writer.writerow([frame_number, class_id, score, box.tolist()])
             
             # Visualize results
             if write_video:
                 v_det = Visualizer(frame_rgb, MetadataCatalog.get(cfg_det.DATASETS.TRAIN[0]), scale=1.2)
-                vis_det = v_det.draw_instance_predictions(filtered_instances)
+                vis_det = v_det.draw_instance_predictions(correct_instances)
                 
                 v_kp = Visualizer(frame_rgb, MetadataCatalog.get(cfg_kp.DATASETS.TRAIN[0]), scale=1.2)
                 vis_kp = v_kp.draw_instance_predictions(keypoint_outputs["instances"].to("cpu"))
