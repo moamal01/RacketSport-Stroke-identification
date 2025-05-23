@@ -28,30 +28,30 @@ test_on_no_stroke = False
 timestamp = time.strftime("%Y%m%d_%H%M%S")
 
 # Generic processing function
-def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, long_edition=False):
+def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, missing_strat, long_edition=False):
     results = []
     labels = []
 
     for video in videos:
-        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_range=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_scores=add_scores, add_embeddings=add_embeddings, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
+        data, video_labels, frames, skipped_frames = get_features(video_number=video, sequence_range=sequence, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_table=add_table, add_ball=add_ball, add_scores=add_scores, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirrored_only, simplify=simplify, long_edition=long_edition)
         results.extend(data)
         labels.extend(video_labels)
 
         if add_mirrored and len(videos) > 1:
-            data, video_labels, frames, skipped_frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, mirror=True, simplify=simplify, long_edition=long_edition)
+            data, video_labels, frames, skipped_frames = get_features(video, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, missing_strat=missing_strat, mirror=True, simplify=simplify, long_edition=long_edition)
             results.extend(data)
             labels.extend(video_labels)
 
     return results, labels, frames, skipped_frames
 
 # Combine all data
-def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False, process_both_players=False):
+def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False, missing_strat="default", process_both_players=False):
     if long_sequence:
         sequence_frames = 5
     else:
         sequence_frames = 0
     
-    all_data, all_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+    all_data, all_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, missing_strat, process_both_players)
 
     # Encode all labels
     label_encoder = LabelEncoder()
@@ -63,14 +63,14 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
         return all(count >= 2 for count in label_counts.values())
 
     if test_on_one:
-        train_embeddings, train_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+        train_embeddings, train_labels, _, _ = process_videos(train_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, missing_strat, process_both_players)
 
         # Filter test samples from video 3 that have seen labels
         train_label_set = set(train_labels)
         filtered_test_embeddings = []
         filtered_test_labels = []
 
-        video3_embeddings, video3_labels, frames, skipped_frames = process_videos(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, process_both_players)
+        video3_embeddings, video3_labels, frames, skipped_frames = process_videos(test_videos, sequence_frames, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_embeddings, simplify, missing_strat, process_both_players)
 
         for emb, label in zip(video3_embeddings, video3_labels):
             if label in train_label_set or label in 'left_forhand': # Change this
@@ -244,7 +244,9 @@ for exp in experiments:
         print(f"Running experiment: {exp['desc']}")
         
         X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
-            **exp["kwargs"], process_both_players=True
+            **exp["kwargs"],
+            missing_strat=strat,
+            process_both_players=True
         )
 
         probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(

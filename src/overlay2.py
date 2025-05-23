@@ -38,7 +38,7 @@ for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="P
     ret, frame = cap.read()
     
     if frame_number % 1 == 0:
-        x = get_feature(4, [frame_number], frame_range, frame_gap, False, True, True, False, True, True, False, False, False, True, True)
+        x = get_feature(4, [frame_number], frame_range, frame_gap, False, True, True, False, True, True, False, False, "fall_back", False, True, True)
         if x is not None:
             if frame_number - last_stroke_frame > 150:
                 pause = True
