@@ -80,7 +80,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     return player, label
 
 
-def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="replace"):
+def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="last"):
     Threshold = 0.9
         
     event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
@@ -367,7 +367,7 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
                         add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False,
                         missing_strat="default", mirror=False, simplify=False, long_edition=False, player_to_get="both"):
 
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    keypoints_table = f"../../data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
 
     for frame in frames:
