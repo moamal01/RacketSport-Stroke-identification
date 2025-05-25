@@ -2,7 +2,7 @@ import pandas as pd
 import ast
 
 # File paths
-video = 3
+video = 1
 keypoints_file = f"../../data/video_{video}/keypoints_video{video}.csv"
 bbox_file = f"../../data/video_{video}/bbox_video{video}.csv"
 
@@ -49,7 +49,7 @@ def flatten_lists(series):
     return [item for item in series.dropna()]
 
 # Apply different aggregation functions
-bbox_agg = bbox_df.groupby(["Event frame", "Sequence frame"]).agg({
+bbox_agg = bbox_df.groupby(["Event frame"]).agg({
     "Ball boxes": aggregate_lists,
     "Ball scores": flatten_lists,
     "Racket boxes": aggregate_lists,
@@ -59,7 +59,7 @@ bbox_agg = bbox_df.groupby(["Event frame", "Sequence frame"]).agg({
 }).reset_index()
 
 # Merge with keypoints dataset
-merged_df = pd.merge(keypoints_df, bbox_agg, on=["Event frame", "Sequence frame"], how="left")
+merged_df = pd.merge(keypoints_df, bbox_agg, on=["Event frame"], how="left")
 
 # Fill NaN values with empty lists where necessary
 for col in ["Ball boxes", "Ball scores", "Racket boxes", "Racket scores", "Table boxes", "Table scores"]:
