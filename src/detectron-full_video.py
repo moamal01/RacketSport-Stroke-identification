@@ -36,8 +36,8 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 2
-start_at = 0
+video = 1
+start_at = 79502
 video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
 efficient = True
@@ -83,8 +83,14 @@ if write_video:
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV output files
-keypoint_filename = f"../data/video_{video}/keypoints_video{video}_fullasdf.csv"
-bbox_filename = f"../data/video_{video}/bbox_video{video}_fullasdf.csv"
+keypoint_filename = f"../data/video_{video}/keypoints_video{video}asdf.csv"
+bbox_filename = f"../data/video_{video}/bbox_video{video}asdf.csv"
+
+interval_idx = 0
+num_intervals = len(intervals)
+
+while interval_idx < num_intervals and start_at > intervals[interval_idx][1]:
+    interval_idx += 1
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
@@ -93,9 +99,6 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
 
     keypoint_writer.writerow(["Path", "Event frame", "Keypoints", "People boxes", "People scores"])
     bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
-    
-    interval_idx = 0
-    num_intervals = len(intervals)
 
     for frame_number in tqdm(range(frame_count), desc="Processing frames"):
         if int(frame_number) < start_at:
@@ -113,7 +116,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
             if frame_number > current_end:
                 interval_idx += 1
                 continue
-
+        
         cap.set(cv2.CAP_PROP_POS_FRAMES, int(frame_number))
 
         try:
