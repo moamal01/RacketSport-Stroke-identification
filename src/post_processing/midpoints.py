@@ -2,7 +2,7 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 4
+video = 2
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
 mirrored = False
@@ -18,7 +18,6 @@ def get_table_midpoints(df):
 def compute_player_midpoints(df, table_midpoints):
     paths = []
     event_frames = []
-    sequence_frames = []
     keypoints_left = []
     keypoints_right = []
     left_score = []
@@ -46,7 +45,6 @@ def compute_player_midpoints(df, table_midpoints):
 
         path = row["Path"]
         event_frame = row["Event frame"]
-        sequence_frame = row["Sequence frame"]
         
         added = False
             
@@ -95,9 +93,8 @@ def compute_player_midpoints(df, table_midpoints):
         if added:
             paths.append(path)
             event_frames.append(event_frame)
-            sequence_frames.append(sequence_frame)
     
-    return paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores
+    return paths, event_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores
 
 def get_hips(keypoints_left, keypoints_right):
     ll_hip = []     # Left player, left hip
@@ -191,7 +188,7 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
 
 table_midpoints = get_table_midpoints(df)
-paths, event_frames, sequence_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores = compute_player_midpoints(df, table_midpoints)
+paths, event_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores = compute_player_midpoints(df, table_midpoints)
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 # midpoints
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
@@ -212,7 +209,6 @@ if mirrored:
 data = {
     'Path': paths,
     'Event frame': event_frames,
-    'Sequence frame': sequence_frames,
     'Table midpoint': table_midpoints, 
     'Ball midpoint': ball_midpoints,
     'Normalized ball midpoints': normalized_ball_midpoints,

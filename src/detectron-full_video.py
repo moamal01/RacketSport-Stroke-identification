@@ -36,8 +36,8 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
-video = 1
-start_at = 79502
+video = 2
+start_at = 49765
 video_path = f"../videos/game_{video}.mp4"
 cap = cv2.VideoCapture(video_path)
 efficient = True
@@ -47,22 +47,6 @@ print(device)
 
 # Visualize
 write_video = False
-
-# Timestamps
-data = load_json_with_dicts(f"../data/extended_events/events_markup{video}.json")
-key_frames = sorted(int(k) for k in data.keys())
-
-intervals = []
-for k in key_frames:
-    lo = max(0, k - threshold)
-    hi = k + threshold
-    if not intervals or lo > intervals[-1][1]:
-        intervals.append([lo, hi])
-    else:
-        intervals[-1][1] = max(intervals[-1][1], hi)
-
-print(intervals)
-
     
 # Get video properties
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -83,14 +67,29 @@ if write_video:
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
 # CSV output files
-keypoint_filename = f"../data/video_{video}/keypoints_video{video}asdf.csv"
-bbox_filename = f"../data/video_{video}/bbox_video{video}asdf.csv"
+keypoint_filename = f"../data/video_{video}/keypoints_video{video}p1p2.csv"
+bbox_filename = f"../data/video_{video}/bbox_video{video}p1p2.csv"
 
-interval_idx = 0
-num_intervals = len(intervals)
+if efficient:
+    # Timestamps
+    data = load_json_with_dicts(f"../data/extended_events/events_markup{video}.json")
+    key_frames = sorted(int(k) for k in data.keys())
 
-while interval_idx < num_intervals and start_at > intervals[interval_idx][1]:
-    interval_idx += 1
+    intervals = []
+    for k in key_frames:
+        lo = max(0, k - threshold)
+        hi = k + threshold
+        if not intervals or lo > intervals[-1][1]:
+            intervals.append([lo, hi])
+        else:
+            intervals[-1][1] = max(intervals[-1][1], hi)
+
+    print(intervals)
+    interval_idx = 0
+    num_intervals = len(intervals)
+
+    while interval_idx < num_intervals and start_at > intervals[interval_idx][1]:
+        interval_idx += 1
 
 # Main loop
 with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_filename, mode="w", newline="") as bbox_file:
@@ -98,7 +97,7 @@ with open(keypoint_filename, mode="w", newline="") as keypoint_file, open(bbox_f
     bbox_writer = csv.writer(bbox_file)
 
     keypoint_writer.writerow(["Path", "Event frame", "Keypoints", "People boxes", "People scores"])
-    bbox_writer.writerow(["Event frame", "Sequence frame", "Class ID", "Score", "Bboxes"])
+    bbox_writer.writerow(["Event frame", "Class ID", "Score", "Bboxes"])
 
     for frame_number in tqdm(range(frame_count), desc="Processing frames"):
         if int(frame_number) < start_at:
