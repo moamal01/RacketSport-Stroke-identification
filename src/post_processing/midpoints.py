@@ -2,10 +2,10 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 2
+video = 1
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = False
+mirrored = True
 
 def get_table_midpoints(df):
     table_midpoints = []
@@ -46,7 +46,8 @@ def compute_player_midpoints(df, table_midpoints):
         path = row["Path"]
         event_frame = row["Event frame"]
         
-        added = False
+        added_left = False 
+        added_right = False
             
         # Keypoints
         for i, keypoints in enumerate(keypoints_row):
@@ -54,14 +55,25 @@ def compute_player_midpoints(df, table_midpoints):
                 keypoints_left.append(keypoints)
                 left_score.append(scores_row[i])
                 left_bboxes.append(people_boxes_row[i])
-                added = True
+                added_left = True
             elif keypoints[11][0] > TABLE_MIDPOINT[0] and abs(keypoints[11][0] - TABLE_MIDPOINT[0]) > 0.1 and len(keypoints_right) <= idx:
                 keypoints_right.append(keypoints)
                 right_score.append(scores_row[i])
                 right_bboxes.append(people_boxes_row[i])
-                added = True
+                added_right = True
                
         # Rackets 
+        if not added_left:
+            keypoints_left.append([])
+            left_score.append(0)
+            left_bboxes.append([])
+
+        if not added_right:
+            keypoints_right.append([])
+            right_score.append(0)
+            right_bboxes.append([])
+            
+            
         for i, box in enumerate(racket_boxes_row):
             if box[0] < TABLE_MIDPOINT[0] and len(left_racket_boxes) <= idx:
                 left_racket_boxes.append(box)
@@ -90,9 +102,9 @@ def compute_player_midpoints(df, table_midpoints):
         if len(ball_scores) <= idx:
             ball_scores.append(0)
 
-        if added:
-            paths.append(path)
-            event_frames.append(event_frame)
+        paths.append(path)
+        event_frames.append(event_frame)
+
     
     return paths, event_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores
 
@@ -103,10 +115,19 @@ def get_hips(keypoints_left, keypoints_right):
     rr_hip = []     # Right player, right hip
     
     for i in range(len(keypoints_left)):
-        ll_hip.append(keypoints_left[i][11])
-        lr_hip.append(keypoints_left[i][12])
-        rl_hip.append(keypoints_right[i][11])
-        rr_hip.append(keypoints_right[i][12])
+        if keypoints_left[i] == []:
+            ll_hip.append([0, 0, 0])
+            lr_hip.append([0, 0, 0])
+        else:      
+            ll_hip.append(keypoints_left[i][11])
+            lr_hip.append(keypoints_left[i][12])
+            
+        if keypoints_right[i] == []:
+            rl_hip.append([0, 0, 0])
+            rr_hip.append([0, 0, 0])
+        else:
+            rl_hip.append(keypoints_right[i][11])
+            rr_hip.append(keypoints_right[i][12])
     
     return ll_hip, lr_hip, rl_hip, rr_hip
 
@@ -171,12 +192,18 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
         right_dist_frame_list = []
 
         for j in range(len(keypoints_left[i])):
-            left_keypoint = keypoints_left[i][j]
-            right_keypoint = keypoints_right[i][j]
+            if keypoints_left[i] == []:
+                left_norm = []
+            else:
+                left_keypoint = keypoints_left[i][j]
+                left_norm = normalize(left_player_left_hip, left_player_right_hip, left_keypoint)
             
-            left_norm = normalize(left_player_left_hip, left_player_right_hip, left_keypoint)
-            right_norm = normalize(right_player_left_hip, right_player_right_hip, right_keypoint)
-                        
+            if keypoints_right[i] == []:
+                right_norm = []
+            else:
+                right_keypoint = keypoints_right[i][j]
+                right_norm = normalize(right_player_left_hip, right_player_right_hip, right_keypoint)
+    
             left_dist_frame_list.append(left_norm)
             right_dist_frame_list.append(right_norm)
         
