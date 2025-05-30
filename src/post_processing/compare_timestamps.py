@@ -1,8 +1,8 @@
 import pandas as pd
  
 video = 2
-bbox_file = f'../../data/video_{video}/bbox_video{video}full.csv'
-keypoint_file = f'../../data/video_{video}/keypoints_video{video}full.csv'
+bbox_file = f'../../data/video_{video}/bbox_video{video}.csv'
+keypoint_file = f'../../data/video_{video}/keypoints_video{video}.csv'
 
 def compare_event_frames(file1, file2):
     # Load CSV files

@@ -2,10 +2,10 @@ import pandas as pd
 import ast
 
 # Load CSV file
-video = 1
+video = 4
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = True
+mirrored = False
 
 def get_table_midpoints(df):
     table_midpoints = []
@@ -188,29 +188,29 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
         right_player_left_hip = rl_hips[i]
         right_player_right_hip = rr_hips[i]
         
-        left_dist_frame_list = []
-        right_dist_frame_list = []
-
-        for j in range(len(keypoints_left[i])):
-            if keypoints_left[i] == []:
-                left_norm = []
-            else:
+        # Left player keypoints
+        if keypoints_left[i] == []:
+            left_dist_frame_list = []
+        else:
+            left_dist_frame_list = []
+            for j in range(17):
                 left_keypoint = keypoints_left[i][j]
                 left_norm = normalize(left_player_left_hip, left_player_right_hip, left_keypoint)
-            
-            if keypoints_right[i] == []:
-                right_norm = []
-            else:
+                left_dist_frame_list.append(left_norm)
+
+        # Right player keypoints
+        if keypoints_right[i] == []:
+            right_dist_frame_list = []
+        else:
+            right_dist_frame_list = []
+            for j in range(17):
                 right_keypoint = keypoints_right[i][j]
                 right_norm = normalize(right_player_left_hip, right_player_right_hip, right_keypoint)
-    
-            left_dist_frame_list.append(left_norm)
-            right_dist_frame_list.append(right_norm)
-        
-        # Populate top level lists
+                right_dist_frame_list.append(right_norm)
+
+        # Append to overall lists
         left_player_distance_to_midpoint.append(left_dist_frame_list)
         right_player_distance_to_midpoint.append(right_dist_frame_list)
-        
     
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
 
@@ -225,7 +225,7 @@ ball_midpoints = get_box_midpoint(ball_boxes)
 # Normalized midpoints
 left_mid_normalized, right_mid_normalized = get_normalized(ll_hip, lr_hip, keypoints_left, rl_hip, rr_hip, keypoints_right)
 left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left_midpoints, table_midpoints), normalize_midpoints(right_midpoints, table_midpoints)
-normalized_left_racket_midpoint, normalized_right_left_racket_midpoint = normalize_midpoints(left_racket_midpoints, left_midpoints), normalize_midpoints(right_racket_midpoints, right_midpoints)
+normalized_left_racket_midpoint, normalized_right_racket_midpoint = normalize_midpoints(left_racket_midpoints, left_midpoints), normalize_midpoints(right_racket_midpoints, right_midpoints)
 normalized_ball_midpoints = normalize_midpoints(ball_midpoints, table_midpoints)
 
 # Prepare data for saving to CSV
@@ -247,7 +247,7 @@ data = {
     'Left player normalized midpoint': left_normalized_midpoints,
     'Left mid-normalized': left_mid_normalized,
     'Left racket': left_racket_midpoints,
-    'Left normalized racket': left_normalized_midpoints,
+    'Left normalized racket': normalized_left_racket_midpoint,
     'Left racket score': left_racket_scores,
     'Keypoints right': keypoints_right,
     'Right score': right_score,
@@ -256,7 +256,7 @@ data = {
     'Right player normalized midpoint': right_normalized_midpoints,
     'Right mid-normalized': right_mid_normalized,
     'Right racket': right_racket_midpoints,
-    'Right normalized racket': right_racket_midpoints,
+    'Right normalized racket': normalized_right_racket_midpoint,
     'Right racket score': right_racket_scores
 }
 
