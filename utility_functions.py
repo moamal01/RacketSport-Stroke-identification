@@ -47,7 +47,7 @@ def get_timestamps(video_number):
     with open(f"data/events/events_markup{video_number}.json", "r") as file:
         data = json.load(file)
         
-    excluded_values = {"empty_event", "bounce", "net"}
+    excluded_values = {"empty_event", "bounce", "net", "pause", "play"}
 
     return {k: v for k, v in data.items() if v not in excluded_values}
 
@@ -83,7 +83,7 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
 def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, add_rackets, add_scores, missing_strat="last"):
     Threshold = 0.9
         
-    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
+    event_row = df[df['Event frame'] == int(frame)]
     idx = event_row.index[0]
     pos = df.index.get_loc(idx)
     event_row = df.iloc[pos + sequence_frame]
@@ -93,21 +93,32 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
     score2 = event_row["Right score"]
 
     column = f"Keypoints {player}" if raw else f"{player.capitalize()} mid-normalized"
-    features = np.array(ast.literal_eval(event_row[column]))[:, :2].flatten()
+    # features = np.array(ast.literal_eval(event_row[column]))[:, :2].flatten()
 
-    if add_midpoints:
-        midpoint = ast.literal_eval(event_row[f"{player.capitalize()} player midpoint"])
-        features = np.concatenate((features, midpoint))
+    # if add_midpoints:
+    #     midpoint = ast.literal_eval(event_row[f"{player.capitalize()} player midpoint"])
+    #     features = np.concatenate((features, midpoint))
 
     score = event_row[f"{player.capitalize()} score"]
     
-    if add_scores:
-        features = np.concatenate((features, np.array([score])))
+    # if add_scores:
+    #     features = np.concatenate((features, np.array([score])))
 
     # Missing strategies
     if missing_strat == "default":
         if score1 < Threshold or score2 < Threshold:
             return None
+        
+        features = np.array(ast.literal_eval(event_row[column]))[:, :2].flatten()
+
+        if add_midpoints:
+            midpoint = ast.literal_eval(event_row[f"{player.capitalize()} player midpoint"])
+            features = np.concatenate((features, midpoint))
+
+        score = event_row[f"{player.capitalize()} score"]
+        
+        if add_scores:
+            features = np.concatenate((features, np.array([score])))
 
         if add_rackets:
             racket1 = ast.literal_eval(event_row["Left racket"])
@@ -152,6 +163,9 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
             rows_back = 1
 
             while not_found:
+                if pos - rows_back < 0:
+                    return None
+
                 prev_row = df.iloc[pos - rows_back]
                 prev_score = prev_row[f"{player.capitalize()} score"]
 
@@ -164,7 +178,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
                         features = np.concatenate((features, midpoint))
                         
                     if add_scores:
-                        features = np.concatenate((features, prev_score))
+                        features = np.concatenate((features, np.array([prev_score])))
                 else:
                     rows_back += 1
 
@@ -173,6 +187,11 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
                 rows_back = 0
 
                 while not_found:
+                    if pos - rows_back < 0:
+                        racket = np.array([-1, -1])
+                        prev_score = np.array([-1])
+                        not_found = False
+
                     prev_row = df.iloc[pos - rows_back]
                     racket = ast.literal_eval(prev_row[f"{player.capitalize()} racket"])
                     prev_score = prev_row[f"{player.capitalize()} racket score"]
@@ -181,19 +200,49 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
                         not_found = False
                     else:
                         rows_back += 1
-                        
+                
+                features = np.concatenate((features, racket))
+                features = np.concatenate((features, np.array([prev_score])))
+        else:
+            features = np.array(ast.literal_eval(event_row[column])).flatten()
+
+            if add_midpoints:
+                midpoint = ast.literal_eval(event_row[f"{player.capitalize()} player midpoint"])
+                features = np.concatenate((features, midpoint))
+
+            score = event_row[f"{player.capitalize()} score"]
+            
+            if add_scores:
+                features = np.concatenate((features, np.array([score])))
+                
+            if add_rackets:
+                not_found = True
+                rows_back = 0
+
+                while not_found:
                     if pos - rows_back < 0: # Move check up
                         racket = np.array([-1, -1])
                         prev_score = np.array([-1])
                         not_found = False
+
+                    prev_row = df.iloc[pos - rows_back]
+                    racket = ast.literal_eval(prev_row[f"{player.capitalize()} racket"])
+                    prev_score = prev_row[f"{player.capitalize()} racket score"]
+                    
+                    if racket:
+                        not_found = False
+                    else:
+                        rows_back += 1
                 
                 features = np.concatenate((features, racket))
-                features = np.concatenate((features, prev_score))
+                features = np.concatenate((features, np.array([prev_score])))
+            
+            
     
     return features
 
 def get_ball(df, frame, sequence_frame, features, add_scores):
-    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
+    event_row = df[df['Event frame'] == int(frame)]
     idx = event_row.index[0]
     pos = df.index.get_loc(idx)
     event_row = df.iloc[pos + sequence_frame]
@@ -225,7 +274,7 @@ def get_ball(df, frame, sequence_frame, features, add_scores):
 
 
 def get_table(df, frame, sequence_frame, features):
-    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
+    event_row = df[df['Event frame'] == int(frame)]
     idx = event_row.index[0]
     pos = df.index.get_loc(idx)
     event_row = df.iloc[pos + sequence_frame]
@@ -262,7 +311,7 @@ def concatenate_features(features, new_features):
 
 
 def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_scores=False, add_embeddings=False, missing_strat="default", mirror=False):    
-    event_row = df[(df['Event frame'] == int(frame)) & (df['Sequence frame'] == 0)]
+    event_row = df[df['Event frame'] == int(frame)]
     if event_row.empty:
         return
 
@@ -292,8 +341,8 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
         
     return features
 
-# Sequence gap 1 because there already is a gap, except for the fourth video.
-def get_features(video_number, sequence_range, sequence_gap=1, raw=False, add_keypoints=False, add_midpoints=False,
+
+def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_keypoints=False, add_midpoints=False,
                         add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_embeddings=False,
                         missing_strat="default", mirror=False, simplify=False, long_edition=False, player_to_get="both"):
     feature_list = []
