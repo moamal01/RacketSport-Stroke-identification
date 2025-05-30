@@ -44,7 +44,7 @@ def load_json_with_dicts(path: str) -> dict:
 
 
 def get_timestamps(video_number):
-    with open(f"data/events/events_markup{video_number}.json", "r") as file:
+    with open(f"data/extended_events/events_markup{video_number}.json", "r") as file:
         data = json.load(file)
         
     excluded_values = {"empty_event", "bounce", "net"}
@@ -64,9 +64,12 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     if value == "right_forehand_loop right_leaning left_foot_lifted":
         pass
 
-    label = value.split(" ")[0]
-    label_parts = label.split("_")
-    player = label_parts[0]
+    if "pause" not in value or "play" not in value:
+        label = value.split(" ")[0]
+        label_parts = label.split("_")
+        player = label_parts[0]
+    else:
+        label = value
 
     if player != player_to_get and player_to_get != "both":
         return
@@ -74,6 +77,8 @@ def get_player_and_label(value, player_to_get, simplify, mirror=False):
     if simplify:
         if "serve" in label:
             label = f"{player}_{label_parts[2]}"
+        elif "play" in label or "pause" in label:
+            pass
         else:
             label = f"{player}_{label_parts[1]}"
     
