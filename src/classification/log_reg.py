@@ -113,6 +113,10 @@ def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints
 def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder):
     probabilities = []
     # Filter out skipped frames from the original `frames` list
+    if frames is None:
+        print("⚠️ No samples for this experiment – skipping.")
+        return None, None, None, None, None
+    
     filtered_frames = [f for f in frames if f not in skipped_frames]
 
     # Print stats
@@ -197,16 +201,16 @@ def save_predictions(data, filename, output_dir):
 
 experiments = [
     #{"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
-    {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
-    {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
-    {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
-    {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
-    {"desc": "04_raw_keypoints_ball", "kwargs":                             {"raw": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "04_raw_keypoints_ball_add_scores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
-    #{"desc": "05_raw_keypoints_embeddings", "kwargs":                       {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-    #{"desc": "05_raw_keypoints_embeddings_add_scores", "kwargs":            {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True}},
-    {"desc": "06_raw_keypoints_time", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True}},
-    {"desc": "06_raw_keypoints_time_add_scores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
+    # {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
+    # {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+    # {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
+    # {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
+    # {"desc": "04_raw_keypoints_ball", "kwargs":                             {"raw": True, "add_keypoints": True, "add_ball": True}},
+    # {"desc": "04_raw_keypoints_ball_add_scores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
+    # #{"desc": "05_raw_keypoints_embeddings", "kwargs":                       {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    # #{"desc": "05_raw_keypoints_embeddings_add_scores", "kwargs":            {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True}},
+    # {"desc": "06_raw_keypoints_time", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    # {"desc": "06_raw_keypoints_time_add_scores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
     {"desc": "07_raw_keypoints_rackets_ball_time", "kwargs":                {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
     {"desc": "07_raw_keypoints_rackets_ball_time_add_scores", "kwargs":     {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
     {"desc": "08_norm_keypoints", "kwargs":                                 {"add_keypoints": True}},
@@ -256,6 +260,11 @@ for exp in experiments:
         probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(
             X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
         )
+        
+        if probs is None:
+            print("Not enough samples for this experiment")
+            print("-----------")
+            continue
 
         plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
         save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
