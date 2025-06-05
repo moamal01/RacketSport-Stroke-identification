@@ -135,15 +135,17 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
 
     elif missing_strat == "replace":
         if score < Threshold:
-            features = np.array([[-1, -1] for _ in range(17)])[:, :numbers].flatten()
-
-            if add_midpoints:
-                midpoint = np.array([-1, -1])
-                features = np.concatenate((features, midpoint))
-                
-            if add_scores:
-                score = np.array([-1])
-                features = np.concatenate((features, score))
+            features = np.array([[0, 0] for _ in range(17)])[:, :numbers].flatten()
+        else:
+            features = np.array(ast.literal_eval(event_row[column]))[:, :numbers].flatten()
+            
+        if add_midpoints:
+            midpoint = np.array([0, 0])
+            features = np.concatenate((features, midpoint))
+            
+        if add_scores:
+            score = np.array([0])
+            features = np.concatenate((features, score))
 
         if add_rackets:
             racket = ast.literal_eval(event_row[f"{player.capitalize()} racket"])
