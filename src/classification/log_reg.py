@@ -21,11 +21,12 @@ test_on_one = True
 simplify = True
 mirrored_only = False
 add_mirrored = False
-videos = [1, 2, 3]
+videos = [1, 2, 3, 4]
 train_videos = videos[:-1]
 test_videos = [videos[-1]]
 test_on_no_stroke = False
 timestamp = time.strftime("%Y%m%d_%H%M%S")
+frame_range = 90
 
 # Generic processing function
 def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_k_score, add_embeddings, simplify, missing_strat, long_edition=False):
@@ -47,7 +48,7 @@ def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rack
 # Combine all data
 def get_splits(long_sequence=False, raw=False, add_keypoints=True, add_midpoints=False, add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_k_score=False, add_embeddings=False, missing_strat="default", process_both_players=False):
     if long_sequence:
-        sequence_frames = 90
+        sequence_frames = frame_range
     else:
         sequence_frames = 0
     
@@ -221,14 +222,14 @@ experiments = [
     # {"desc": "10_norm_keypoints_ball_add_scores", "kwargs":                 {"add_keypoints": True, "add_ball": True, "add_scores": True}},
     #{"desc": "11_norm_keypoints_embeddings", "kwargs":                      {"add_keypoints": True, "add_embeddings": True}},
     #{"desc": "11_norm_keypoints_embeddings_add_scores", "kwargs":           {"add_keypoints": True, "add_embeddings": True, "add_scores": True}},
-    {"desc": "12_norm_keypoints_time", "kwargs":                            {"long_sequence": True, "add_keypoints": True}},
-    {"desc": "12_norm_keypoints_time_k_score", "kwargs":                    {"long_sequence": True, "add_keypoints": True}, "add_k_score": True},
-    {"desc": "12_norm_keypoints_time_add_scores", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
-    {"desc": "13_norm_keypoints_midpoints_time", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-    {"desc": "13_norm_keypoints_midpoints_time_add_scores", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True}},
-    {"desc": "13_norm_keypoints_midpoints_time_add_scores_k_score", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True, "add_k_score": True}},
+    # {"desc": "12_norm_keypoints_time", "kwargs":                            {"long_sequence": True, "add_keypoints": True}},
+    # {"desc": "12_norm_keypoints_time_k_score", "kwargs":                    {"long_sequence": True, "add_keypoints": True}, "add_k_score": True},
+    # {"desc": "12_norm_keypoints_time_add_scores", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
+    # {"desc": "13_norm_keypoints_midpoints_time", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    # {"desc": "13_norm_keypoints_midpoints_time_add_scores", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True}},
+    # {"desc": "13_norm_keypoints_midpoints_time_add_scores_k_score", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True, "add_k_score": True}},
     {"desc": "14_norm_keypoints_midpoints_table_time", "kwargs":            {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-    {"desc": "14_norm_keypoints_midpoints_table_time_add_scores", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+    #{"desc": "14_norm_keypoints_midpoints_table_time_add_scores", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
     {"desc": "14_norm_keypoints_midpoints_table_time_ball", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_ball": True}},
     {"desc": "15_norm_keypoints_rackets_ball_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
     {"desc": "15_norm_keypoints_rackets_ball_time_add_scores", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
@@ -237,9 +238,10 @@ experiments = [
     #{"desc": "17_norm_keypoints_all_embeddings_time", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
     #{"desc": "17_norm_keypoints_all_embeddings_time_add_scores", "kwargs":  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True, "add_scores": True}},
 ]
-    
+
 for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
+    print(f'Frame range: {frame_range}')
     
     # Prepare filenames and directories
     strat = "default"
