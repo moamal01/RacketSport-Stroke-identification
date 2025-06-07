@@ -8,8 +8,8 @@ import cv2
 from tqdm import tqdm
 
 # Models
-model = joblib.load('../results/default/20250602_184327/14_norm_keypoints_midpoints_table_time/logistic_regression_model.joblib')
-label_encoder = joblib.load('../results/default/20250602_184327/14_norm_keypoints_midpoints_table_time/label_encoder.joblib')
+model = joblib.load('../results/replace/20250605_144121/14_norm_keypoints_midpoints_table_time_ball/logistic_regression_model.joblib')
+label_encoder = joblib.load('../results/replace/20250605_144121/14_norm_keypoints_midpoints_table_time_ball/label_encoder.joblib')
 class_names = label_encoder.classes_
 
 # Video properties
@@ -20,7 +20,7 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-out = cv2.VideoWriter("../videos/result6.mp4", fourcc, fps, (width, height))
+out = cv2.VideoWriter("../videos/result7.mp4", fourcc, fps, (width, height))
 
 # Variables
 last_event = ""
@@ -36,7 +36,7 @@ old_probabilities = [0, 0, 0, 0, 0, 0]
 for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="Processing Frames"):
     ret, frame = cap.read()
     
-    #if frame_number < 5112 or 5637 < frame_number:
+    #if frame_number < 436 or 5637 < frame_number:
     #    continue
 
     x = get_feature(
@@ -48,11 +48,12 @@ for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="P
         add_keypoints=True,
         add_midpoints=True,
         add_rackets=False,
-        add_table=False,
+        add_table=True,
         add_ball=True,
+        cheat_ball=True,
         add_scores=False,
         add_embeddings=False,
-        missing_strat="fall_back",
+        missing_strat="replace",
         mirror=False,
         simplify=True,
         long_edition=True

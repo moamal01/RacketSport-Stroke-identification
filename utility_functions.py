@@ -6,6 +6,12 @@ import os
 import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import json
+
+with open('../data/video_4/ball_markup.json', "r") as file:
+    true_balls: dict = json.load(file)
+    
+true_balls = {int(k): v for k, v in true_balls.items()}
 
 joint_list = [
     'nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'left_shoulder',
@@ -243,7 +249,7 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
     
     return features
 
-def get_ball(df, frame, sequence_frame, features, add_scores):
+def get_ball(df, frame, sequence_frame, features, add_scores, missing_strat="fall_back"):
     event_row = df[df['Event frame'] == int(frame)]
     idx = event_row.index[0]
     pos = df.index.get_loc(idx)
@@ -264,13 +270,52 @@ def get_ball(df, frame, sequence_frame, features, add_scores):
             rows_back += 1
 
         if pos - rows_back < 0:
-            ball = np.array([-1, -1])
+            ball = np.array([0, 0])
             not_found = False
 
     features = concatenate_features(features, ball)
     
     if add_scores:
         features = np.concatenate((features, np.array([score])))
+
+    return features
+
+def get_cheat_ball(frame, sequence_frame, features, add_scores):
+    frame = int(frame) + sequence_frame
+
+    if frame in true_balls:
+        ball = true_balls[frame]
+        features = np.concatenate((features, np.array([ball['x'] / 1920, ball['y'] / 1080])))
+        
+        if add_scores:
+            features = np.concatenate((features, np.array([1.0])))
+    else:
+        smaller_keys = [k for k in true_balls if k < frame]
+        larger_keys = [k for k in true_balls if k > frame]
+
+        smaller_key = max(smaller_keys) if smaller_keys else None
+        larger_key = min(larger_keys) if larger_keys else None
+        
+        if (smaller_key is not None and larger_key is not None and larger_key - smaller_key < 120):
+            t = (frame - smaller_key) / (larger_key - smaller_key)
+
+            ball_smaller = true_balls[smaller_key]
+            ball_larger = true_balls[larger_key]
+
+            # Interpolate linearly
+            smaller_array = np.array([ball_smaller['x']  / 1920, ball_smaller['y'] / 1080])
+            larger_array = np.array([ball_larger['x']  / 1920, ball_larger['y'] / 1080])
+
+            ball = (1 - t) * smaller_array + t * larger_array
+            features = np.concatenate((features, ball))
+            
+            if add_scores:
+                features = np.concatenate((features, np.array([0.5])))
+        else:
+            features = np.concatenate((features, np.array([0.0, 0.0])))
+            
+            if add_scores:
+                features = np.concatenate((features, np.array([0.0])))
 
     return features
 
@@ -417,8 +462,8 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
     return feature_list, labels, frames, skipped_frames
 
 def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False, add_keypoints=False, add_midpoints=False,
-                        add_rackets=False, add_table=False, add_ball=False, add_scores=False, add_k_score=False, add_embeddings=False,
-                        missing_strat="default", mirror=False, simplify=False, long_edition=False, player_to_get="both"):
+                        add_rackets=False, add_table=False, add_ball=False, cheat_ball=False, add_scores=False, add_k_score=False,
+                        add_embeddings=False, missing_strat="default", mirror=False, simplify=False, long_edition=False, player_to_get="both"):
 
     keypoints_table = f"../data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
@@ -438,6 +483,9 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
             # Ball
             if add_ball:
                 for i in range(-sequence_range, sequence_range + sequence_gap):
+                    if cheat_ball:
+                        frame_feature = get_cheat_ball(frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
+
                     frame_feature = get_ball(df=df, frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
                     if frame is None:
                         features = None
