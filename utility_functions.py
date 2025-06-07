@@ -8,7 +8,7 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import json
 
-with open('../data/video_4/ball_markup.json', "r") as file:
+with open('data/video_4/ball_markup.json', "r") as file:
     true_balls: dict = json.load(file)
     
 true_balls = {int(k): v for k, v in true_balls.items()}
@@ -50,7 +50,7 @@ def load_json_with_dicts(path: str) -> dict:
 
 
 def get_timestamps(video_number):
-    with open(f"data/extended_events/events_markup{video_number}.json", "r") as file:
+    with open(f"data/events/events_markup{video_number}.json", "r") as file:
         data = json.load(file)
         
     excluded_values = {"empty_event", "bounce", "net"}
