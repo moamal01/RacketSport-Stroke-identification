@@ -17,14 +17,12 @@ sys.path.append(os.path.abspath('../../'))
 
 from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_features, plot_probabilities)
 
+cross_validation = True
 per_player_classifiers = False
 test_on_one = True
 simplify = True
 mirrored_only = False
 add_mirrored = False
-videos = [1, 2, 3]
-#train_videos = videos[:-1]
-#test_videos = [videos[-1]]
 test_on_no_stroke = False
 timestamp = time.strftime("%Y%m%d_%H%M%S")
 frame_range = 90
@@ -136,18 +134,18 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     class_counts = Counter(y_train)
     most_common_class = max(class_counts, key=class_counts.get)
     baseline_acc = class_counts[most_common_class] / len(y_train)
-    print(f"Baseline Accuracy: {baseline_acc:.2f}")
+    print(f"Baseline Accuracy:                      {baseline_acc:.2f}")
 
     # Validation accuracy
     if X_val is not None:
         y_val_pred = clf.predict(X_val)
         val_accuracy = accuracy_score(y_val, y_val_pred)
-        print(f"Validation Accuracy: {val_accuracy:.2f}")
+        print(f"Validation Accuracy:                {val_accuracy:.2f}")
 
     # Test accuracy
     y_test_pred = clf.predict(X_test)
     test_accuracy = accuracy_score(y_test, y_test_pred)
-    print(f"Test Accuracy: {test_accuracy:.2f}")
+    print(f"Test Accuracy:                          {test_accuracy:.2f}")
     
     # --- Softmax outputs ---
     y_test_probs = clf.predict_proba(X_test)
@@ -182,15 +180,15 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
 
     if X_val is not None:
         rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
-        print(f"Random Forest Validation Accuracy: {rf_val_acc:.2f}")
+        print(f"Random Forest Validation Accuracy:  {rf_val_acc:.2f}")
 
     rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-    print(f"Random Forest Test Accuracy: {rf_test_acc:.2f}")
+    print(f"Random Forest Test Accuracy:            {rf_test_acc:.2f}")
     
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
 
-    return probabilities, y_test_decoded, y_test_pred_decoded, test_accuracy, rf_test_acc, clf, clf_rf
+    return probabilities, y_test_decoded, y_test_pred_decoded, test_accuracy, baseline_acc, rf_test_acc, clf, clf_rf
 
 def save_predictions(data, filename, output_dir):
     """Saves the prediction data as a JSON file."""
@@ -240,51 +238,6 @@ experiments = [
     #{"desc": "17_norm_keypoints_all_embeddings_time_add_scores", "kwargs":  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True, "add_scores": True}},
 ]
 
-# for exp in experiments:
-#     print(f"Running experiment: {exp['desc']}")
-#     print(f'Frame range: {frame_range}')
-    
-#     # Prepare filenames and directories
-#     strat = "default"
-#     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-#     save_dir = f"results/{strat}/{timestamp}/{filename}"
-#     os.makedirs(save_dir, exist_ok=True)
-
-#     log_path = os.path.join(f"results/{strat}/{timestamp}", "log.txt")
-    
-#     # Open the log file in append mode ("a") to avoid overwriting
-#     with open(log_path, "a") as log_file, redirect_stdout(log_file):
-#         print(f"Running experiment: {exp['desc']}")
-        
-#         X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
-#             **exp["kwargs"],
-#             missing_strat=strat,
-#             process_both_players=True
-#         )
-
-#         probs, y_test_decoded, y_test_pred_decoded, log_clf, rf_clf = classify(
-#             X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
-#         )
-        
-#         if probs is None:
-#             print("Not enough samples for this experiment")
-#             print("-----------")
-#             continue
-
-#         plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
-#         save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
-#         joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
-#         joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
-#         joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
-
-#         if "probs" in locals():
-#             pass
-#             #plot_probabilities(probs, len(X_test))
-
-#         print("-----------")  # This also goes to the file
-
-#     print(f"Finished: {exp['desc']}, log saved to: {log_path}")
-
 for exp in experiments:
     print(f"Running experiment: {exp['desc']}")
     print(f'Frame range: {frame_range}')
@@ -299,12 +252,25 @@ for exp in experiments:
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
-        print(f"Running experiment: {exp['desc']}")
+        print(f"+++++++++++++++ Running experiment: {exp['desc']} +++++++++++++++")
         
         accuracies = []
         accuracies_rf = []
         
-        for split in [([1,2], [3]), ([2,3], [1]), ([1,3], [2])]:
+
+        splits = [([1,2], [3]), ([2,3], [1]), ([1,3], [2]), ([1,2,3], [4])]
+        
+        for idx, split in enumerate(splits, start=1):
+            train_videos, test_videos = split
+            
+            if len(train_videos) < 3:
+                if cross_validation:
+                    print(f"========== Iteration {idx} ==========")
+                else:
+                    continue
+            else:
+                print(f"========== Full model ==========")
+                
             train_videos, test_videos = split
 
             X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
@@ -315,7 +281,7 @@ for exp in experiments:
                 process_both_players=True
             )
 
-            probs, y_test_decoded, y_test_pred_decoded, test_accuracy, test_accuracy_rf, log_clf, rf_clf = classify(
+            probs, y_test_decoded, y_test_pred_decoded, test_accuracy, test_accuracy_rf, baseline, log_clf, rf_clf = classify(
                 X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
             )
             
@@ -324,22 +290,25 @@ for exp in experiments:
             
             if probs is None:
                 print("Not enough samples for this experiment")
-                print("-----------")
+                print("\nxxxxxxxxxxxxxx")
                 continue
 
-            plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
-            save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
-            joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
-            joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
-            joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
+            if len(train_videos) < 3:
+                plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True)
+                save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
+                joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
+                joblib.dump(rf_clf, os.path.join(save_dir, "random_forrest_model.joblib"))
+                joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
 
             if "probs" in locals():
                 pass
                 #plot_probabilities(probs, len(X_test))
 
-        print(f"Logistic regression cross-validation accuracy:  {statistics.mean(accuracies)}")
-        print(f"Random Forrest cross-validation accuracy:       {statistics.mean(accuracies_rf)}")
-        print("-----------")  # This also goes to the file
+        if cross_validation:
+            print("-----------")
+            print(f"Logistic regression cross-validation accuracy:  {statistics.mean(accuracies)}")
+            print(f"Random Forrest cross-validation accuracy:       {statistics.mean(accuracies_rf)}")
+        print("\nxxxxxxxxxxxxxx")
 
     print(f"Finished: {exp['desc']}, log saved to: {log_path}")
 
