@@ -534,7 +534,7 @@ def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
 
 
 
-def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", concatenate: bool=False) -> None:
+def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", concatenate: bool=False, iteration="") -> None:
     """Plots a confusion matrix comparing predicted labels to test labels.
 
     Args:
@@ -559,11 +559,10 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", con
     
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, "confusion_matrix.png")
+        save_path = os.path.join(save_dir, f"confusion_matrix{iteration}.png")
         plt.savefig(save_path)
-        #print(f"Confusion matrix saved to {save_path}")
     
-    #plt.show()
+    plt.show()
 
 
 
@@ -634,3 +633,31 @@ def plot_probabilities(probs, num_samples):
     plt.legend()
     plt.tight_layout()
     #plt.show()
+    
+
+def plot_accuracies(train_acc, test_acc, save_dir=""):
+    folds = ['Fold 1', 'Fold 2', 'Fold 3', 'Average']
+    x = np.arange(len(folds))  # Adjust the x positions according to the number of folds
+    
+    plt.rcParams.update({'font.size': 22})
+    sns.set_theme()
+
+    # Bar width
+    bar_width = 0.35
+
+    # Plotting bars with offsets
+    plt.bar(x - bar_width/2, train_acc, color='orange', width=bar_width, label='Train Accuracy')
+    plt.bar(x + bar_width/2, test_acc, color='skyblue', width=bar_width, label='Test Accuracy')
+    
+    # Set x-axis labels
+    plt.xticks(x, folds)
+
+    plt.legend()
+    
+    if save_dir:
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, f"accuracies.png")
+        plt.savefig(save_path)
+
+    plt.show()
+    
