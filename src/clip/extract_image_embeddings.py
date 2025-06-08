@@ -4,20 +4,26 @@ from transformers import CLIPProcessor, CLIPModel
 from PIL import Image
 import json
 import os
+import pandas as pd
+from tqdm import tqdm
 
-video = 3
+video = 4
 mirror = False
+full_video = False
 
 if mirror:
     m = "m"
+    file_path = f"../../data/video_{video}/mirrored_midpoints_video{video}.csv"
 else:
     m = ""
-
+    file_path = f"../../data/video_{video}/midpoints_video{video}.csv"
+    
+df = pd.read_csv(file_path)
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
 def save_people_embedding(path):    
-    full_path = "cropped/" + path
+    full_path = "../../cropped/" + path
     if not os.path.exists(full_path):
         return 
     
@@ -29,7 +35,7 @@ def save_people_embedding(path):
         image_embeddings = model.get_image_features(**image_inputs)
 
     # Save embedding
-    directory = "embeddings/" + '/'.join(path.split('/')[:-1])
+    directory = "../../embeddings/" + '/'.join(path.split('/')[:-1])
     if not os.path.exists(directory):
         os.makedirs(directory)
     
@@ -43,7 +49,7 @@ def save_people_embedding(path):
         np.save(directory + "/right.npy", image_embeddings_np)
 
 def save_object_embedding(path):
-    image = Image.open("cropped/" + path)
+    image = Image.open("../../cropped/" + path)
     image_inputs = processor(images=image, return_tensors="pt", do_convert_rgb=False)
 
     # Extract embeddings
@@ -52,35 +58,29 @@ def save_object_embedding(path):
 
     # Save embeddings
     path = '/'.join(path.split('/')[:-1])
-    directory = "embeddings/" + path
+    directory = "../../embeddings/" + path
     os.makedirs(directory)
     
     image_embeddings_np = image_embeddings.cpu().numpy()
     np.save(directory + "/image_embeddings.npy", image_embeddings_np)
 
 
-with open(f"data/events/events_markup{video}.json", "r") as keypoint_file:
+with open(f"../../data/extended_events/events_markup{video}.json", "r") as keypoint_file:
     data = json.load(keypoint_file)
     
 excluded_values = {"empty_event", "bounce", "net"}
 loaded_keys = {k: v for k, v in data.items() if v not in excluded_values}
 
-for key_frame, _ in loaded_keys.items():
-    frame = int(key_frame) - 0
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    event_frame = row["Event frame"]
+    
+    if not full_video:
+        if str(event_frame) not in loaded_keys:
+            continue
+    
     for i in range(1):
-        save_people_embedding(f"video_{video}{m}/{frame}/0/left.png")
-        save_people_embedding(f"video_{video}{m}/{frame}/0/right.png")
-        
-        #if os.path.exists(f"cropped/video_{video}/{frame}/32"):
-        #    save_object_embedding(f"video_{video}/{frame}/32/object.png")
-                
-        #if os.path.exists(f"cropped/video_{video}/{frame}/38"):
-        #    save_object_embedding(f"video_{video}/{frame}/38/object.png")
-            
-        #if os.path.exists(f"cropped/video_{video}/{frame}/60"):
-        #    save_object_embedding(f"video_{video}/{frame}/60/object.png")
-
-        frame += 1
+        save_people_embedding(f"video_{video}{m}/{event_frame}/0/left.png")
+        save_people_embedding(f"video_{video}{m}/{event_frame}/0/right.png")
     
 
 def image_grid(imgs, cols):
