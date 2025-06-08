@@ -5,7 +5,7 @@ import ast
 video = 4
 file_path = f"../../data/video_{video}/normalized_data_video{video}.csv"
 df = pd.read_csv(file_path)
-mirrored = False
+mirrored = True
 
 def get_table_midpoints(df):
     table_midpoints = []
@@ -214,8 +214,79 @@ def get_normalized(ll_hips, lr_hips, keypoints_left, rl_hips, rr_hips, keypoints
     
     return left_player_distance_to_midpoint, right_player_distance_to_midpoint
 
+
+def mirror_keypoints(list):
+    new_list = []
+    for keypoints in list:
+        new_keypoints = []
+        for keypoint in keypoints:
+            x, y, s = keypoint
+            x = 1 - x
+            
+            new_keypoints.append([x, y, s])
+        
+        new_list.append(new_keypoints)
+    
+    return new_list
+        
+
+def mirror_bboxes(boxes):
+    new_boxes = []
+    for box in boxes:
+        if box:
+            x_min, y_min, x_max, y_max = box
+
+            new_x_min = 1 - x_max
+            new_x_max = 1 - x_min
+            
+            new_boxes.append([new_x_min, y_min, new_x_max, y_max])
+        else:
+            new_boxes.append([])
+    
+    return new_boxes
+
+
+
+def mirror_midpoints(list):
+    new_list = []
+    for midpoint in list:
+        x, y = midpoint
+        x = 1 - x
+        
+        new_list.append([x, y])
+    
+    return new_list
+
+
 table_midpoints = get_table_midpoints(df)
 paths, event_frames, keypoints_left, left_score, left_bboxes, keypoints_right, right_score, right_bboxes, left_racket_boxes, left_racket_scores, right_racket_boxes, right_racket_scores, ball_boxes, ball_scores = compute_player_midpoints(df, table_midpoints)
+
+if mirrored:
+    table_midpoints = mirror_midpoints(table_midpoints)
+    ball_boxes = mirror_bboxes(ball_boxes)
+
+    # Placeholders
+    keypoints_left_m = mirror_keypoints(keypoints_right)
+    left_bboxes_m = mirror_bboxes(right_bboxes)
+    left_score_m = right_score
+    
+    left_rackets_boxes_m = mirror_bboxes(right_racket_boxes)
+    left_racket_scores_m = right_racket_scores
+
+    # Assign to correct sides
+    keypoints_right = mirror_keypoints(keypoints_left)
+    right_bboxes = mirror_bboxes(left_bboxes)
+    right_score = left_score
+    keypoints_left = keypoints_left_m
+    left_bboxes = left_bboxes_m
+    left_score = left_score_m
+    
+    right_racket_boxes = mirror_bboxes(left_racket_boxes)
+    right_racket_scores = left_racket_scores
+    left_racket_boxes = left_rackets_boxes_m
+    left_racket_scores = left_racket_scores_m
+
+
 ll_hip, lr_hip, rl_hip, rr_hip = get_hips(keypoints_left, keypoints_right)
 # midpoints
 left_midpoints, right_midpoints = get_midpoint(ll_hip, lr_hip), get_midpoint(rl_hip, rr_hip)
@@ -228,10 +299,11 @@ left_normalized_midpoints, right_normalized_midpoints = normalize_midpoints(left
 normalized_left_racket_midpoint, normalized_right_racket_midpoint = normalize_midpoints(left_racket_midpoints, left_midpoints), normalize_midpoints(right_racket_midpoints, right_midpoints)
 normalized_ball_midpoints = normalize_midpoints(ball_midpoints, table_midpoints)
 
-# Prepare data for saving to CSV
-output_file = f"../../data/video_{video}/midpoints_video{video}.csv"
+
 if mirrored:
     output_file = f"../../data/video_{video}/mirrored_midpoints_video{video}.csv"
+else:
+    output_file = f"../../data/video_{video}/midpoints_video{video}.csv"
 
 data = {
     'Path': paths,
