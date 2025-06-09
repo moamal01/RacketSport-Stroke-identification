@@ -406,7 +406,6 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
     feature_list = []
     labels = []
 
-
     if video_number == 1:
         timestamps = get_timestamps(video_number)
     else:
@@ -429,18 +428,19 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
         
         if long_edition:
             # Left player features
-            for i in range(-sequence_range, sequence_range + sequence_gap):
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
-                if frame_feature is None:
-                    features = None
-                    break
-                features = frame_feature
+            if add_keypoints:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
             # If add embedding
-            if add_embeddings:
+            if (add_embeddings and features is not None) or (add_embeddings and not add_keypoints):
                 embeddings = get_embeddings(video_number, frame, player="left", missing_strat=missing_strat)
                 if embeddings is None:
                     features = None
-                    break
+                    continue
                 
                 features = concatenate_features(features, embeddings) 
             # Ball
@@ -460,18 +460,19 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
                         break
                     features = frame_feature
             # Right player features
-            for i in range(-sequence_range, sequence_range + sequence_gap):
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
-                if frame_feature is None:
-                    features = None
-                    break
-                features = frame_feature
+            if add_keypoints:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
             # If add embedding
-            if add_embeddings:
+            if (add_embeddings and features is not None) or (add_embeddings and not add_keypoints):
                 embeddings = get_embeddings(video_number, frame, player="right", missing_strat=missing_strat)
                 if embeddings is None:
                     features = None
-                    break
+                    continue
                 
                 features = concatenate_features(features, embeddings) 
 

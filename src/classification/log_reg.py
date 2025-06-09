@@ -254,7 +254,7 @@ for exp in experiments:
     print(f'Frame range: {frame_range}')
     
     # Prepare filenames and directories
-    strat = "default"
+    strat = "replace"
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
     save_dir = f"results/{strat}/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
