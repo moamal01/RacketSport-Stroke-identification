@@ -571,6 +571,7 @@ def plot_label_distribution(y_data: list, title: str, simplify=False) -> None:
     plt.xlabel("Count")
     plt.ylabel("Label")
     plt.show()
+    plt.close()
 
 
 
@@ -603,6 +604,7 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", con
         plt.savefig(save_path)
     
     #plt.show()
+    plt.close()
 
 
 
@@ -614,6 +616,7 @@ def plot_coefficients(coefs, classes):
     plt.title("Logistic Regression Coefficients")
     plt.xticks(rotation=45, ha="right")
     plt.show()
+    plt.close()
     
 
 def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors, type):
@@ -648,6 +651,7 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     #plt.savefig(f"figures/umaps/cleaned/LALALALAred_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
 
     #plt.show()
+    plt.close()
     
 def plot_umap2(labels, data, neighbors, text_embeddings=None, save_dir=""):
     umap_model_embeddings = umap.UMAP(n_neighbors=neighbors, min_dist=0.1, metric='euclidean', random_state=42)
@@ -690,9 +694,12 @@ def plot_umap2(labels, data, neighbors, text_embeddings=None, save_dir=""):
     plt.tight_layout()
 
     if save_dir:
-        save_path = os.path.join(save_dir, f"UMAP")
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, f"UMAP.png")
         plt.savefig(save_path)
+        
     #plt.show()
+    plt.close()
     
     
 def plot_probabilities(probs, num_samples):
@@ -718,31 +725,29 @@ def plot_probabilities(probs, num_samples):
     plt.legend()
     plt.tight_layout()
     #plt.show()
+    plt.close()
     
 
-def plot_accuracies(train_acc, test_acc, save_dir=""):
+def plot_accuracies(train_acc, test_acc, save_path=""):
     folds = ['Fold 1', 'Fold 2', 'Fold 3', 'Average']
-    x = np.arange(len(folds))  # Adjust the x positions according to the number of folds
+    x = np.arange(len(folds))
     
     plt.rcParams.update({'font.size': 22})
     sns.set_theme()
 
-    # Bar width
     bar_width = 0.35
 
-    # Plotting bars with offsets
     plt.bar(x - bar_width/2, train_acc, color='orange', width=bar_width, label='Train Accuracy')
     plt.bar(x + bar_width/2, test_acc, color='skyblue', width=bar_width, label='Test Accuracy')
     
-    # Set x-axis labels
     plt.xticks(x, folds)
-
     plt.legend()
     
-    if save_dir:
-        os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, f"accuracies.png")
+    if save_path:
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
         plt.savefig(save_path)
 
     #plt.show()
+    plt.close()
+
     

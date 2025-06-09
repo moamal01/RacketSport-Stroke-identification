@@ -218,7 +218,7 @@ def save_predictions(data, filename, output_dir):
 experiments = [
     {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
     {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
-    # {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
     # {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
     # {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
     # {"desc": "04_raw_keypoints_ball", "kwargs":                             {"raw": True, "add_keypoints": True, "add_ball": True}},
@@ -304,8 +304,6 @@ for exp in experiments:
                 X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
             )
             
-            plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=str(idx))
-            
             train_accuracies.append(train_accuracy)
             accuracies.append(test_accuracy)
             train_accuracies_rf.append(train_accuracy_rf)
@@ -317,18 +315,20 @@ for exp in experiments:
                 continue
 
             if len(train_videos) > 2:
-                plot_umap2(all_labels, all_data, 15, save_dir)
+                plot_umap2(all_labels, all_data, 15, save_dir=save_dir)
                 save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
                 joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
                 joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
                 joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
+            else:
+                plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=str(idx))
 
             if "probs" in locals():
                 pass
                 #plot_probabilities(probs, len(X_test))
                 
-        plot_accuracies(train_accuracies, accuracies, f"{save_dir}_log")
-        plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}_rf")
+        plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
+        plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
 
         if cross_validation:
             print("-----------")
