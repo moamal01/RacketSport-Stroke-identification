@@ -12,11 +12,17 @@ import joblib
 import time
 import statistics
 from contextlib import redirect_stdout
-import matplotlib.pyplot as plt
 
 sys.path.append(os.path.abspath('../../'))
 
-from utility_functions import (plot_label_distribution, plot_confusion_matrix, get_features, plot_probabilities, plot_accuracies)
+from utility_functions import (
+    plot_label_distribution,
+    plot_confusion_matrix,
+    get_features,
+    plot_probabilities,
+    plot_accuracies,
+    plot_umap2
+)
 
 cross_validation = True
 per_player_classifiers = False
@@ -28,7 +34,6 @@ test_on_no_stroke = False
 timestamp = time.strftime("%Y%m%d_%H%M%S")
 frame_range = 90
 
-# Generic processing function
 def process_videos(videos, sequence, raw, add_keypoints, add_midpoints, add_rackets, add_table, add_ball, add_scores, add_k_score, add_embeddings, simplify, missing_strat, long_edition=False):
     results = []
     labels = []
@@ -61,7 +66,7 @@ def get_splits(train_videos, test_videos, long_sequence=False, raw=False, add_ke
     # Encode all labels
     label_encoder = LabelEncoder()
     all_labels_encoded = label_encoder.fit_transform(all_labels)
-    all_embeddings_np = np.vstack(all_data)
+    stacked_data = np.vstack(all_data)
 
     def can_stratify(labels):
         label_counts = Counter(labels)
@@ -98,7 +103,7 @@ def get_splits(train_videos, test_videos, long_sequence=False, raw=False, add_ke
             print("⚠️ Not all classes have ≥2 samples. Falling back to non-stratified split.")
 
         # First: 90% temp, 10% test
-        X_temp, X_test, y_temp, y_test = train_test_split(all_embeddings_np, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat)
+        X_temp, X_test, y_temp, y_test = train_test_split(stacked_data, all_labels_encoded, test_size=0.1, random_state=42, stratify=strat)
 
         if can_stratify(y_temp):
             strat_temp = y_temp
@@ -109,7 +114,7 @@ def get_splits(train_videos, test_videos, long_sequence=False, raw=False, add_ke
         # Then: 10% of 90% (i.e. 10% overall) for validation
         X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=1/9, random_state=42, stratify=strat_temp)
 
-    return X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
+    return all_labels, all_data, X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
 
 def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder):
     probabilities = []
@@ -212,7 +217,7 @@ def save_predictions(data, filename, output_dir):
 
 experiments = [
     {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
-    #{"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
+    {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
     # {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
     # {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
     # {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
@@ -287,7 +292,7 @@ for exp in experiments:
                 
             train_videos, test_videos = split
 
-            X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
+            all_labels, all_data, X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
                 **exp["kwargs"],
                 train_videos=train_videos,
                 test_videos=test_videos,
@@ -311,7 +316,8 @@ for exp in experiments:
                 print("\nxxxxxxxxxxxxxx")
                 continue
 
-            if len(train_videos) < 3:
+            if len(train_videos) > 2:
+                plot_umap2(all_labels, all_data, 15, save_dir)
                 save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
                 joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
                 joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))

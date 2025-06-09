@@ -1,3 +1,4 @@
+import umap
 import ast
 import json
 import matplotlib.pyplot as plt
@@ -7,6 +8,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import json
+import matplotlib.cm as cm
 
 with open('data/video_4/ball_markup.json', "r") as file:
     true_balls: dict = json.load(file)
@@ -474,7 +476,7 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
                     features = None
                     continue
                 
-                features = concatenate_features(features, embeddings) 
+                features = concatenate_features(features, embeddings)
 
         else:
             for i in range(-sequence_range, sequence_range + sequence_gap):
@@ -501,12 +503,13 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
         
         if long_edition:
             # Left player features
-            for i in range(-sequence_range, sequence_range + sequence_gap):
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
-                if frame_feature is None:
-                    features = None
-                    break
-                features = frame_feature
+            if add_keypoints:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="left", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
             # Ball
             if add_ball:
                 for i in range(-sequence_range, sequence_range + sequence_gap):
@@ -527,12 +530,22 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
                         break
                     features = frame_feature
             # Right player features
-            for i in range(-sequence_range, sequence_range + sequence_gap):
-                frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
-                if frame_feature is None:
+            if add_keypoints:
+                for i in range(-sequence_range, sequence_range + sequence_gap):
+                    frame_feature = compose_features(df=df, frame=frame, sequence_frame=i, video_number=video_number, player="right", features=features, raw=raw, add_keypoints=add_keypoints, add_midpoints=add_midpoints, add_rackets=add_rackets, add_scores=add_scores, add_k_score=add_k_score, add_embeddings=add_embeddings, missing_strat=missing_strat, mirror=mirror)
+                    if frame_feature is None:
+                        features = None
+                        break
+                    features = frame_feature
+            # If add embedding
+            if (add_embeddings and features is not None) or (add_embeddings and not add_keypoints):
+                embeddings = get_embeddings(video_number, frame, player="right", missing_strat=missing_strat)
+                if embeddings is None:
                     features = None
-                    break
-                features = frame_feature
+                    continue
+                
+                features = concatenate_features(features, embeddings) 
+            
         else:
             for i in range(-sequence_range, sequence_range + sequence_gap):
                 features = compose_features(df, frame, i, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_scores, add_embeddings, missing_strat)
@@ -589,7 +602,7 @@ def plot_confusion_matrix(test_labels: list, pred_labels: list, save_dir="", con
         save_path = os.path.join(save_dir, f"confusion_matrix{iteration}.png")
         plt.savefig(save_path)
     
-    plt.show()
+    #plt.show()
 
 
 
@@ -634,7 +647,52 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
 
     #plt.savefig(f"figures/umaps/cleaned/LALALALAred_umap_video_{video_number}_player{player}_neighbors{neighbors}.png", dpi=300)
 
-    plt.show()
+    #plt.show()
+    
+def plot_umap2(labels, data, neighbors, text_embeddings=None, save_dir=""):
+    umap_model_embeddings = umap.UMAP(n_neighbors=neighbors, min_dist=0.1, metric='euclidean', random_state=42)
+    stacked_data = np.vstack(data)
+    #text_embeddings = np.vstack(text_embeddings)
+    
+    data_2d = umap_model_embeddings.fit_transform(stacked_data)
+    
+    unique_labels = list(set(labels))
+    cmap = cm.get_cmap("tab20", len(unique_labels))
+    color_dict = {label: cmap(i) for i, label in enumerate(unique_labels)}
+
+    markers = ['o', 's', 'D', 'P', '*', 'X', '^', 'v', '<', '>', 'p', 'h']
+    marker_dict = {label: markers[i % len(markers)] for i, label in enumerate(unique_labels)}
+    
+    
+    plt.rcParams.update({'font.size': 22})
+    sns.set_theme()
+
+    plt.figure(figsize=(10, 6))
+    for label in unique_labels:
+        mask = np.array(labels) == label
+        plt.scatter(data_2d[mask, 0], data_2d[mask, 1], 
+                    s=20, label=label, color=color_dict[label], marker=marker_dict[label], 
+                    edgecolors='black', linewidth=0.5, alpha=0.8)
+
+    # if text_embeddings is not None:
+    #     plt.scatter(text_embeddings[:, 0], text_embeddings[:, 1], 
+    #             s=2, c='black', label="Text Embeddings", marker='o')
+
+    #     #Add captions to text embeddings
+    #     for i, caption in enumerate(text_labels):
+    #         plt.text(text_embeddings[i, 0] + 1.15, text_embeddings[i, 1], caption, 
+    #                 fontsize=8, color='black', ha='center', va='center', alpha=0.7)
+
+    plt.title(f"UMAP")
+    plt.xlabel("UMAP Dimension 1")
+    plt.ylabel("UMAP Dimension 2")
+    plt.legend(markerscale=1, bbox_to_anchor=(0.5, -0.1), loc='upper center', ncol=5)
+    plt.tight_layout()
+
+    if save_dir:
+        save_path = os.path.join(save_dir, f"UMAP")
+        plt.savefig(save_path)
+    #plt.show()
     
     
 def plot_probabilities(probs, num_samples):
@@ -686,5 +744,5 @@ def plot_accuracies(train_acc, test_acc, save_dir=""):
         save_path = os.path.join(save_dir, f"accuracies.png")
         plt.savefig(save_path)
 
-    plt.show()
+    #plt.show()
     
