@@ -332,19 +332,35 @@ def get_table(df, frame, sequence_frame, features):
     return features
 
 
-def get_embeddings(video_number, frame, player=None, single_player=False, mirror=False):
+def get_embeddings(video_number, frame, player=None, missing_strat="default", mirror=False):
     mirrored = "m" if mirror else ""
 
     file_path_of_interest = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
-    if single_player:
-        if not os.path.exists(file_path_of_interest):
-            return None
-    else:
+
+    if missing_strat == "default":
         file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
         file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
+        
         if not os.path.exists(file_path) or not os.path.exists(file_path2):
             return None
+
+    elif missing_strat == "replace":
+        if not os.path.exists(file_path_of_interest):
+            return np.zeros(512, dtype=float)
     
+    elif missing_strat == "fall_back":
+        if not os.path.exists(file_path_of_interest):
+            frame -= 1
+            not_found = True
+            
+            if frame < 0:
+                return np.zeros(512, dtype=float)
+            
+            while not_found:
+                file_path_of_interest = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+                if os.path.exists(file_path_of_interest):
+                    not_found == False
+
     return np.load(file_path_of_interest).squeeze()
 
 
@@ -379,13 +395,6 @@ def compose_features(df, frame, sequence_frame, video_number, player, features, 
             return None
 
         features = concatenate_features(features, keypoints)
-        
-    if add_embeddings:
-        embeddings = get_embeddings(video_number, frame, player)
-        if embeddings is None:
-            return None
-        
-        features = concatenate_features(features, embeddings) 
         
     return features
 
@@ -426,6 +435,14 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
                     features = None
                     break
                 features = frame_feature
+            # If add embedding
+            if add_embeddings:
+                embeddings = get_embeddings(video_number, frame, player="left", missing_strat=missing_strat)
+                if embeddings is None:
+                    features = None
+                    break
+                
+                features = concatenate_features(features, embeddings) 
             # Ball
             if add_ball:
                 for i in range(-sequence_range, sequence_range + sequence_gap):
@@ -449,6 +466,15 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
                     features = None
                     break
                 features = frame_feature
+            # If add embedding
+            if add_embeddings:
+                embeddings = get_embeddings(video_number, frame, player="right", missing_strat=missing_strat)
+                if embeddings is None:
+                    features = None
+                    break
+                
+                features = concatenate_features(features, embeddings) 
+
         else:
             for i in range(-sequence_range, sequence_range + sequence_gap):
                 features = compose_features(df, frame, i, video_number, player, features, raw, add_keypoints, add_midpoints, add_table, add_scores, add_k_score, add_embeddings, missing_strat)

@@ -13,11 +13,10 @@ full_video = False
 
 if mirror:
     m = "m"
-    file_path = f"../../data/video_{video}/mirrored_midpoints_video{video}.csv"
 else:
     m = ""
-    file_path = f"../../data/video_{video}/midpoints_video{video}.csv"
     
+file_path = f"../../data/video_{video}/midpoints_video{video}.csv"
 df = pd.read_csv(file_path)
 model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
