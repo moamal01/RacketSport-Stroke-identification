@@ -10,7 +10,14 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import json
 import matplotlib.cm as cm
 
-with open('data/video_4/ball_markup.json', "r") as file:
+debug = False
+    
+if debug:
+    prefix = ""
+else:
+    prefix = "../../"
+
+with open(prefix + 'data/video_4/ball_markup.json', "r") as file:
     true_balls: dict = json.load(file)
     
 true_balls = {int(k): v for k, v in true_balls.items()}
@@ -52,7 +59,7 @@ def load_json_with_dicts(path: str) -> dict:
 
 
 def get_timestamps(video_number):
-    with open(f"data/extended_events/events_markup{video_number}.json", "r") as file:
+    with open(prefix + f"data/extended_events/events_markup{video_number}.json", "r") as file:
         data = json.load(file)
         
     excluded_values = {"empty_event", "bounce", "net"}
@@ -60,7 +67,7 @@ def get_timestamps(video_number):
     return {k: v for k, v in data.items() if v not in excluded_values}
 
 def get_timestamps2(video_number):
-    with open(f"data/extended_events/events_markup{video_number}.json", "r") as file:
+    with open(prefix + f"data/extended_events/events_markup{video_number}.json", "r") as file:
         data = json.load(file)
 
     return {k: v for k, v in data.items() if v in "no_stroke"}
@@ -143,7 +150,10 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
 
     elif missing_strat == "replace":
         if score < Threshold:
-            features = np.array([[0, 0] for _ in range(17)])[:, :numbers].flatten()
+            if add_k_score:
+                features = np.array([[0, 0, 0] for _ in range(17)])[:, :numbers].flatten()
+            else:
+                features = np.array([[0, 0] for _ in range(17)])[:, :numbers].flatten()
         else:
             features = np.array(ast.literal_eval(event_row[column]))[:, :numbers].flatten()
             
@@ -260,7 +270,8 @@ def get_ball(df, frame, sequence_frame, features, add_scores, missing_strat="fal
 
     not_found = True
     rows_back = 0
-        
+    
+
     while not_found:
         prev_row = df.iloc[pos - rows_back]
         ball = ast.literal_eval(prev_row['Ball midpoint'])
@@ -269,11 +280,18 @@ def get_ball(df, frame, sequence_frame, features, add_scores, missing_strat="fal
         if ball:
             not_found = False
         else:
-            rows_back += 1
+            if missing_strat == "replace":
+                ball = np.array([0, 0])
+                score = 0
+                not_found = False
+            elif missing_strat == "default":
+                return None
+            else:
+                rows_back += 1
 
-        if pos - rows_back < 0:
-            ball = np.array([0, 0])
-            not_found = False
+                if pos - rows_back < 0:
+                    ball = np.array([0, 0])
+                    not_found = False
 
     features = concatenate_features(features, ball)
     
@@ -337,11 +355,11 @@ def get_table(df, frame, sequence_frame, features):
 def get_embeddings(video_number, frame, player=None, missing_strat="default", mirror=False):
     mirrored = "m" if mirror else ""
 
-    file_path_of_interest = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+    file_path_of_interest = prefix + f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
 
     if missing_strat == "default":
-        file_path = f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
-        file_path2 = f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
+        file_path = prefix + f"embeddings/video_{video_number}{mirrored}/{frame}/0/left.npy"
+        file_path2 = prefix + f"embeddings/video_{video_number}{mirrored}/{frame}/0/right.npy" 
         
         if not os.path.exists(file_path) or not os.path.exists(file_path2):
             return None
@@ -359,7 +377,7 @@ def get_embeddings(video_number, frame, player=None, missing_strat="default", mi
                 return np.zeros(512, dtype=float)
             
             while not_found:
-                file_path_of_interest = f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
+                file_path_of_interest = prefix + f"embeddings/video_{video_number}{mirrored}/{frame}/0/{player}.npy"
                 if os.path.exists(file_path_of_interest):
                     not_found == False
 
@@ -413,7 +431,7 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
     else:
         timestamps = get_timestamps(video_number)
 
-    keypoints_table = f"data/video_{video_number}/midpoints_video{video_number}.csv"
+    keypoints_table = prefix + f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
     frames = []
     skipped_frames = []
@@ -449,7 +467,7 @@ def get_features(video_number, sequence_range, sequence_gap=2, raw=False, add_ke
             if add_ball:
                 for i in range(-sequence_range, sequence_range + sequence_gap):
                     frame_feature = get_ball(df=df, frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
-                    if frame is None:
+                    if frame_feature is None:
                         features = None
                         break
                     features = frame_feature

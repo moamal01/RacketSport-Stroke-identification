@@ -24,6 +24,14 @@ from utility_functions import (
     plot_umap2
 )
 
+
+debug = False
+
+if debug:
+    prefix = ""
+else:
+    prefix = "../../"
+
 cross_validation = True
 per_player_classifiers = False
 test_on_one = True
@@ -216,42 +224,51 @@ def save_predictions(data, filename, output_dir):
 
 
 experiments = [
-    {"desc": "01_embeddings", "kwargs":                                     {"add_embeddings": True}},
-    {"desc": "02_raw_keypoints", "kwargs":                                  {"raw": True, "add_keypoints": True}},
-    {"desc": "02_raw_keypoints_add_scores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_scores": True}},
-    # {"desc": "03_raw_keypoints_rackets", "kwargs":                          {"raw": True, "add_keypoints": True, "add_rackets": True}},
-    # {"desc": "03_raw_keypoints_rackets_add_scores", "kwargs":               {"raw": True, "add_keypoints": True, "add_rackets": True, "add_scores": True}},
-    # {"desc": "04_raw_keypoints_ball", "kwargs":                             {"raw": True, "add_keypoints": True, "add_ball": True}},
-    # {"desc": "04_raw_keypoints_ball_add_scores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
-    # {"desc": "05_raw_keypoints_embeddings", "kwargs":                       {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-    # {"desc": "05_raw_keypoints_embeddings_add_scores", "kwargs":            {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True}},
-    # {"desc": "06_raw_keypoints_time", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True}},
-    # {"desc": "06_raw_keypoints_time_add_scores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
-    # {"desc": "07_raw_keypoints_rackets_ball_time", "kwargs":                {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    # {"desc": "07_raw_keypoints_rackets_ball_time_add_scores", "kwargs":     {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-    # {"desc": "08_norm_keypoints", "kwargs":                                 {"add_keypoints": True}},
-    # {"desc": "08_norm_keypoints_add_scores", "kwargs":                      {"add_keypoints": True, "add_scores": True}},
-    # {"desc": "09_norm_keypoints_rackets", "kwargs":                         {"add_keypoints": True, "add_rackets": True}},
-    # {"desc": "09_norm_keypoints_rackets_add_scores", "kwargs":              {"add_keypoints": True, "add_rackets": True, "add_scores": True}},
-    # {"desc": "10_norm_keypoints_ball", "kwargs":                            {"add_keypoints": True, "add_ball": True}},
-    # {"desc": "10_norm_keypoints_ball_add_scores", "kwargs":                 {"add_keypoints": True, "add_ball": True, "add_scores": True}},
-    {"desc": "11_norm_keypoints_embeddings", "kwargs":                      {"add_keypoints": True, "add_embeddings": True}},
-    #{"desc": "11_norm_keypoints_embeddings_add_scores", "kwargs":           {"add_keypoints": True, "add_embeddings": True, "add_scores": True}},
-    # {"desc": "12_norm_keypoints_time", "kwargs":                            {"long_sequence": True, "add_keypoints": True}},
-    # {"desc": "12_norm_keypoints_time_k_score", "kwargs":                    {"long_sequence": True, "add_keypoints": True}, "add_k_score": True},
-    # {"desc": "12_norm_keypoints_time_add_scores", "kwargs":                 {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
-    # {"desc": "13_norm_keypoints_midpoints_time", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-    # {"desc": "13_norm_keypoints_midpoints_time_add_scores", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True}},
-    # {"desc": "13_norm_keypoints_midpoints_time_add_scores_k_score", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "14_norm_keypoints_midpoints_table_time", "kwargs":            {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-    #{"desc": "14_norm_keypoints_midpoints_table_time_add_scores", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
-    {"desc": "14_norm_keypoints_midpoints_table_time_ball", "kwargs":       {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_ball": True}},
-    {"desc": "15_norm_keypoints_rackets_ball_time", "kwargs":               {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "15_norm_keypoints_rackets_ball_time_add_scores", "kwargs":    {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-    {"desc": "16_norm_keypoints_all_time", "kwargs":                        {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True}},
-    {"desc": "16_norm_keypoints_all_time_add_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-    #{"desc": "17_norm_keypoints_all_embeddings_time", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True}},
-    #{"desc": "17_norm_keypoints_all_embeddings_time_add_scores", "kwargs":  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_rackets": True, "add_ball": True, "add_embeddings": True, "add_scores": True}},
+    {"desc": "01_clip", "kwargs":                                                       {"add_embeddings": True}},
+    {"desc": "02_raw_keypoints_clip", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    {"desc": "03_raw_keypoints_clip_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True, "add_k_score": True}},
+
+    {"desc": "04_raw_keypoints", "kwargs":                                              {"raw": True, "add_keypoints": True}},
+    {"desc": "05_raw_keypoints_scores", "kwargs":                                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "06_raw_keypoints_fullscores", "kwargs":                                   {"raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "07_raw_keypoints_ball", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "08_raw_keypoints_ball_scores", "kwargs":                                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "09_raw_keypoints_ball_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "10_raw_keypoints_ball_racket_fullscores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+    {"desc": "11_raw_keypoints_ball_racket_clip_fullscores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+
+    {"desc": "12_raw_keypoints_time", "kwargs":                                         {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    {"desc": "13_raw_keypoints_time_scores", "kwargs":                                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "14_raw_keypoints_time_fullscores", "kwargs":                              {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "15_raw_keypoints_time_ball", "kwargs":                                    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "16_raw_keypoints_time_ball_racket", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "17_raw_keypoints_ball_racket_time_scores", "kwargs":                      {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "18_raw_keypoints_ball_racket_time_fullscores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+
+    {"desc": "19_keypoints", "kwargs":                                                  {"add_keypoints": True}},
+    {"desc": "20_keypoints_scores", "kwargs":                                           {"add_keypoints": True, "add_scores": True}},
+    {"desc": "21_keypoints_fullscores", "kwargs":                                       {"add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "22_keypoints_ball", "kwargs":                                             {"add_keypoints": True, "add_ball": True}},
+    {"desc": "23_keypoints_ball_scores", "kwargs":                                      {"add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "24_keypoints_ball_fullscores", "kwargs":                                  {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "25_keypoints_ball_racket_fullscores", "kwargs":                           {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+    {"desc": "26_keypoints_ball_racket_clip_fullscores", "kwargs":                      {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+    
+    {"desc": "27_keypoints_time", "kwargs":                                             {"long_sequence": True, "add_keypoints": True}},
+    {"desc": "28_keypoints_time_scores", "kwargs":                                      {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "29_keypoints_time_fullscores", "kwargs":                                  {"long_sequence": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "30_keypoints_time_ball", "kwargs":                                        {"long_sequence": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "31_keypoints_time_ball_racket", "kwargs":                                 {"long_sequence": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "32_keypoints_ball_racket_time_scores", "kwargs":                          {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "33_keypoints_ball_racket_time_fullscores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+
+    {"desc": "34_keypoints_midpoints_time", "kwargs":                                   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    {"desc": "35_keypoints_midpoints_table_time", "kwargs":                             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+    {"desc": "36_keypoints_midpoints_table_time_scores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+    {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
+    {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
 ]
 
 for exp in experiments:
@@ -261,10 +278,10 @@ for exp in experiments:
     # Prepare filenames and directories
     strat = "replace"
     filename = exp["desc"].replace(" ", "_").replace(",", "").lower()
-    save_dir = f"results/{strat}/{timestamp}/{filename}"
+    save_dir = prefix + f"results/{strat}/{timestamp}/{filename}"
     os.makedirs(save_dir, exist_ok=True)
 
-    log_path = os.path.join(f"results/{strat}/{timestamp}", "log.txt")
+    log_path = os.path.join(prefix + f"results/{strat}/{timestamp}", "log.txt")
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
