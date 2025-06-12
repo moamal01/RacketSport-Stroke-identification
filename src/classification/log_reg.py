@@ -142,7 +142,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     #plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution", simplify=simplify)
 
     # Train Logistic Regression
-    clf = LogisticRegression(max_iter=1000, solver='saga', penalty='l2')
+    clf = LogisticRegression(max_iter=10000, solver='saga', penalty='l2')
     clf.fit(X_train, y_train)
     
     class_counts = Counter(y_train)
@@ -164,7 +164,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     # Test accuracy
     y_test_pred = clf.predict(X_test)
     test_accuracy = accuracy_score(y_test, y_test_pred)
-    print(f"Logistic Regression Test Accuracy:      {test_accuracy:.2f}")
+    print(f"Logistic Regression Test Accuracy:      +{test_accuracy:.2f}+")
     
     # --- Softmax outputs ---
     y_test_probs = clf.predict_proba(X_test)
@@ -207,7 +207,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
 
     # Random forest test accuracy
     rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-    print(f"Random Forest Test Accuracy:            {rf_test_acc:.2f}")
+    print(f"Random Forest Test Accuracy:            +{rf_test_acc:.2f}+")
     
     y_test_decoded = label_encoder.inverse_transform(y_test)
     y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
@@ -333,11 +333,14 @@ for exp in experiments:
 
             if len(train_videos) > 2:
                 plot_umap2(all_labels, all_data, 15, save_dir=save_dir)
-                save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
+                save_predictions(probs, os.path.join(save_dir, f"{filename}_full.json"), ".")
                 joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
                 joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
                 joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
             else:
+                if train_videos == [1, 2]:
+                    save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
+                    
                 plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=str(idx))
 
             if "probs" in locals():

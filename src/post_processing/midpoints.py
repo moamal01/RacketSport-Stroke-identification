@@ -165,7 +165,7 @@ def normalize(left_hip, right_hip, keypoint):
     midpoint_x = (left_hip[0] + right_hip[0]) / 2
     midpoint_y = (left_hip[1] + right_hip[1]) / 2
     
-    return [keypoint_x - midpoint_x, keypoint_y - midpoint_y]
+    return [keypoint_x - midpoint_x, keypoint_y - midpoint_y, keypoint[2]]
 
 def normalize_midpoints(midpoints, table_midpoints):
     normalized_midpoints_list = []
