@@ -15,7 +15,7 @@ debug = False
 if debug:
     prefix = ""
 else:
-    prefix = "../"
+    prefix = "../../"
 
 with open(prefix + 'data/video_4/ball_markup.json', "r") as file:
     true_balls: dict = json.load(file)
@@ -756,25 +756,33 @@ def plot_probabilities(probs, num_samples):
     
 
 def plot_accuracies(train_acc, test_acc, save_path=""):
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import os
+
     folds = ['Fold 1', 'Fold 2', 'Fold 3', 'Average']
     x = np.arange(len(folds))
-    
+
     plt.rcParams.update({'font.size': 22})
     sns.set_theme()
 
     bar_width = 0.35
 
+    plt.figure(figsize=(10, 6))  # Optional: set figure size
+
     plt.bar(x - bar_width/2, train_acc, color='orange', width=bar_width, label='Train Accuracy')
     plt.bar(x + bar_width/2, test_acc, color='skyblue', width=bar_width, label='Test Accuracy')
-    
+
     plt.xticks(x, folds)
-    plt.legend()
-    
+    plt.legend(markerscale=1, bbox_to_anchor=(0.5, -0.15), loc='upper center', ncol=2)
+
+    plt.subplots_adjust(bottom=0.25)  # Make room for the legend
+
     if save_path:
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        plt.savefig(save_path)
+        plt.savefig(save_path, bbox_inches='tight')  # ensures all content is saved
 
     #plt.show()
     plt.close()
 
-    

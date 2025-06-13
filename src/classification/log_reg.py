@@ -268,7 +268,11 @@ experiments = [
     {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
     {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
     {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
-    {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
+    {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}},
+
+    {"desc": "41_keypoints_midpoints_table_ball_time_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True}},
+    {"desc": "42_keypoints_midpoints_table_ball_racket_time_scores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "43_keypoints_midpoints_table_ball_racket_time_scores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
 ]
 
 for exp in experiments:
@@ -306,8 +310,6 @@ for exp in experiments:
                     continue
             else:
                 print(f"========== Full model ==========")
-                
-            train_videos, test_videos = split
 
             all_labels, all_data, X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder = get_splits(
                 **exp["kwargs"],
@@ -321,10 +323,11 @@ for exp in experiments:
                 X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
             )
             
-            train_accuracies.append(train_accuracy)
-            accuracies.append(test_accuracy)
-            train_accuracies_rf.append(train_accuracy_rf)
-            accuracies_rf.append(test_accuracy_rf)
+            if len(train_videos) < 3:
+                train_accuracies.append(train_accuracy)
+                accuracies.append(test_accuracy)
+                train_accuracies_rf.append(train_accuracy_rf)
+                accuracies_rf.append(test_accuracy_rf)
             
             if probs is None:
                 print("Not enough samples for this experiment")
@@ -338,24 +341,33 @@ for exp in experiments:
                 joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
                 joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
             else:
-                if train_videos == [1, 2]:
-                    save_predictions(probs, os.path.join(save_dir, f"{filename}.json"), ".")
+                save_predictions(probs, os.path.join(save_dir, f"{filename}_iteration{idx}.json"), ".")
                     
                 plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=str(idx))
 
             if "probs" in locals():
                 pass
                 #plot_probabilities(probs, len(X_test))
-                
+
+        mean_train_acc = statistics.mean(train_accuracies)
+        mean_acc = statistics.mean(accuracies)
+        mean_train_acc_rf = statistics.mean(train_accuracies_rf)
+        mean_acc_rf = statistics.mean(accuracies_rf)
+        
+        train_accuracies.append(mean_train_acc)
+        accuracies.append(mean_acc)
+        train_accuracies_rf.append(mean_train_acc_rf)
+        accuracies_rf.append(mean_acc_rf)
+        
         plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
         plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
 
         if cross_validation:
             print("-----------")
-            print(f"Logistic regression cross-validation train accuracy:    {statistics.mean(train_accuracies)}")
-            print(f"Logistic regression cross-validation test accuracy:     {statistics.mean(accuracies)}")
-            print(f"Random Forest cross-validation train accuracy:          {statistics.mean(train_accuracies_rf)}")
-            print(f"Random Forest cross-validation test accuracy:           {statistics.mean(accuracies_rf)}")
+            print(f"Logistic regression cross-validation train accuracy:    {mean_train_acc}")
+            print(f"Logistic regression cross-validation test accuracy:     {mean_acc}")
+            print(f"Random Forest cross-validation train accuracy:          {mean_train_acc_rf}")
+            print(f"Random Forest cross-validation test accuracy:           {mean_acc_rf}")
         print("\nxxxxxxxxxxxxxx")
 
     print(f"Finished: {exp['desc']}, log saved to: {log_path}")
