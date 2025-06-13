@@ -6,21 +6,29 @@ sys.path.append(os.path.abspath('../'))
 from utility_functions import get_feature
 import cv2
 from tqdm import tqdm
+from collections import deque
+
+debug = False
+
+if debug:
+    prefix = ""
+else:
+    prefix = "../"
 
 # Models
-model = joblib.load('../results/replace/20250605_144121/14_norm_keypoints_midpoints_table_time_ball/logistic_regression_model.joblib')
-label_encoder = joblib.load('../results/replace/20250605_144121/14_norm_keypoints_midpoints_table_time_ball/label_encoder.joblib')
+model = joblib.load(prefix + 'results/replace/20250610_104540/39_keypoints_midpoints_table_ball_racket_time_fullscores/logistic_regression_model.joblib')
+label_encoder = joblib.load(prefix + 'results/replace/20250610_104540/39_keypoints_midpoints_table_ball_racket_time_fullscores/label_encoder.joblib')
 class_names = label_encoder.classes_
 
 # Video properties
-cap = cv2.VideoCapture("../videos/testvidf.mp4")
+cap = cv2.VideoCapture(prefix + "videos/testvidf.mp4")
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 fps = cap.get(cv2.CAP_PROP_FPS)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-out = cv2.VideoWriter("../videos/result7.mp4", fourcc, fps, (width, height))
+out = cv2.VideoWriter(prefix + "videos/full_model-cheat_ball.mp4", fourcc, fps, (width, height))
 
 # Variables
 last_event = ""
@@ -30,8 +38,9 @@ pause = True
 points = 0
 frame_range = 90
 frame_gap = 2
+sma_window_size = 40
 
-old_probabilities = [0, 0, 0, 0, 0, 0]
+prob_history = deque(maxlen=sma_window_size)
     
 for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="Processing Frames"):
     ret, frame = cap.read()
@@ -47,11 +56,12 @@ for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="P
         raw=False,
         add_keypoints=True,
         add_midpoints=True,
-        add_rackets=False,
+        add_rackets=True,
         add_table=True,
         add_ball=True,
         cheat_ball=True,
-        add_scores=False,
+        add_scores=True,
+        add_k_score=True,
         add_embeddings=False,
         missing_strat="replace",
         mirror=False,
@@ -62,12 +72,13 @@ for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="P
     if x is not None:
         x = x.reshape(1, -1)
         probabilities = model.predict_proba(x)[0]
-        old_probabilities = probabilities
+        prob_history.append(probabilities)
+        smoothed_probabilities = np.mean(prob_history, axis=0)
+        best_i = np.argmax(smoothed_probabilities)
 
-        best_i = np.argmax(probabilities)
         new_event = label_encoder.inverse_transform([best_i])[0]
         last_event_frame = frame_number
-
+        
         # --- EVENT HANDLING ---
         if "pause" in new_event:
             pause = True
@@ -128,7 +139,7 @@ for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="P
     # Show probabilities vertically (left side)
     class_labels = label_encoder.classes_
     for i, label in enumerate(class_labels):
-        prob = old_probabilities[i]
+        prob = probabilities[i]
         text = f"{label}: {prob:.2f}"
         cv2.putText(
             frame,
