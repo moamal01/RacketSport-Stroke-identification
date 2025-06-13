@@ -15,7 +15,7 @@ debug = False
 if debug:
     prefix = ""
 else:
-    prefix = "../../"
+    prefix = "../"
 
 with open(prefix + 'data/video_4/ball_markup.json', "r") as file:
     true_balls: dict = json.load(file)
@@ -151,9 +151,9 @@ def get_player_features(df, frame, sequence_frame, raw, player, add_midpoints, a
     elif missing_strat == "replace":
         if score < Threshold:
             if add_k_score:
-                features = np.array([[0, 0, 0] for _ in range(17)])[:, :numbers].flatten()
+                features = np.array([[0, 0, 0] for _ in range(17)]).flatten()
             else:
-                features = np.array([[0, 0] for _ in range(17)])[:, :numbers].flatten()
+                features = np.array([[0, 0] for _ in range(17)]).flatten()
         else:
             features = np.array(ast.literal_eval(event_row[column]))[:, :numbers].flatten()
             
@@ -393,7 +393,7 @@ def concatenate_features(features, new_features):
     return features
 
 
-def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_scores=False, add_k_score=False, add_embeddings=False, missing_strat="default", mirror=False):    
+def compose_features(df, frame, sequence_frame, video_number, player, features, raw=False, add_keypoints=False, add_midpoints=False, add_rackets=False, add_scores=False, add_k_score=False, add_embeddings=False, missing_strat="default", mirror=False):
     event_row = df[df['Event frame'] == int(frame)]
     if event_row.empty:
         return
@@ -512,7 +512,7 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
                         add_rackets=False, add_table=False, add_ball=False, cheat_ball=False, add_scores=False, add_k_score=False,
                         add_embeddings=False, missing_strat="default", mirror=False, simplify=False, long_edition=False, player_to_get="both"):
 
-    keypoints_table = f"../data/video_{video_number}/midpoints_video{video_number}.csv"
+    keypoints_table = prefix + f"data/video_{video_number}/midpoints_video{video_number}.csv"
     df = pd.read_csv(keypoints_table)
 
     for frame in frames:
@@ -528,13 +528,22 @@ def get_feature(video_number, frames, sequence_range, sequence_gap=1, raw=False,
                         features = None
                         break
                     features = frame_feature
+            # If add embedding
+            if (add_embeddings and features is not None) or (add_embeddings and not add_keypoints):
+                embeddings = get_embeddings(video_number, frame, player="left", missing_strat=missing_strat)
+                if embeddings is None:
+                    features = None
+                    continue
+                
+                features = concatenate_features(features, embeddings) 
             # Ball
             if add_ball:
                 for i in range(-sequence_range, sequence_range + sequence_gap):
                     if cheat_ball:
                         frame_feature = get_cheat_ball(frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
+                    else:
+                        frame_feature = get_ball(df=df, frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
 
-                    frame_feature = get_ball(df=df, frame=frame, sequence_frame=i, features=features, add_scores=add_scores)
                     if frame is None:
                         features = None
                         break
