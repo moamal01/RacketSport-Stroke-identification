@@ -12,6 +12,7 @@ import joblib
 import time
 import statistics
 from contextlib import redirect_stdout
+from sklearn.metrics import f1_score
 
 sys.path.append(os.path.abspath('../../'))
 
@@ -31,6 +32,12 @@ if debug:
     prefix = ""
 else:
     prefix = "../../"
+
+logistic_regression = True
+max_iterations = 1
+
+random_forest = True
+max_depth = 3
 
 cross_validation = True
 per_player_classifiers = False
@@ -124,12 +131,25 @@ def get_splits(train_videos, test_videos, long_sequence=False, raw=False, add_ke
 
     return all_labels, all_data, X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
 
-def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder):
+def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder, log=True, rf=True):
     probabilities = []
+    probabilities_rf = []
+    test_accuracy = 0
+    train_accuracy = 0
+    rf_test_acc = 0
+    rf_train_acc = 0
+    clf = None
+    clf_rf = None
+    
+    y_test_pred_decoded = None
+    y_test_pred_decoded_rf = None
+    
+    class_names = label_encoder.classes_
+    
     # Filter out skipped frames from the original `frames` list
     if frames is None:
         print("⚠️ No samples for this experiment – skipping.")
-        return None, None, None, None, None
+        return None, None, None, None, None, None, None, None, None, None
     
     filtered_frames = [f for f in frames if f not in skipped_frames]
 
@@ -142,77 +162,119 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     #plot_label_distribution(label_encoder.inverse_transform(y_test), "Test Set Label Distribution", simplify=simplify)
 
     # Train Logistic Regression
-    clf = LogisticRegression(max_iter=10000, solver='saga', penalty='l2')
-    clf.fit(X_train, y_train)
-    
-    class_counts = Counter(y_train)
-    most_common_class = max(class_counts, key=class_counts.get)
-    baseline_acc = class_counts[most_common_class] / len(y_train)
-    print(f"Baseline Accuracy:                      {baseline_acc:.2f}")
-    
-    # Train accuracy
-    y_train_pred = clf.predict(X_train)
-    train_accuracy = accuracy_score(y_train, y_train_pred)
-    print(f"Logistic Regression Train Accuracy:     {train_accuracy:.2f}")
+    if log:
+        clf = LogisticRegression(max_iter=max_iterations, solver='saga', penalty='l2')
+        clf.fit(X_train, y_train)
+        
+        class_counts = Counter(y_train)
+        most_common_class = max(class_counts, key=class_counts.get)
+        baseline_acc = class_counts[most_common_class] / len(y_train)
+        print(f"Baseline Accuracy:                      {baseline_acc:.2f}")
+        
+        # Train accuracy
+        y_train_pred = clf.predict(X_train)
+        train_accuracy = accuracy_score(y_train, y_train_pred)
+        print(f"Logistic Regression Train Accuracy:     {train_accuracy:.2f}")
 
-    # Validation accuracy
-    if X_val is not None:
-        y_val_pred = clf.predict(X_val)
-        val_accuracy = accuracy_score(y_val, y_val_pred)
-        print(f"Validation Accuracy:                {val_accuracy:.2f}")
+        # Validation accuracy
+        if X_val is not None:
+            y_val_pred = clf.predict(X_val)
+            val_accuracy = accuracy_score(y_val, y_val_pred)
+            print(f"Validation Accuracy:                {val_accuracy:.2f}")
 
-    # Test accuracy
-    y_test_pred = clf.predict(X_test)
-    test_accuracy = accuracy_score(y_test, y_test_pred)
-    print(f"Logistic Regression Test Accuracy:      +{test_accuracy:.2f}+")
-    
-    # --- Softmax outputs ---
-    y_test_probs = clf.predict_proba(X_test)
-    class_names = label_encoder.classes_
-    
-    # Find the index of "no_stroke" in class_names
-    if test_on_no_stroke:
-        no_stroke_index = class_names.tolist().index('no_stroke')
+        # Test accuracy
+        y_test_pred = clf.predict(X_test)
+        test_accuracy = accuracy_score(y_test, y_test_pred)
+        print(f"Logistic Regression Test Accuracy:          +{test_accuracy:.2f}+")
+        
+        f1_macro = f1_score(y_test, y_test_pred, average='macro')
+        print(f"Macro F1 Score:                             +{f1_macro:.2f}+")
+        f1_micro = f1_score(y_test, y_test_pred, average='micro')
+        print(f"Macro F1 Score:                             +{f1_micro:.2f}+")
+        
+        y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
+        
+        # --- Softmax outputs ---
+        y_test_probs = clf.predict_proba(X_test)
+        
+        # Find the index of "no_stroke" in class_names
+        if test_on_no_stroke:
+            no_stroke_index = class_names.tolist().index('no_stroke')
 
-        for i in range(len(X_test)):
-            for j in range(len(y_test_probs[i])):
-                # probs, true_label
+            for i in range(len(X_test)):
+                for j in range(len(y_test_probs[i])):
+                    # probs, true_label
+                    probabilities.append({
+                        "predicted_class": class_names[j],
+                        "probability": y_test_probs[i][j],
+                        "probabilities": [prob for k, prob in enumerate(y_test_probs[i]) if k != no_stroke_index],
+                        "true_class": class_names[y_test[i]]
+                    })
+        else:
+            for i in range(len(X_test)):
+                most_probable_index = np.argmax(y_test_probs[i])
                 probabilities.append({
-                    "predicted_class": class_names[j],
-                    "probability": y_test_probs[i][j],
-                    "probabilities": [prob for k, prob in enumerate(y_test_probs[i]) if k != no_stroke_index],
-                    "true_class": class_names[y_test[i]]
+                    "true_class": class_names[y_test[i]],
+                    "frame": filtered_frames[i],
+                    "predicted_class": class_names[most_probable_index],
+                    "probabilities": dict(zip(class_names, y_test_probs[i].tolist()))
                 })
-    else:
-        for i in range(len(X_test)):
-            most_probable_index = np.argmax(y_test_probs[i])
-            probabilities.append({
-                "true_class": class_names[y_test[i]],
-                "frame": filtered_frames[i],
-                "predicted_class": class_names[most_probable_index],
-                "probabilities": dict(zip(class_names, y_test_probs[i].tolist()))
-            })
 
     # Train Random Forest
-    clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
-    clf_rf.fit(X_train, y_train)
-    
-    # Random forest train accuracy
-    rf_train_acc = accuracy_score(y_train, clf_rf.predict(X_train))
-    print(f"Random Forest Train Accuracy:            {rf_train_acc:.2f}")
+    if rf:
+        clf_rf = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=max_depth)
+        clf_rf.fit(X_train, y_train)
+        
+        # Random forest train accuracy
+        rf_train_acc = accuracy_score(y_train, clf_rf.predict(X_train))
+        print(f"Random Forest Train Accuracy:            {rf_train_acc:.2f}")
 
-    if X_val is not None:
-        rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
-        print(f"Random Forest Validation Accuracy:  {rf_val_acc:.2f}")
+        if X_val is not None:
+            rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
+            print(f"Random Forest Validation Accuracy:  {rf_val_acc:.2f}")
 
-    # Random forest test accuracy
-    rf_test_acc = accuracy_score(y_test, clf_rf.predict(X_test))
-    print(f"Random Forest Test Accuracy:            +{rf_test_acc:.2f}+")
+        # Random forest test accuracy
+        y_test_pred_rf = clf_rf.predict(X_test)
+        clf_rf.predict(X_test)
+        rf_test_acc = accuracy_score(y_test, y_test_pred_rf)
+        print(f"Random Forest Test Accuracy:                +{rf_test_acc:.2f}+")
+
+        f1_macro_rf = f1_score(y_test, y_test_pred, average='macro')
+        print(f"Macro F1 Score:                             +{f1_macro_rf:.2f}+")
+        
+        f1_micro_rf = f1_score(y_test, y_test_pred, average='micro')
+        print(f"Macro F1 Score:                             +{f1_micro_rf:.2f}+")
+        
+        y_test_pred_decoded_rf = label_encoder.inverse_transform(y_test_pred_rf)
+        
+        # --- Softmax outputs ---
+        y_test_probs_rf = clf_rf.predict_proba(X_test)
+        
+        if test_on_no_stroke:
+            no_stroke_index = class_names.tolist().index('no_stroke')
+
+            for i in range(len(X_test)):
+                for j in range(len(y_test_probs_rf[i])):
+                    # probs, true_label
+                    probabilities_rf.append({
+                        "predicted_class": class_names[j],
+                        "probability": y_test_probs_rf[i][j],
+                        "probabilities": [prob for k, prob in enumerate(y_test_probs_rf[i]) if k != no_stroke_index],
+                        "true_class": class_names[y_test[i]]
+                    })
+        else:
+            for i in range(len(X_test)):
+                most_probable_index = np.argmax(y_test_probs_rf[i])
+                probabilities_rf.append({
+                    "true_class": class_names[y_test[i]],
+                    "frame": filtered_frames[i],
+                    "predicted_class": class_names[most_probable_index],
+                    "probabilities": dict(zip(class_names, y_test_probs_rf[i].tolist()))
+                })
     
     y_test_decoded = label_encoder.inverse_transform(y_test)
-    y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
 
-    return probabilities, y_test_decoded, y_test_pred_decoded, test_accuracy, train_accuracy, rf_test_acc, rf_train_acc, clf, clf_rf
+    return probabilities, probabilities_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, f1_macro, train_accuracy, rf_test_acc, f1_macro_rf, rf_train_acc, clf, clf_rf
 
 def save_predictions(data, filename, output_dir):
     """Saves the prediction data as a JSON file."""
@@ -224,55 +286,55 @@ def save_predictions(data, filename, output_dir):
 
 
 experiments = [
-    {"desc": "01_clip", "kwargs":                                                       {"add_embeddings": True}},
-    {"desc": "02_raw_keypoints_clip", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-    {"desc": "03_raw_keypoints_clip_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True, "add_k_score": True}},
+    # {"desc": "01_clip", "kwargs":                                                       {"add_embeddings": True}},
+    # {"desc": "02_raw_keypoints_clip", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    # {"desc": "03_raw_keypoints_clip_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True, "add_k_score": True}},
 
     {"desc": "04_raw_keypoints", "kwargs":                                              {"raw": True, "add_keypoints": True}},
-    {"desc": "05_raw_keypoints_scores", "kwargs":                                       {"raw": True, "add_keypoints": True, "add_scores": True}},
-    {"desc": "06_raw_keypoints_fullscores", "kwargs":                                   {"raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "07_raw_keypoints_ball", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "08_raw_keypoints_ball_scores", "kwargs":                                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
-    {"desc": "09_raw_keypoints_ball_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "10_raw_keypoints_ball_racket_fullscores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
-    {"desc": "11_raw_keypoints_ball_racket_clip_fullscores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+#     {"desc": "05_raw_keypoints_scores", "kwargs":                                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+#     {"desc": "06_raw_keypoints_fullscores", "kwargs":                                   {"raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "07_raw_keypoints_ball", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_ball": True}},
+#     {"desc": "08_raw_keypoints_ball_scores", "kwargs":                                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
+#     {"desc": "09_raw_keypoints_ball_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "10_raw_keypoints_ball_racket_fullscores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+#     {"desc": "11_raw_keypoints_ball_racket_clip_fullscores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
 
-    {"desc": "12_raw_keypoints_time", "kwargs":                                         {"long_sequence": True, "raw": True, "add_keypoints": True}},
-    {"desc": "13_raw_keypoints_time_scores", "kwargs":                                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
-    {"desc": "14_raw_keypoints_time_fullscores", "kwargs":                              {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "15_raw_keypoints_time_ball", "kwargs":                                    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "16_raw_keypoints_time_ball_racket", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
-    {"desc": "17_raw_keypoints_ball_racket_time_scores", "kwargs":                      {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-    {"desc": "18_raw_keypoints_ball_racket_time_fullscores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "12_raw_keypoints_time", "kwargs":                                         {"long_sequence": True, "raw": True, "add_keypoints": True}},
+#     {"desc": "13_raw_keypoints_time_scores", "kwargs":                                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
+#     {"desc": "14_raw_keypoints_time_fullscores", "kwargs":                              {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "15_raw_keypoints_time_ball", "kwargs":                                    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True}},
+#     {"desc": "16_raw_keypoints_time_ball_racket", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+#     {"desc": "17_raw_keypoints_ball_racket_time_scores", "kwargs":                      {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+#     {"desc": "18_raw_keypoints_ball_racket_time_fullscores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
 
-    {"desc": "19_keypoints", "kwargs":                                                  {"add_keypoints": True}},
-    {"desc": "20_keypoints_scores", "kwargs":                                           {"add_keypoints": True, "add_scores": True}},
-    {"desc": "21_keypoints_fullscores", "kwargs":                                       {"add_keypoints": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "22_keypoints_ball", "kwargs":                                             {"add_keypoints": True, "add_ball": True}},
-    {"desc": "23_keypoints_ball_scores", "kwargs":                                      {"add_keypoints": True, "add_ball": True, "add_scores": True}},
-    {"desc": "24_keypoints_ball_fullscores", "kwargs":                                  {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "25_keypoints_ball_racket_fullscores", "kwargs":                           {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
-    {"desc": "26_keypoints_ball_racket_clip_fullscores", "kwargs":                      {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+#     {"desc": "19_keypoints", "kwargs":                                                  {"add_keypoints": True}},
+#     {"desc": "20_keypoints_scores", "kwargs":                                           {"add_keypoints": True, "add_scores": True}},
+#     {"desc": "21_keypoints_fullscores", "kwargs":                                       {"add_keypoints": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "22_keypoints_ball", "kwargs":                                             {"add_keypoints": True, "add_ball": True}},
+#     {"desc": "23_keypoints_ball_scores", "kwargs":                                      {"add_keypoints": True, "add_ball": True, "add_scores": True}},
+#     {"desc": "24_keypoints_ball_fullscores", "kwargs":                                  {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "25_keypoints_ball_racket_fullscores", "kwargs":                           {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+#     {"desc": "26_keypoints_ball_racket_clip_fullscores", "kwargs":                      {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
     
-    {"desc": "27_keypoints_time", "kwargs":                                             {"long_sequence": True, "add_keypoints": True}},
-    {"desc": "28_keypoints_time_scores", "kwargs":                                      {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
-    {"desc": "29_keypoints_time_fullscores", "kwargs":                                  {"long_sequence": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "30_keypoints_time_ball", "kwargs":                                        {"long_sequence": True, "add_keypoints": True, "add_ball": True}},
-    {"desc": "31_keypoints_time_ball_racket", "kwargs":                                 {"long_sequence": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
-    {"desc": "32_keypoints_ball_racket_time_scores", "kwargs":                          {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-    {"desc": "33_keypoints_ball_racket_time_fullscores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "27_keypoints_time", "kwargs":                                             {"long_sequence": True, "add_keypoints": True}},
+#     {"desc": "28_keypoints_time_scores", "kwargs":                                      {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
+#     {"desc": "29_keypoints_time_fullscores", "kwargs":                                  {"long_sequence": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "30_keypoints_time_ball", "kwargs":                                        {"long_sequence": True, "add_keypoints": True, "add_ball": True}},
+#     {"desc": "31_keypoints_time_ball_racket", "kwargs":                                 {"long_sequence": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+#     {"desc": "32_keypoints_ball_racket_time_scores", "kwargs":                          {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+#     {"desc": "33_keypoints_ball_racket_time_fullscores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
 
-    {"desc": "34_keypoints_midpoints_time", "kwargs":                                   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-    {"desc": "35_keypoints_midpoints_table_time", "kwargs":                             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-    {"desc": "36_keypoints_midpoints_table_time_scores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
-    {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
-    {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
-    {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
-    {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}},
+#     {"desc": "34_keypoints_midpoints_time", "kwargs":                                   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+#     {"desc": "35_keypoints_midpoints_table_time", "kwargs":                             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+#     {"desc": "36_keypoints_midpoints_table_time_scores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+#     {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
+#     {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
+#     {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
+#     {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}},
 
-    {"desc": "41_keypoints_midpoints_table_ball_time_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True}},
-    {"desc": "42_keypoints_midpoints_table_ball_racket_time_scores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True}},
-    {"desc": "43_keypoints_midpoints_table_ball_racket_time_scores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
+#     {"desc": "41_keypoints_midpoints_table_ball_time_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True}},
+#     {"desc": "42_keypoints_midpoints_table_ball_racket_time_scores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True}},
+#     {"desc": "43_keypoints_midpoints_table_ball_racket_time_scores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
 ]
 
 for exp in experiments:
@@ -289,14 +351,15 @@ for exp in experiments:
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
-        print(f"+++++++++++++++ Running experiment: {exp['desc']} +++++++++++++++")
+        print(f"+++++++++++++++ Running experiment: {exp['desc']} max depth 20 +++++++++++++++")
         
         train_accuracies = []
         accuracies = []
+        f1_accuracies = []
         
         train_accuracies_rf = []
         accuracies_rf = []
-        
+        f1_accuracies_rf = []
 
         splits = [([1,2], [3]), ([2,3], [1]), ([1,3], [2]), ([1,2,3], [4])]
         
@@ -319,55 +382,86 @@ for exp in experiments:
                 process_both_players=True
             )
 
-            probs, y_test_decoded, y_test_pred_decoded, test_accuracy, train_accuracy, test_accuracy_rf, train_accuracy_rf, log_clf, rf_clf = classify(
-                X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder
+            probs, probs_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, f1_accuracy, train_accuracy, test_accuracy_rf, f1_accuracy_rf, train_accuracy_rf, log_clf, rf_clf = classify(
+                X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder, logistic_regression, random_forest
             )
             
             if len(train_videos) < 3:
-                train_accuracies.append(train_accuracy)
-                accuracies.append(test_accuracy)
-                train_accuracies_rf.append(train_accuracy_rf)
-                accuracies_rf.append(test_accuracy_rf)
-            
-            if probs is None:
-                print("Not enough samples for this experiment")
-                print("\nxxxxxxxxxxxxxx")
-                continue
+                if logistic_regression:
+                    train_accuracies.append(train_accuracy)
+                    accuracies.append(test_accuracy)
+                    f1_accuracies.append(f1_accuracy)
+                
+                if random_forest:
+                    train_accuracies_rf.append(train_accuracy_rf)
+                    accuracies_rf.append(test_accuracy_rf)
+                    f1_accuracies_rf.append(f1_accuracy_rf)
 
             if len(train_videos) > 2:
                 plot_umap2(all_labels, all_data, 15, save_dir=save_dir)
-                save_predictions(probs, os.path.join(save_dir, f"{filename}_full.json"), ".")
-                joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
-                joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
                 joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
-            else:
-                save_predictions(probs, os.path.join(save_dir, f"{filename}_iteration{idx}.json"), ".")
+                
+                if logistic_regression:
+                    save_predictions(probs, os.path.join(save_dir, f"{filename}_log_full.json"), ".")
+                    joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
                     
-                plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=str(idx))
+                if random_forest:
+                    save_predictions(probs_rf, os.path.join(save_dir, f"{filename}_rf_full.json"), ".")
+                    joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
+
+                
+            else:
+                if logistic_regression:
+                    save_predictions(probs, os.path.join(save_dir, f"{filename}_log_iteration{idx}.json"), ".")
+                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=f"{str(idx)}_log")
+                    
+                if random_forest:
+                    save_predictions(probs_rf, os.path.join(save_dir, f"{filename}_rf_iteration{idx}.json"), ".")
+                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded_rf, save_dir, concatenate=True, iteration=f"{str(idx)}_rf")
+                    
+                
 
             if "probs" in locals():
                 pass
                 #plot_probabilities(probs, len(X_test))
 
-        mean_train_acc = statistics.mean(train_accuracies)
-        mean_acc = statistics.mean(accuracies)
-        mean_train_acc_rf = statistics.mean(train_accuracies_rf)
-        mean_acc_rf = statistics.mean(accuracies_rf)
-        
-        train_accuracies.append(mean_train_acc)
-        accuracies.append(mean_acc)
-        train_accuracies_rf.append(mean_train_acc_rf)
-        accuracies_rf.append(mean_acc_rf)
-        
-        plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
-        plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
+        if logistic_regression:
+            mean_train_acc = statistics.mean(train_accuracies)
+            mean_acc = statistics.mean(accuracies)
+            mean_f1_acc = statistics.mean(f1_accuracies)
+
+            train_accuracies.append(mean_train_acc)
+            accuracies.append(mean_acc)
+            f1_accuracies.append(mean_f1_acc)
+            
+            plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
+            plot_accuracies(train_accuracies, f1_accuracies, f"{save_dir}/f1_scores_log.png")
+            
+        if random_forest:
+            mean_train_acc_rf = statistics.mean(train_accuracies_rf)
+            mean_acc_rf = statistics.mean(accuracies_rf)
+            mean_f1_acc_rf = statistics.mean(f1_accuracies_rf)
+            
+            train_accuracies_rf.append(mean_train_acc_rf)
+            accuracies_rf.append(mean_acc_rf)
+            f1_accuracies_rf.append(mean_f1_acc_rf)
+            
+            plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
+            plot_accuracies(train_accuracies, f1_accuracies_rf, f"{save_dir}/f1_scores_rf.png")
+
 
         if cross_validation:
             print("-----------")
-            print(f"Logistic regression cross-validation train accuracy:    {mean_train_acc}")
-            print(f"Logistic regression cross-validation test accuracy:     {mean_acc}")
-            print(f"Random Forest cross-validation train accuracy:          {mean_train_acc_rf}")
-            print(f"Random Forest cross-validation test accuracy:           {mean_acc_rf}")
+            if logistic_regression:
+                print(f"Logistic regression cross-validation train accuracy:    {mean_train_acc}")
+                print(f"Logistic regression cross-validation test accuracy:     {mean_acc}")
+                print(f"Logistic regression cross-validation f1 score:          {mean_f1_acc}")
+                
+            if random_forest:
+                print(f"Random Forest cross-validation train accuracy:          {mean_train_acc_rf}")
+                print(f"Random Forest cross-validation test accuracy:           {mean_acc_rf}")
+                print(f"Random Forest cross-validation test f1 score:           {mean_f1_acc_rf}")
+
         print("\nxxxxxxxxxxxxxx")
 
     print(f"Finished: {exp['desc']}, log saved to: {log_path}")
