@@ -26,7 +26,7 @@ from utility_functions import (
 )
 
 
-debug = False
+debug = True
 
 if debug:
     prefix = ""
@@ -144,6 +144,11 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     y_test_pred_decoded = None
     y_test_pred_decoded_rf = None
     
+    f1_test_scores_log = []
+    f1_train_scores_log = []
+    f1_train_scores_rf = []
+    f1_test_scores_rf = []
+    
     class_names = label_encoder.classes_
     
     # Filter out skipped frames from the original `frames` list
@@ -174,7 +179,17 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         # Train accuracy
         y_train_pred = clf.predict(X_train)
         train_accuracy = accuracy_score(y_train, y_train_pred)
+        
+        f1_macro_train = f1_score(y_train, y_train_pred, average='macro')
+        f1_weighted_train = f1_score(y_train, y_train_pred, average='weighted')
+        f1_micro_train = f1_score(y_train, y_train_pred, average='micro')
         print(f"Logistic Regression Train Accuracy:     {train_accuracy:.2f}")
+        print(f"Macro F1 Score:                         {f1_macro_train:.2f}")
+        print(f"Macro F1 Weighted:                      {f1_weighted_train:.2f}")
+        print(f"Macro F1 Score:                         {f1_micro_train:.2f}")
+        f1_train_scores_log.append(f1_macro_train)
+        f1_train_scores_log.append(f1_weighted_train)
+        f1_train_scores_log.append(f1_micro_train)
 
         # Validation accuracy
         if X_val is not None:
@@ -185,12 +200,17 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         # Test accuracy
         y_test_pred = clf.predict(X_test)
         test_accuracy = accuracy_score(y_test, y_test_pred)
+
+        f1_macro_test = f1_score(y_test, y_test_pred, average='macro')
+        f1_weighted_test = f1_score(y_test, y_test_pred, average='weighted')
+        f1_micro_test = f1_score(y_test, y_test_pred, average='micro')
         print(f"Logistic Regression Test Accuracy:          +{test_accuracy:.2f}+")
-        
-        f1_macro = f1_score(y_test, y_test_pred, average='macro')
-        print(f"Macro F1 Score:                             +{f1_macro:.2f}+")
-        f1_micro = f1_score(y_test, y_test_pred, average='micro')
-        print(f"Macro F1 Score:                             +{f1_micro:.2f}+")
+        print(f"Macro F1 Score:                             +{f1_macro_test:.2f}+")
+        print(f"Macro F1 Weighted:                          +{f1_weighted_test:.2f}+")
+        print(f"Macro F1 Score:                             +{f1_micro_test:.2f}+")
+        f1_test_scores_log.append(f1_macro_test)
+        f1_test_scores_log.append(f1_weighted_test)
+        f1_test_scores_log.append(f1_micro_test)
         
         y_test_pred_decoded = label_encoder.inverse_transform(y_test_pred)
         
@@ -227,7 +247,18 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         
         # Random forest train accuracy
         rf_train_acc = accuracy_score(y_train, clf_rf.predict(X_train))
-        print(f"Random Forest Train Accuracy:            {rf_train_acc:.2f}")
+        f1_macro_rf_train = f1_score(y_test, y_test_pred, average='macro')
+        f1_weighted_rf_train = f1_score(y_test, y_test_pred, average='weighted')
+        f1_micro_rf_train = f1_score(y_test, y_test_pred, average='micro')
+
+        print(f"Random Forest Train Accuracy:               {rf_train_acc:.2f}")
+        print(f"Random Forest Test Accuracy:                    +{rf_test_acc:.2f}+")
+        print(f"Macro F1 Score:                                 +{f1_macro_rf_train:.2f}+")
+        print(f"weighted F1 Score:                              +{f1_weighted_rf_train:.2f}+")
+        print(f"Macro F1 Score:                                 +{f1_micro_rf_train:.2f}+")
+        f1_train_scores_rf.append(f1_macro_rf_train)
+        f1_train_scores_rf.append(f1_weighted_rf_train)
+        f1_train_scores_rf.append(f1_micro_rf_train)
 
         if X_val is not None:
             rf_val_acc = accuracy_score(y_val, clf_rf.predict(X_val))
@@ -237,13 +268,17 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         y_test_pred_rf = clf_rf.predict(X_test)
         clf_rf.predict(X_test)
         rf_test_acc = accuracy_score(y_test, y_test_pred_rf)
-        print(f"Random Forest Test Accuracy:                +{rf_test_acc:.2f}+")
 
         f1_macro_rf = f1_score(y_test, y_test_pred, average='macro')
-        print(f"Macro F1 Score:                             +{f1_macro_rf:.2f}+")
-        
+        f1_weighted_rf = f1_score(y_test, y_test_pred, average='weighted')
         f1_micro_rf = f1_score(y_test, y_test_pred, average='micro')
-        print(f"Macro F1 Score:                             +{f1_micro_rf:.2f}+")
+        print(f"Random Forest Test Accuracy:                    +{rf_test_acc:.2f}+")
+        print(f"Macro F1 Score:                                 +{f1_macro_rf:.2f}+")
+        print(f"weighted F1 Score:                              +{f1_weighted_rf:.2f}+")
+        print(f"Macro F1 Score:                                 +{f1_micro_rf:.2f}+")
+        f1_test_scores_rf.append(f1_macro_rf)
+        f1_test_scores_rf.append(f1_weighted_rf)
+        f1_test_scores_rf.append(f1_micro_rf)
         
         y_test_pred_decoded_rf = label_encoder.inverse_transform(y_test_pred_rf)
         
@@ -274,7 +309,7 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
     
     y_test_decoded = label_encoder.inverse_transform(y_test)
 
-    return probabilities, probabilities_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, f1_macro, train_accuracy, rf_test_acc, f1_macro_rf, rf_train_acc, clf, clf_rf
+    return probabilities, probabilities_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, train_accuracy, f1_train_scores_log, f1_test_scores_log, rf_test_acc, rf_train_acc, f1_train_scores_rf, f1_test_scores_rf, clf, clf_rf
 
 def save_predictions(data, filename, output_dir):
     """Saves the prediction data as a JSON file."""
@@ -353,13 +388,27 @@ for exp in experiments:
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
         print(f"+++++++++++++++ Running experiment: {exp['desc']} max depth 20 +++++++++++++++")
         
+        # Logistic regression lists
         train_accuracies = []
+        f1_train_accuracies_macro = []
+        f1_train_accuracies_weighted = []
+        f1_train_accuracies_micro = []
+
         accuracies = []
-        f1_accuracies = []
+        f1_accuracies_macro = []
+        f1_accuracies_weighted = []
+        f1_accuracies_micro = []
         
+        # Random forest lists
         train_accuracies_rf = []
+        f1_train_accuracies_macro_rf = []
+        f1_train_accuracies_weighted_rf = []
+        f1_train_accuracies_micro_rf = []
+
         accuracies_rf = []
-        f1_accuracies_rf = []
+        f1_accuracies_macro_rf = []
+        f1_accuracies_weighted_rf = []
+        f1_accuracies_micro_rf = []
 
         splits = [([1,2], [3]), ([2,3], [1]), ([1,3], [2]), ([1,2,3], [4])]
         
@@ -382,7 +431,7 @@ for exp in experiments:
                 process_both_players=True
             )
 
-            probs, probs_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, f1_accuracy, train_accuracy, test_accuracy_rf, f1_accuracy_rf, train_accuracy_rf, log_clf, rf_clf = classify(
+            probs, probs_rf, y_test_decoded, y_test_pred_decoded, y_test_pred_decoded_rf, test_accuracy, train_accuracy, f1_train_log, f1_test_log, test_accuracy_rf, train_accuracy_rf, f1_train_rf, f1_test_rf, log_clf, rf_clf = classify(
                 X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_frames, label_encoder, logistic_regression, random_forest
             )
             
@@ -390,12 +439,24 @@ for exp in experiments:
                 if logistic_regression:
                     train_accuracies.append(train_accuracy)
                     accuracies.append(test_accuracy)
-                    f1_accuracies.append(f1_accuracy)
+                    f1_train_accuracies_macro.append(f1_train_log[0])
+                    f1_train_accuracies_weighted.append(f1_train_log[1])
+                    f1_train_accuracies_micro.append(f1_train_log[2])
+
+                    f1_accuracies_macro.append(f1_test_log[0])
+                    f1_accuracies_weighted.append(f1_test_log[1])
+                    f1_accuracies_micro.append(f1_test_log[2])
                 
                 if random_forest:
                     train_accuracies_rf.append(train_accuracy_rf)
                     accuracies_rf.append(test_accuracy_rf)
-                    f1_accuracies_rf.append(f1_accuracy_rf)
+                    f1_train_accuracies_macro_rf.append(f1_train_rf[0])
+                    f1_train_accuracies_weighted_rf.append(f1_train_rf[1])
+                    f1_train_accuracies_micro_rf.append(f1_train_rf[2])
+
+                    f1_accuracies_macro_rf.append(f1_test_rf[0])
+                    f1_accuracies_weighted_rf.append(f1_test_rf[1])
+                    f1_accuracies_micro_rf.append(f1_test_rf[2])
 
             if len(train_videos) > 2:
                 plot_umap2(all_labels, all_data, 15, save_dir=save_dir)
@@ -426,41 +487,78 @@ for exp in experiments:
                 #plot_probabilities(probs, len(X_test))
 
         if logistic_regression:
+            # Means
             mean_train_acc = statistics.mean(train_accuracies)
-            mean_acc = statistics.mean(accuracies)
-            mean_f1_acc = statistics.mean(f1_accuracies)
-
-            train_accuracies.append(mean_train_acc)
-            accuracies.append(mean_acc)
-            f1_accuracies.append(mean_f1_acc)
+            mean_f1_macro_train_acc = statistics.mean(f1_train_accuracies_macro)
+            mean_f1_weighted_train_acc = statistics.mean(f1_train_accuracies_weighted)
+            mean_f1_micro_train_acc = statistics.mean(f1_train_accuracies_micro)
             
+            mean_acc = statistics.mean(accuracies)
+            mean_f1_macro_acc = statistics.mean(f1_accuracies_macro)
+            mean_f1_weighted_acc = statistics.mean(f1_accuracies_weighted)
+            mean_f1_micro_acc = statistics.mean(f1_accuracies_micro)
+
+            # Appending
+            train_accuracies.append(mean_train_acc)
+            f1_train_accuracies_macro.append(mean_f1_macro_train_acc)
+            f1_train_accuracies_weighted.append(mean_f1_weighted_train_acc)
+            f1_train_accuracies_micro.append(mean_f1_micro_train_acc)
+            
+            accuracies.append(mean_acc)
+            f1_accuracies_macro.append(mean_f1_macro_acc)
+            f1_accuracies_weighted.append(mean_f1_weighted_acc)
+            f1_accuracies_micro.append(mean_f1_micro_acc)
+            
+            # Plotting
             plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
-            plot_accuracies(train_accuracies, f1_accuracies, f"{save_dir}/f1_scores_log.png")
+            plot_accuracies(f1_train_accuracies_macro, f1_accuracies_macro, f"{save_dir}/f1_macro_scores_log.png")
+            plot_accuracies(f1_train_accuracies_weighted, f1_accuracies_weighted, f"{save_dir}/f1_weighted_scores_log.png")
+            plot_accuracies(f1_train_accuracies_micro, f1_accuracies_micro, f"{save_dir}/f1_micro_scores_log.png")
             
         if random_forest:
+            # Means
             mean_train_acc_rf = statistics.mean(train_accuracies_rf)
+            mean_f1_macro_train_acc_rf = statistics.mean(f1_train_accuracies_macro_rf)
+            mean_f1_weighted_train_acc_rf = statistics.mean(f1_train_accuracies_weighted_rf)
+            mean_f1_micro_train_acc_rf = statistics.mean(f1_train_accuracies_micro_rf)
+            
             mean_acc_rf = statistics.mean(accuracies_rf)
-            mean_f1_acc_rf = statistics.mean(f1_accuracies_rf)
-            
-            train_accuracies_rf.append(mean_train_acc_rf)
-            accuracies_rf.append(mean_acc_rf)
-            f1_accuracies_rf.append(mean_f1_acc_rf)
-            
-            plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
-            plot_accuracies(train_accuracies, f1_accuracies_rf, f"{save_dir}/f1_scores_rf.png")
+            mean_f1_macro_acc_rf = statistics.mean(f1_accuracies_macro_rf)
+            mean_f1_weighted_acc_rf = statistics.mean(f1_accuracies_weighted_rf)
+            mean_f1_micro_acc_rf = statistics.mean(f1_accuracies_micro_rf)
 
+            # Appending
+            train_accuracies_rf.append(mean_train_acc_rf)
+            f1_train_accuracies_macro_rf.append(mean_f1_macro_train_acc_rf)
+            f1_train_accuracies_weighted_rf.append(mean_f1_weighted_train_acc_rf)
+            f1_train_accuracies_micro_rf.append(mean_f1_micro_train_acc_rf)
+            
+            accuracies_rf.append(mean_acc_rf)
+            f1_accuracies_macro_rf.append(mean_f1_macro_acc_rf)
+            f1_accuracies_weighted_rf.append(mean_f1_weighted_acc_rf)
+            f1_accuracies_micro_rf.append(mean_f1_micro_acc_rf)
+            
+            # Plotting
+            plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_log.png")
+            plot_accuracies(f1_train_accuracies_macro_rf, f1_accuracies_macro_rf, f"{save_dir}/f1_macro_scores_rf.png")
+            plot_accuracies(f1_train_accuracies_weighted_rf, f1_accuracies_weighted_rf, f"{save_dir}/f1_weighted_scores_rf.png")
+            plot_accuracies(f1_train_accuracies_micro_rf, f1_accuracies_micro_rf, f"{save_dir}/f1_micro_scores_rf.png")
 
         if cross_validation:
             print("-----------")
             if logistic_regression:
                 print(f"Logistic regression cross-validation train accuracy:    {mean_train_acc}")
                 print(f"Logistic regression cross-validation test accuracy:     {mean_acc}")
-                print(f"Logistic regression cross-validation f1 score:          {mean_f1_acc}")
+                print(f"Logistic regression cross-validation f1 macro score:    {mean_f1_macro_acc}")
+                print(f"Logistic regression cross-validation f1 weighted score: {mean_f1_weighted_acc}")
+                print(f"Logistic regression cross-validation f1 micro score:    {mean_f1_micro_acc}\n")
                 
             if random_forest:
-                print(f"Random Forest cross-validation train accuracy:          {mean_train_acc_rf}")
-                print(f"Random Forest cross-validation test accuracy:           {mean_acc_rf}")
-                print(f"Random Forest cross-validation test f1 score:           {mean_f1_acc_rf}")
+                print(f"Random forest cross-validation train accuracy:          {mean_train_acc_rf}")
+                print(f"Random forest cross-validation test accuracy:           {mean_acc_rf}")
+                print(f"Random forest cross-validation f1 macro score:          {mean_f1_macro_acc_rf}")
+                print(f"Random forest cross-validation f1 weighted score:       {mean_f1_weighted_acc_rf}")
+                print(f"Random forest cross-validation f1 micro score:          {mean_f1_micro_acc_rf}")
 
         print("\nxxxxxxxxxxxxxx")
 
