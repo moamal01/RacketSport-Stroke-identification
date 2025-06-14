@@ -183,10 +183,11 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         f1_macro_train = f1_score(y_train, y_train_pred, average='macro')
         f1_weighted_train = f1_score(y_train, y_train_pred, average='weighted')
         f1_micro_train = f1_score(y_train, y_train_pred, average='micro')
+        print("# Logistic Regression training ----")
         print(f"Logistic Regression Train Accuracy:     {train_accuracy:.2f}")
-        print(f"Macro F1 Score:                         {f1_macro_train:.2f}")
-        print(f"Macro F1 Weighted:                      {f1_weighted_train:.2f}")
-        print(f"Macro F1 Score:                         {f1_micro_train:.2f}")
+        print(f"F1 Score:                               Macro {f1_macro_train:.2f}")
+        print(f"F1 Score:                               Weighted {f1_weighted_train:.2f}")
+        print(f"F1 Score:                               Micro {f1_micro_train:.2f}")
         f1_train_scores_log.append(f1_macro_train)
         f1_train_scores_log.append(f1_weighted_train)
         f1_train_scores_log.append(f1_micro_train)
@@ -204,10 +205,11 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         f1_macro_test = f1_score(y_test, y_test_pred, average='macro')
         f1_weighted_test = f1_score(y_test, y_test_pred, average='weighted')
         f1_micro_test = f1_score(y_test, y_test_pred, average='micro')
+        print("# Logistic Regression test --------")
         print(f"Logistic Regression Test Accuracy:          +{test_accuracy:.2f}+")
-        print(f"Macro F1 Score:                             +{f1_macro_test:.2f}+")
-        print(f"Macro F1 Weighted:                          +{f1_weighted_test:.2f}+")
-        print(f"Macro F1 Score:                             +{f1_micro_test:.2f}+")
+        print(f"F1 Score:                                   Macro +{f1_macro_test:.2f}+")
+        print(f"F1 Score:                                   Weighted +{f1_weighted_test:.2f}+")
+        print(f"F1 Score:                                   Micro +{f1_micro_test:.2f}+")
         f1_test_scores_log.append(f1_macro_test)
         f1_test_scores_log.append(f1_weighted_test)
         f1_test_scores_log.append(f1_micro_test)
@@ -251,11 +253,12 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         f1_weighted_rf_train = f1_score(y_test, y_test_pred, average='weighted')
         f1_micro_rf_train = f1_score(y_test, y_test_pred, average='micro')
 
+        print("# Random Forest training ----------")
         print(f"Random Forest Train Accuracy:               {rf_train_acc:.2f}")
         print(f"Random Forest Test Accuracy:                    +{rf_test_acc:.2f}+")
-        print(f"Macro F1 Score:                                 +{f1_macro_rf_train:.2f}+")
-        print(f"weighted F1 Score:                              +{f1_weighted_rf_train:.2f}+")
-        print(f"Macro F1 Score:                                 +{f1_micro_rf_train:.2f}+")
+        print(f"F1 Score:                                       Macro +{f1_macro_rf_train:.2f}+")
+        print(f"F1 Score:                                       weighted +{f1_weighted_rf_train:.2f}+")
+        print(f"F1 Score:                                       Micro +{f1_micro_rf_train:.2f}+")
         f1_train_scores_rf.append(f1_macro_rf_train)
         f1_train_scores_rf.append(f1_weighted_rf_train)
         f1_train_scores_rf.append(f1_micro_rf_train)
@@ -272,10 +275,12 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         f1_macro_rf = f1_score(y_test, y_test_pred, average='macro')
         f1_weighted_rf = f1_score(y_test, y_test_pred, average='weighted')
         f1_micro_rf = f1_score(y_test, y_test_pred, average='micro')
-        print(f"Random Forest Test Accuracy:                    +{rf_test_acc:.2f}+")
-        print(f"Macro F1 Score:                                 +{f1_macro_rf:.2f}+")
-        print(f"weighted F1 Score:                              +{f1_weighted_rf:.2f}+")
-        print(f"Macro F1 Score:                                 +{f1_micro_rf:.2f}+")
+        
+        print("# Random Forest test --------------")
+        print(f"Random Forest Test Accuracy:                +{rf_test_acc:.2f}+")
+        print(f"F1 Score:                                       Macro +{f1_macro_rf:.2f}+")
+        print(f"F1 Score:                                       weighted +{f1_weighted_rf:.2f}+")
+        print(f"F1 Score:                                       Micro +{f1_micro_rf:.2f}+")
         f1_test_scores_rf.append(f1_macro_rf)
         f1_test_scores_rf.append(f1_weighted_rf)
         f1_test_scores_rf.append(f1_micro_rf)
@@ -317,59 +322,56 @@ def save_predictions(data, filename, output_dir):
     with open(os.path.join(output_dir, filename), "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"Predictions saved to {os.path.join(output_dir, filename)}")
-
-
 experiments = [
-    # {"desc": "01_clip", "kwargs":                                                       {"add_embeddings": True}},
-    # {"desc": "02_raw_keypoints_clip", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_embeddings": True}},
-    # {"desc": "03_raw_keypoints_clip_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "01_clip", "kwargs":                                                       {"add_embeddings": True}},
+    {"desc": "02_raw_keypoints_clip", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_embeddings": True}},
+    {"desc": "03_raw_keypoints_clip_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_embeddings": True, "add_scores": True, "add_k_score": True}},
 
     {"desc": "04_raw_keypoints", "kwargs":                                              {"raw": True, "add_keypoints": True}},
-#     {"desc": "05_raw_keypoints_scores", "kwargs":                                       {"raw": True, "add_keypoints": True, "add_scores": True}},
-#     {"desc": "06_raw_keypoints_fullscores", "kwargs":                                   {"raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "07_raw_keypoints_ball", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_ball": True}},
-#     {"desc": "08_raw_keypoints_ball_scores", "kwargs":                                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
-#     {"desc": "09_raw_keypoints_ball_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "10_raw_keypoints_ball_racket_fullscores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
-#     {"desc": "11_raw_keypoints_ball_racket_clip_fullscores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+    {"desc": "05_raw_keypoints_scores", "kwargs":                                       {"raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "06_raw_keypoints_fullscores", "kwargs":                                   {"raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "07_raw_keypoints_ball", "kwargs":                                         {"raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "08_raw_keypoints_ball_scores", "kwargs":                                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "09_raw_keypoints_ball_fullscores", "kwargs":                              {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "10_raw_keypoints_ball_racket_fullscores", "kwargs":                       {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+    {"desc": "11_raw_keypoints_ball_racket_clip_fullscores", "kwargs":                  {"raw": True, "add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
 
-#     {"desc": "12_raw_keypoints_time", "kwargs":                                         {"long_sequence": True, "raw": True, "add_keypoints": True}},
-#     {"desc": "13_raw_keypoints_time_scores", "kwargs":                                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
-#     {"desc": "14_raw_keypoints_time_fullscores", "kwargs":                              {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "15_raw_keypoints_time_ball", "kwargs":                                    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True}},
-#     {"desc": "16_raw_keypoints_time_ball_racket", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
-#     {"desc": "17_raw_keypoints_ball_racket_time_scores", "kwargs":                      {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-#     {"desc": "18_raw_keypoints_ball_racket_time_fullscores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "12_raw_keypoints_time", "kwargs":                                         {"long_sequence": True, "raw": True, "add_keypoints": True}},
+    {"desc": "13_raw_keypoints_time_scores", "kwargs":                                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "14_raw_keypoints_time_fullscores", "kwargs":                              {"long_sequence": True, "raw": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "15_raw_keypoints_time_ball", "kwargs":                                    {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "16_raw_keypoints_time_ball_racket", "kwargs":                             {"long_sequence": True, "raw": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "17_raw_keypoints_ball_racket_time_scores", "kwargs":                      {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "18_raw_keypoints_ball_racket_time_fullscores", "kwargs":                  {"long_sequence": True, "raw": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
 
-#     {"desc": "19_keypoints", "kwargs":                                                  {"add_keypoints": True}},
-#     {"desc": "20_keypoints_scores", "kwargs":                                           {"add_keypoints": True, "add_scores": True}},
-#     {"desc": "21_keypoints_fullscores", "kwargs":                                       {"add_keypoints": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "22_keypoints_ball", "kwargs":                                             {"add_keypoints": True, "add_ball": True}},
-#     {"desc": "23_keypoints_ball_scores", "kwargs":                                      {"add_keypoints": True, "add_ball": True, "add_scores": True}},
-#     {"desc": "24_keypoints_ball_fullscores", "kwargs":                                  {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "25_keypoints_ball_racket_fullscores", "kwargs":                           {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
-#     {"desc": "26_keypoints_ball_racket_clip_fullscores", "kwargs":                      {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
+    {"desc": "19_keypoints", "kwargs":                                                  {"add_keypoints": True}},
+    {"desc": "20_keypoints_scores", "kwargs":                                           {"add_keypoints": True, "add_scores": True}},
+    {"desc": "21_keypoints_fullscores", "kwargs":                                       {"add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "22_keypoints_ball", "kwargs":                                             {"add_keypoints": True, "add_ball": True}},
+    {"desc": "23_keypoints_ball_scores", "kwargs":                                      {"add_keypoints": True, "add_ball": True, "add_scores": True}},
+    {"desc": "24_keypoints_ball_fullscores", "kwargs":                                  {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "25_keypoints_ball_racket_fullscores", "kwargs":                           {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True}},
+    {"desc": "26_keypoints_ball_racket_clip_fullscores", "kwargs":                      {"add_keypoints": True, "add_ball": True, "add_scores": True, "add_k_score": True, "add_rackets": True, "add_embeddings": True}},
     
-#     {"desc": "27_keypoints_time", "kwargs":                                             {"long_sequence": True, "add_keypoints": True}},
-#     {"desc": "28_keypoints_time_scores", "kwargs":                                      {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
-#     {"desc": "29_keypoints_time_fullscores", "kwargs":                                  {"long_sequence": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "30_keypoints_time_ball", "kwargs":                                        {"long_sequence": True, "add_keypoints": True, "add_ball": True}},
-#     {"desc": "31_keypoints_time_ball_racket", "kwargs":                                 {"long_sequence": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
-#     {"desc": "32_keypoints_ball_racket_time_scores", "kwargs":                          {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
-#     {"desc": "33_keypoints_ball_racket_time_fullscores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "27_keypoints_time", "kwargs":                                             {"long_sequence": True, "add_keypoints": True}},
+    {"desc": "28_keypoints_time_scores", "kwargs":                                      {"long_sequence": True, "add_keypoints": True, "add_scores": True}},
+    {"desc": "29_keypoints_time_fullscores", "kwargs":                                  {"long_sequence": True, "add_keypoints": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "30_keypoints_time_ball", "kwargs":                                        {"long_sequence": True, "add_keypoints": True, "add_ball": True}},
+    {"desc": "31_keypoints_time_ball_racket", "kwargs":                                 {"long_sequence": True, "add_keypoints": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "32_keypoints_ball_racket_time_scores", "kwargs":                          {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True}},
+    {"desc": "33_keypoints_ball_racket_time_fullscores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_rackets": True, "add_ball": True, "add_scores": True, "add_k_score": True}},
 
-#     {"desc": "34_keypoints_midpoints_time", "kwargs":                                   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
-#     {"desc": "35_keypoints_midpoints_table_time", "kwargs":                             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
-#     {"desc": "36_keypoints_midpoints_table_time_scores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
-#     {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
-#     {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
-#     {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
-#     {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}},
+    {"desc": "34_keypoints_midpoints_time", "kwargs":                                   {"long_sequence": True, "add_keypoints": True, "add_midpoints": True}},
+    {"desc": "35_keypoints_midpoints_table_time", "kwargs":                             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True}},
+    {"desc": "36_keypoints_midpoints_table_time_scores", "kwargs":                      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True}},
+    {"desc": "37_keypoints_midpoints_table_time_fullscores", "kwargs":                  {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True}},
+    {"desc": "38_keypoints_midpoints_table_ball_time_fullscores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True}},
+    {"desc": "39_keypoints_midpoints_table_ball_racket_time_fullscores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "40_keypoints_midpoints_table_ball_racket_time_fullscores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_k_score": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}},
 
-#     {"desc": "41_keypoints_midpoints_table_ball_time_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True}},
-#     {"desc": "42_keypoints_midpoints_table_ball_racket_time_scores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True}},
-#     {"desc": "43_keypoints_midpoints_table_ball_racket_time_scores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
+    {"desc": "41_keypoints_midpoints_table_ball_time_scores", "kwargs":             {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True}},
+    {"desc": "42_keypoints_midpoints_table_ball_racket_time_scores", "kwargs":      {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True}},
+    {"desc": "43_keypoints_midpoints_table_ball_racket_time_scores_clip", "kwargs": {"long_sequence": True, "add_keypoints": True, "add_midpoints": True, "add_table": True, "add_scores": True, "add_ball": True, "add_rackets": True, "add_embeddings": True}}
 ]
 
 for exp in experiments:
@@ -463,11 +465,11 @@ for exp in experiments:
                 joblib.dump(label_encoder, os.path.join(save_dir, "label_encoder.joblib"))
                 
                 if logistic_regression:
-                    save_predictions(probs, os.path.join(save_dir, f"{filename}_log_full.json"), ".")
+                    save_predictions(probs, f"{filename}_full.json", save_dir + "/prediction_log")
                     joblib.dump(log_clf, os.path.join(save_dir, "logistic_regression_model.joblib"))
                     
                 if random_forest:
-                    save_predictions(probs_rf, os.path.join(save_dir, f"{filename}_rf_full.json"), ".")
+                    save_predictions(probs_rf, f"{filename}_full.json", save_dir + "/prediction_rf")
                     joblib.dump(rf_clf, os.path.join(save_dir, "random_forest_model.joblib"))
 
                 
