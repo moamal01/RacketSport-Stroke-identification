@@ -1,0 +1,5492 @@
+[
+  {
+    "true_class": "play",
+    "frame": 29,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02021072975656131,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9002389458195228,
+      "play": 0.048095614697420866,
+      "right_backhand": 0.002223606243781338,
+      "right_forehand": 0.02202865490042199,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 58,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.03744776754823369,
+      "left_forehand": 0.06470488115671177,
+      "left_serve": 0.013551550888809369,
+      "pause": 0.6142311138809433,
+      "play": 0.17884419321806702,
+      "right_backhand": 0.028271251192665874,
+      "right_forehand": 0.05242172385257135,
+      "right_serve": 0.010527518261997866
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 722,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00026726190476190475,
+      "left_forehand": 0.015170269191646393,
+      "left_serve": 0.009601154121789062,
+      "pause": 0.8873567274084719,
+      "play": 0.056929036809148605,
+      "right_backhand": 0.0032358867678191523,
+      "right_forehand": 0.027439663796363124,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 1122,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018857151170774283,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.9078492222238458,
+      "play": 0.044799883907546086,
+      "right_backhand": 0.0018401545284822613,
+      "right_forehand": 0.021512972114906655,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 1522,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021838920123803847,
+      "left_forehand": 0.019533402913687162,
+      "left_serve": 0.009211689676570874,
+      "pause": 0.8924814294237073,
+      "play": 0.05204544124817021,
+      "right_backhand": 0.003952172602260502,
+      "right_forehand": 0.02010982926608067,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 2185,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.019924872995796355,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9029956680995774,
+      "play": 0.04661433229210235,
+      "right_backhand": 0.0018625655606782313,
+      "right_forehand": 0.02181677913622065,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 2215,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011909059354390835,
+      "left_forehand": 0.017821565443293757,
+      "left_serve": 0.002019152652880571,
+      "pause": 0.9162287538975923,
+      "play": 0.0423365149829706,
+      "right_backhand": 0.0008498117892906808,
+      "right_forehand": 0.019553295298533144,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 2245,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011683412868872329,
+      "left_forehand": 0.0313732523564005,
+      "left_serve": 0.07053104272663781,
+      "pause": 0.7125785150829479,
+      "play": 0.11512165339833182,
+      "right_backhand": 0.018008061818993285,
+      "right_forehand": 0.03566432221181168,
+      "right_serve": 0.00503973953600461
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 2275,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030188853163845663,
+      "left_forehand": 0.017817938704394683,
+      "left_serve": 0.009529759864579759,
+      "pause": 0.8527613760959875,
+      "play": 0.07494080293805944,
+      "right_backhand": 0.011183153282733577,
+      "right_forehand": 0.030612978740880363,
+      "right_serve": 0.00013510505698005699
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 2305,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011102684119964653,
+      "left_forehand": 0.027723791823736882,
+      "left_serve": 0.10313046561513213,
+      "pause": 0.39132671348672493,
+      "play": 0.2805028243652767,
+      "right_backhand": 0.07624179671499444,
+      "right_forehand": 0.10633713680097509,
+      "right_serve": 0.003634587073195347
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 5366,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015252935352326915,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9238965380575105,
+      "play": 0.04101337076881323,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.017995366412286926,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 5766,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015402693806433197,
+      "left_serve": 0.0018040988894397108,
+      "pause": 0.9234539568028821,
+      "play": 0.03906757220344945,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.01947208301626802,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 6166,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015094205193596756,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9241867416810474,
+      "play": 0.04025339000883247,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.018623873707460884,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 9226,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0041871361751870855,
+      "left_forehand": 0.022523162830453504,
+      "left_serve": 0.007156825463940479,
+      "pause": 0.8910608106820703,
+      "play": 0.048309377522594316,
+      "right_backhand": 0.003062779502941593,
+      "right_forehand": 0.023217764965670046,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 9268,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019156300918399646,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9065684271297922,
+      "play": 0.04558630354792658,
+      "right_backhand": 0.0018438594083383002,
+      "right_forehand": 0.02141481231198564,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 9309,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.02883814131586333,
+      "left_forehand": 0.05829797558143238,
+      "left_serve": 0.10561329582084238,
+      "pause": 0.5601529629135161,
+      "play": 0.1636691148113537,
+      "right_backhand": 0.028766595673375573,
+      "right_forehand": 0.045658205944115106,
+      "right_serve": 0.009003707939501504
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 9482,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005894765404665344,
+      "left_forehand": 0.024773756038235114,
+      "left_serve": 0.062124927231524275,
+      "pause": 0.619749634290458,
+      "play": 0.1641822929624708,
+      "right_backhand": 0.05336913132102026,
+      "right_forehand": 0.0674393978102961,
+      "right_serve": 0.00246609494133001
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 9882,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.0170959278464822,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9218932602720648,
+      "play": 0.040193816031649204,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.017812415743066978,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 10282,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019613686276554066,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9084639914280903,
+      "play": 0.04679242501151722,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.019386777731472658,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 10454,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02062555108146076,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9042570945901367,
+      "play": 0.04811408778743421,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.01910824825442525,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 10486,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02062555108146076,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9042570945901367,
+      "play": 0.04811408778743421,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.01910824825442525,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 10519,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024443868477517054,
+      "left_serve": 0.0028163786187386125,
+      "pause": 0.8712968534103445,
+      "play": 0.06212373894731946,
+      "right_backhand": 0.005535295854947583,
+      "right_forehand": 0.025764796174487306,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 11016,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015252935352326915,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9238965380575105,
+      "play": 0.04101337076881323,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.017995366412286926,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 11416,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0025791911576795294,
+      "left_forehand": 0.01823107338614044,
+      "left_serve": 0.0015965336052615236,
+      "pause": 0.9100056756892374,
+      "play": 0.04644539329789704,
+      "right_backhand": 0.0017532069016410173,
+      "right_forehand": 0.0189067831050004,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 11816,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016448053111841096,
+      "left_serve": 0.0016739145576424761,
+      "pause": 0.9194465797854536,
+      "play": 0.040910053934209954,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.019421601284133096,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 12314,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.017047561529362144,
+      "left_serve": 0.004623684296046312,
+      "pause": 0.9048858604490954,
+      "play": 0.0459833084134054,
+      "right_backhand": 0.002303820563563196,
+      "right_forehand": 0.024039485678760214,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 12356,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018541400639229814,
+      "left_serve": 0.0028927520926564816,
+      "pause": 0.9073137282265159,
+      "play": 0.04432833155643663,
+      "right_backhand": 0.001886879601490188,
+      "right_forehand": 0.022456343099617953,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 12397,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0102685505983225,
+      "left_forehand": 0.035525772708547856,
+      "left_serve": 0.08151409086247201,
+      "pause": 0.5365377788062241,
+      "play": 0.1898586332520817,
+      "right_backhand": 0.06361225898991604,
+      "right_forehand": 0.07929458760281155,
+      "right_serve": 0.003388327179624219
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 12452,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016756541724677533,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9175273251270686,
+      "play": 0.04097423612882693,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.02020628037316001,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 12508,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.021187708610807973,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.8918579414379434,
+      "play": 0.05231484098401006,
+      "right_backhand": 0.0009059988771074111,
+      "right_forehand": 0.030181411700816504,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 12922,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0034955882882153426,
+      "left_forehand": 0.021745521550268442,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9049664676980079,
+      "play": 0.0476589522683452,
+      "right_backhand": 0.002039683268356631,
+      "right_forehand": 0.01823016422784316,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 13322,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015021749596172558,
+      "left_serve": 0.0033274658086513537,
+      "pause": 0.9149172662536078,
+      "play": 0.04488330869738859,
+      "right_backhand": 0.0020088479233443175,
+      "right_forehand": 0.019841361720835494,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 13722,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01720026075434475,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9101907145191686,
+      "play": 0.044119940804696806,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.02060307473021512,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 14136,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016681106521582757,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9178751115014506,
+      "play": 0.04017534294163586,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.020732822389063727,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14178,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018381541724677534,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9108316413305785,
+      "play": 0.042684117197578975,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.02097779738661251,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 14220,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.020479913565151192,
+      "left_serve": 0.0015965336052615236,
+      "pause": 0.9056042903534172,
+      "play": 0.04650602338091518,
+      "right_backhand": 0.0018855260750049669,
+      "right_forehand": 0.02077252137052545,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14250,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02025518071109039,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9054901959794881,
+      "play": 0.04758424725759368,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.018775357765284766,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 14281,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00346738128860436,
+      "left_forehand": 0.022521972770204703,
+      "left_serve": 0.0017068848716971148,
+      "pause": 0.886185493236451,
+      "play": 0.054763693315787586,
+      "right_backhand": 0.006433691718347488,
+      "right_forehand": 0.023311477909845033,
+      "right_serve": 0.001609404889062856
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14304,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011465246389598907,
+      "left_forehand": 0.031395683194466784,
+      "left_serve": 0.0031067400177526255,
+      "pause": 0.848713005812978,
+      "play": 0.0715357934985792,
+      "right_backhand": 0.00577541683106169,
+      "right_forehand": 0.027024948491788613,
+      "right_serve": 0.000983165763774343
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 14327,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.015591233814690249,
+      "left_forehand": 0.039963439294204095,
+      "left_serve": 0.0038808626352608037,
+      "pause": 0.7954940766926661,
+      "play": 0.09419564190535244,
+      "right_backhand": 0.013320938391524172,
+      "right_forehand": 0.034397854105256885,
+      "right_serve": 0.0031559531610452275
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14355,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009892872407032172,
+      "left_forehand": 0.0305595520461858,
+      "left_serve": 0.003243894064278681,
+      "pause": 0.838166671125432,
+      "play": 0.07598448390273964,
+      "right_backhand": 0.01085597339688122,
+      "right_forehand": 0.029079250158437552,
+      "right_serve": 0.0022173028990131044
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 14383,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.025055129061047777,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.883093829157825,
+      "play": 0.06147455078273583,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.021094567949943514,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14422,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019772416435284223,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9081737878045533,
+      "play": 0.04755240577149799,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.0187582704362987,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 14460,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019772416435284223,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9081737878045533,
+      "play": 0.04755240577149799,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.0187582704362987,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14482,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019772416435284223,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9081737878045533,
+      "play": 0.04755240577149799,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.0187582704362987,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 14505,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0037280142142019357,
+      "left_forehand": 0.022401408915710602,
+      "left_serve": 0.0020240490508015925,
+      "pause": 0.8884383695801266,
+      "play": 0.055117198294592724,
+      "right_backhand": 0.005083959411172635,
+      "right_forehand": 0.021292164584333757,
+      "right_serve": 0.001914835949060319
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14568,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.02002478756930484,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9070381177014606,
+      "play": 0.04859570474057015,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.0185982704362987,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 14630,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019772416435284223,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9081737878045533,
+      "play": 0.04755240577149799,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.0187582704362987,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14714,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02078428124019092,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.90278042118638,
+      "play": 0.050124068547414954,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.01841621073947107,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 14797,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01940204606491385,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9095453791761446,
+      "play": 0.04692155514064735,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.01838790006592833,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14847,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01940204606491385,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9095453791761446,
+      "play": 0.04692155514064735,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.01838790006592833,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 14897,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01940204606491385,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9095453791761446,
+      "play": 0.04692155514064735,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.01838790006592833,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 14944,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.019250028375582727,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9113013319022467,
+      "play": 0.045693518390222544,
+      "right_backhand": 0.0016318211951489281,
+      "right_forehand": 0.018161255510925563,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 14991,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003870573825644476,
+      "left_forehand": 0.019891522810119053,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9072795566556648,
+      "play": 0.0476343305352889,
+      "right_backhand": 0.002011568030591966,
+      "right_forehand": 0.017448825443727566,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 15282,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015252935352326915,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9238965380575105,
+      "play": 0.04101337076881323,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.017995366412286926,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 15682,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0034582804452937756,
+      "left_forehand": 0.02389672502090291,
+      "left_serve": 0.038848499388719045,
+      "pause": 0.6763120973482774,
+      "play": 0.1239779182740438,
+      "right_backhand": 0.04148969468349192,
+      "right_forehand": 0.0903710809068944,
+      "right_serve": 0.0016457039323765298
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 16082,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016835854874606877,
+      "left_serve": 0.0027334383671662856,
+      "pause": 0.9182686148078356,
+      "play": 0.04135591849908023,
+      "right_backhand": 0.0006219079680165021,
+      "right_forehand": 0.018764956110496746,
+      "right_serve": 0.00030303030303030303
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 16374,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01757905552325348,
+      "left_serve": 0.002019152652880571,
+      "pause": 0.9185175226233914,
+      "play": 0.0406431493182903,
+      "right_backhand": 0.0006976655437740778,
+      "right_forehand": 0.019427175268642946,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 16421,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018924177383592266,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9116126344008157,
+      "play": 0.04333649856943709,
+      "right_backhand": 0.0015608992093333251,
+      "right_forehand": 0.019626787285602406,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 16468,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016756541724677533,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9185753049250484,
+      "play": 0.039825246229837026,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.02030729047417011,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 16499,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008266459658133546,
+      "left_forehand": 0.026993768129670342,
+      "left_serve": 0.003754447014030327,
+      "pause": 0.8747422421533344,
+      "play": 0.0588427813642012,
+      "right_backhand": 0.0033256838308928665,
+      "right_forehand": 0.023204763928727883,
+      "right_serve": 0.0008698539210094516
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 16530,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.0209340396942972,
+      "left_serve": 0.0021433846037254255,
+      "pause": 0.9023378399317517,
+      "play": 0.04817826998205118,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.019892927343452164,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 16548,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02678405243652585,
+      "left_serve": 0.001748158456602775,
+      "pause": 0.8635528907824592,
+      "play": 0.06483128598088073,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.026006713336163504,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 16565,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.042702673955149144,
+      "left_forehand": 0.07462061165690254,
+      "left_serve": 0.006826582501478589,
+      "pause": 0.5827406147461776,
+      "play": 0.186038148583148,
+      "right_backhand": 0.0338908579326776,
+      "right_forehand": 0.06333296472938048,
+      "right_serve": 0.00984754589508627
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 16598,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00402038866124093,
+      "left_forehand": 0.021162831973576473,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.8796196251244589,
+      "play": 0.052578886192461934,
+      "right_backhand": 0.005509932178562839,
+      "right_forehand": 0.03386784145887786,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 16631,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027823490972245152,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8575717774066092,
+      "play": 0.06548021596829551,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.02710927473845003,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 17047,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02039140403538247,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.9005088670635345,
+      "play": 0.048674878509182964,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.02114292734345216,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 17447,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003870573825644476,
+      "left_forehand": 0.02010316302175927,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9073846386878301,
+      "play": 0.04625520040615877,
+      "right_backhand": 0.002011568030591966,
+      "right_forehand": 0.018511233329052117,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 17847,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.01939978682968901,
+      "left_serve": 0.0021433846037254255,
+      "pause": 0.9108587506476183,
+      "play": 0.04374771982485877,
+      "right_backhand": 0.0016318211951489281,
+      "right_forehand": 0.019637972114906657,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 18263,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02062555108146076,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9042570945901367,
+      "play": 0.04811408778743421,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.01910824825442525,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 18300,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02039140403538247,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.9005088670635345,
+      "play": 0.048674878509182964,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.02114292734345216,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 18337,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.11309825541437822,
+      "left_forehand": 0.1456677626082234,
+      "left_serve": 0.01891633669727794,
+      "pause": 0.1090468628012524,
+      "play": 0.41532699200635087,
+      "right_backhand": 0.08010438570518659,
+      "right_forehand": 0.09235831484443763,
+      "right_serve": 0.025481089922892896
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 18383,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011037195915841916,
+      "left_forehand": 0.03213175416347604,
+      "left_serve": 0.003035033134271676,
+      "pause": 0.8466477185760459,
+      "play": 0.07097860523401997,
+      "right_backhand": 0.007331427398695549,
+      "right_forehand": 0.02708859293888694,
+      "right_serve": 0.0017496726387620136
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 18429,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002258518878052026,
+      "left_forehand": 0.020766127694193056,
+      "left_serve": 0.0032618217221625436,
+      "pause": 0.9009672241547068,
+      "play": 0.047851427905376616,
+      "right_backhand": 0.0028966190009915103,
+      "right_forehand": 0.021016117787374798,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 18466,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019243315906183694,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9098355827996817,
+      "play": 0.0461615743806666,
+      "right_backhand": 0.0017064480608205695,
+      "right_forehand": 0.01901640736110229,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 18503,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.017299177383592265,
+      "left_serve": 0.002019152652880571,
+      "pause": 0.9204042777932655,
+      "play": 0.03932863770270525,
+      "right_backhand": 0.000775184923619039,
+      "right_forehand": 0.01905729047417011,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 18542,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016990688770755824,
+      "left_serve": 0.0012572478909758092,
+      "pause": 0.9223235324516506,
+      "play": 0.03926445550808827,
+      "right_backhand": 0.000775184923619039,
+      "right_forehand": 0.0182726113851432,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 18581,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018540253567661046,
+      "left_serve": 0.0015965336052615236,
+      "pause": 0.9126932056533632,
+      "play": 0.04372342318762905,
+      "right_backhand": 0.0015608992093333251,
+      "right_forehand": 0.01930511999269899,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 18669,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.014860058147518467,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9226729637326448,
+      "play": 0.038415190831591325,
+      "right_backhand": 0.0010079286148609984,
+      "right_forehand": 0.02082309311727812,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 18757,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.014860058147518467,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9216249839346651,
+      "play": 0.03956418073058123,
+      "right_backhand": 0.0010079286148609984,
+      "right_forehand": 0.020722083016268017,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 20224,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.0170959278464822,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.920706790491845,
+      "play": 0.041443816031649205,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.01774888552328676,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 20624,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.0170959278464822,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.920706790491845,
+      "play": 0.041443816031649205,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.01774888552328676,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 21024,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018720927846482202,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.912963126897375,
+      "play": 0.044302686999391154,
+      "right_backhand": 0.0016318211951489281,
+      "right_forehand": 0.018419392435729157,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 22492,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016851821577940226,
+      "left_serve": 0.0025534663783707673,
+      "pause": 0.9096348439740961,
+      "play": 0.04408669970922329,
+      "right_backhand": 0.00165097734585109,
+      "right_forehand": 0.024105911944751313,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 22532,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018381541724677534,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9108316413305785,
+      "play": 0.042684117197578975,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.02097779738661251,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 22573,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01859544117154259,
+      "left_serve": 0.00201320027192819,
+      "pause": 0.9084368821110504,
+      "play": 0.045728822384237436,
+      "right_backhand": 0.0018438594083383002,
+      "right_forehand": 0.02072660300317851,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 22596,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0023432646407638906,
+      "left_forehand": 0.021007972593382763,
+      "left_serve": 0.003978287914981935,
+      "pause": 0.8899759809547103,
+      "play": 0.05287880204501541,
+      "right_backhand": 0.003728780625858111,
+      "right_forehand": 0.025104768368144844,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 22620,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019642583981321834,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8972477220318161,
+      "play": 0.04981864649636366,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.022666498853294623,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 23194,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.019250028375582727,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.9113013319022467,
+      "play": 0.045693518390222544,
+      "right_backhand": 0.0016318211951489281,
+      "right_forehand": 0.018161255510925563,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 23594,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.017331960861894438,
+      "left_serve": 0.004089370570556115,
+      "pause": 0.9095239746306845,
+      "play": 0.04544347247037786,
+      "right_backhand": 0.002055359551251294,
+      "right_forehand": 0.020439582845468495,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 23994,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01686476040607449,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9095757507416207,
+      "play": 0.04503442873015524,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.02063905093057488,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 24568,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01686476040607449,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9106237305396004,
+      "play": 0.04388543883116535,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.020740061031584985,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 24614,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0023978286751490828,
+      "left_forehand": 0.02315495454151926,
+      "left_serve": 0.015214380084257361,
+      "pause": 0.8532920867480109,
+      "play": 0.060397731519745264,
+      "right_backhand": 0.008571479566417238,
+      "right_forehand": 0.0358213287808675,
+      "right_serve": 0.0011502100840336134
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 24659,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011956099861373162,
+      "left_forehand": 0.03448562430251861,
+      "left_serve": 0.10043527883241081,
+      "pause": 0.4130658123351642,
+      "play": 0.2319217523917263,
+      "right_backhand": 0.08843954537880229,
+      "right_forehand": 0.11448285396033912,
+      "right_serve": 0.0052130329376655115
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 24682,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0042900282775230145,
+      "left_forehand": 0.02232724958943154,
+      "left_serve": 0.0031270824412943173,
+      "pause": 0.8866652346230656,
+      "play": 0.05299426320246616,
+      "right_backhand": 0.003063545952835094,
+      "right_forehand": 0.026550453056241617,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 24705,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005987970990984894,
+      "left_forehand": 0.023735419907486077,
+      "left_serve": 0.006100601072082174,
+      "pause": 0.8734471709969391,
+      "play": 0.05635104926918892,
+      "right_backhand": 0.007404396282657993,
+      "right_forehand": 0.025058555531600607,
+      "right_serve": 0.001914835949060319
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 25800,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.0170959278464822,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.920706790491845,
+      "play": 0.041443816031649205,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.01774888552328676,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 26200,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015402693806433197,
+      "left_serve": 0.0018040988894397108,
+      "pause": 0.9222734012473266,
+      "play": 0.039623127759005,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.020097083016268016,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 26600,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.0170959278464822,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9201185551977273,
+      "play": 0.04163989446302176,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.01814104238603186,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 27694,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002963057834173261,
+      "left_forehand": 0.028766404035382456,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9000747040043714,
+      "play": 0.04415088861019306,
+      "right_backhand": 0.0015088139438826553,
+      "right_forehand": 0.02031536601589084,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 27738,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020021033665012098,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.9029284382331056,
+      "play": 0.046895037979342434,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.020873567074091895,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 27781,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012319254163888474,
+      "left_forehand": 0.042296764164557986,
+      "left_serve": 0.07491970400016483,
+      "pause": 0.5372298420675039,
+      "play": 0.19142045317783257,
+      "right_backhand": 0.04988166085199941,
+      "right_forehand": 0.0886262300414033,
+      "right_serve": 0.003306091532649659
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 27820,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00402038866124093,
+      "left_forehand": 0.0209219109283076,
+      "left_serve": 0.00179814650848733,
+      "pause": 0.8909983392423035,
+      "play": 0.05285254183568279,
+      "right_backhand": 0.005509932178562839,
+      "right_forehand": 0.023218297504986087,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 27860,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.017407818691227428,
+      "left_forehand": 0.03873079247949929,
+      "left_serve": 0.050452489662651194,
+      "pause": 0.7247751218797462,
+      "play": 0.11380036191800351,
+      "right_backhand": 0.01809120763793185,
+      "right_forehand": 0.03252032175082737,
+      "right_serve": 0.004221885980113372
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 27903,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0039317188028342295,
+      "left_forehand": 0.01831781635840883,
+      "left_serve": 0.007512447493633039,
+      "pause": 0.8773358288792045,
+      "play": 0.06075560486906339,
+      "right_backhand": 0.007003342548912845,
+      "right_forehand": 0.024927530832233095,
+      "right_serve": 0.0002157102157102157
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 27946,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0026403361348692833,
+      "left_forehand": 0.017524946936915656,
+      "left_serve": 0.004714207597935516,
+      "pause": 0.8914991462872858,
+      "play": 0.058911781083015057,
+      "right_backhand": 0.0031981372377256345,
+      "right_forehand": 0.02115143436224264,
+      "right_serve": 0.00036001036001036003
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 28357,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.014860058147518467,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9210326636732272,
+      "play": 0.03992365785476423,
+      "right_backhand": 0.0010079286148609984,
+      "right_forehand": 0.020954926153522915,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 28757,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012780198821919933,
+      "left_forehand": 0.02915449283872348,
+      "left_serve": 0.036382068414281196,
+      "pause": 0.7853823458673659,
+      "play": 0.0920088390725433,
+      "right_backhand": 0.01219478266388352,
+      "right_forehand": 0.029660869873918676,
+      "right_serve": 0.002436402447363977
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 29157,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.01277259684428976,
+      "left_forehand": 0.034417692098785924,
+      "left_serve": 0.0027096281043952255,
+      "pause": 0.8352914217976805,
+      "play": 0.07934628429292792,
+      "right_backhand": 0.00597110284164968,
+      "right_forehand": 0.028670563130142948,
+      "right_serve": 0.0008207108901281337
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 29568,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004480163953673074,
+      "left_forehand": 0.02180700367261037,
+      "left_serve": 0.002477092904452898,
+      "pause": 0.8854818634209676,
+      "play": 0.05554421530467064,
+      "right_backhand": 0.00436983473379026,
+      "right_forehand": 0.025537359059882647,
+      "right_serve": 0.00030246694995278564
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 29606,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020985163621329645,
+      "left_serve": 0.007178656284841831,
+      "pause": 0.8781705343980927,
+      "play": 0.05931649607351109,
+      "right_backhand": 0.0058910725478391645,
+      "right_forehand": 0.02387200336719643,
+      "right_serve": 0.0006408730158730158
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 29645,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0032600153104215372,
+      "left_forehand": 0.021508547242328254,
+      "left_serve": 0.010578793469477266,
+      "pause": 0.8488070347059251,
+      "play": 0.07316671190688274,
+      "right_backhand": 0.011498034586276948,
+      "right_forehand": 0.03018091483687966,
+      "right_serve": 0.000999947941808407
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 29686,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.0188141333394298,
+      "left_serve": 0.0047632002719281905,
+      "pause": 0.8955442832230786,
+      "play": 0.049912143240001774,
+      "right_backhand": 0.0031958988940115653,
+      "right_forehand": 0.02334299748309117,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 29728,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01633120315367039,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9082991396006935,
+      "play": 0.04443726785118365,
+      "right_backhand": 0.0021109855348148544,
+      "right_forehand": 0.023199087552647615,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 29734,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0022197273456295106,
+      "left_forehand": 0.018607065222635905,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9028588710569765,
+      "play": 0.04626729223293217,
+      "right_backhand": 0.0021799510520562333,
+      "right_forehand": 0.023361055852546952,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 29741,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01633120315367039,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9082991396006935,
+      "play": 0.04443726785118365,
+      "right_backhand": 0.0021109855348148544,
+      "right_forehand": 0.023199087552647615,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 30312,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0009821428571428572,
+      "left_forehand": 0.01671920519359676,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.918217783160915,
+      "play": 0.041666182545201866,
+      "right_backhand": 0.001585309567241951,
+      "right_forehand": 0.0189657539769384,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 30712,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015252935352326915,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9238965380575105,
+      "play": 0.04101337076881323,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.017995366412286926,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 31112,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010167165761921606,
+      "left_forehand": 0.02885416841657364,
+      "left_serve": 0.06709892588508955,
+      "pause": 0.7403813519202618,
+      "play": 0.10521401199265915,
+      "right_backhand": 0.01379559166052697,
+      "right_forehand": 0.030140106786188565,
+      "right_serve": 0.004348677576778847
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 31684,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02022587210866557,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9032124750266306,
+      "play": 0.04745697120724967,
+      "right_backhand": 0.0019377535306030432,
+      "right_forehand": 0.02038114621122603,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 31726,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.019382237336881623,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.8989381598778249,
+      "play": 0.04881548627377958,
+      "right_backhand": 0.0020708988940115647,
+      "right_forehand": 0.023590769035210544,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 31767,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.10062048395920148,
+      "left_forehand": 0.13590115522110324,
+      "left_serve": 0.035035273484664814,
+      "pause": 0.18383723139780264,
+      "play": 0.3702117451541205,
+      "right_backhand": 0.06920914577035886,
+      "right_forehand": 0.08436918431465056,
+      "right_serve": 0.02081578069809799
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 31796,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004795839933196324,
+      "left_forehand": 0.026280421933512304,
+      "left_serve": 0.007308257203810167,
+      "pause": 0.842521492196623,
+      "play": 0.07104790552682522,
+      "right_backhand": 0.012138564911739726,
+      "right_forehand": 0.03344879833673736,
+      "right_serve": 0.0024587199575560065
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 31826,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020394383641053046,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8929875648576723,
+      "play": 0.05180571058695034,
+      "right_backhand": 0.0035037808714135934,
+      "right_forehand": 0.022035893542943247,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 32196,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.001138578579186314,
+      "left_forehand": 0.02006333675891877,
+      "left_serve": 0.007414281927626135,
+      "pause": 0.8358723869795611,
+      "play": 0.10112487145044063,
+      "right_backhand": 0.005147096028210825,
+      "right_forehand": 0.02899433734033758,
+      "right_serve": 0.0002451109357186705
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 32596,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.019094773092729927,
+      "left_serve": 0.00442865628484183,
+      "pause": 0.9017100265618602,
+      "play": 0.04806756099403502,
+      "right_backhand": 0.002763554457120619,
+      "right_forehand": 0.021354863825359373,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 32996,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.020361040070472004,
+      "left_forehand": 0.04034311671956191,
+      "left_serve": 0.05853150496980354,
+      "pause": 0.6933007431786293,
+      "play": 0.12948916794015047,
+      "right_backhand": 0.017068049446704345,
+      "right_forehand": 0.03536799137609801,
+      "right_serve": 0.005538386298580544
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 33366,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02015043690557079,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9035602614010128,
+      "play": 0.046658078020058606,
+      "right_backhand": 0.0019377535306030432,
+      "right_forehand": 0.020907688227129743,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 33399,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020172709535658015,
+      "left_serve": 0.00442865628484183,
+      "pause": 0.894414139198491,
+      "play": 0.052170675671392164,
+      "right_backhand": 0.00329544753808026,
+      "right_forehand": 0.021091028223077936,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 33432,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.05241109482068281,
+      "left_forehand": 0.08257155426830748,
+      "left_serve": 0.03296483770338916,
+      "pause": 0.4751135754635189,
+      "play": 0.24669006616931874,
+      "right_backhand": 0.04066538553824429,
+      "right_forehand": 0.059121228357564816,
+      "right_serve": 0.010462257678973706
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 33462,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030188853163845663,
+      "left_forehand": 0.01751261108140951,
+      "left_serve": 0.008555536733557668,
+      "pause": 0.8360432549004914,
+      "play": 0.09084098317627526,
+      "right_backhand": 0.013680994485844788,
+      "right_forehand": 0.03005389909032668,
+      "right_serve": 0.0002938352157102157
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 33492,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004362997346793987,
+      "left_forehand": 0.020022320344116693,
+      "left_serve": 0.03810779396653613,
+      "pause": 0.777850348521075,
+      "play": 0.10510796932314405,
+      "right_backhand": 0.016688923985060257,
+      "right_forehand": 0.03755755552057507,
+      "right_serve": 0.0003020909926987275
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 34516,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015094205193596756,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9259614467553848,
+      "play": 0.038807311577459924,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.018295247064496006,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 34916,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016861780800403913,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9169644771899071,
+      "play": 0.04131016230895353,
+      "right_backhand": 0.0010544402427679752,
+      "right_forehand": 0.02047209483209389,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 35316,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015094205193596756,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9253732114612672,
+      "play": 0.03900339000883247,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.018687403927241105,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 36339,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01678932520297971,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9099235371160028,
+      "play": 0.04423553554296419,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.0211655929464786,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 36382,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018188761293205277,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.9016152802200973,
+      "play": 0.047050660782749866,
+      "right_backhand": 0.002974219200374101,
+      "right_forehand": 0.022745190768011896,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 36426,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00999120785704078,
+      "left_forehand": 0.04727730422718079,
+      "left_serve": 0.04477793779506059,
+      "pause": 0.6880446237692182,
+      "play": 0.12948738359479392,
+      "right_backhand": 0.022802998338251626,
+      "right_forehand": 0.05458581479245209,
+      "right_serve": 0.0030327296260020957
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 36476,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.015006359723567715,
+      "left_forehand": 0.0406999579340781,
+      "left_serve": 0.003920512659318499,
+      "pause": 0.7879452016275313,
+      "play": 0.09637740298594544,
+      "right_backhand": 0.014851307126242417,
+      "right_forehand": 0.03838801960063207,
+      "right_serve": 0.0028112383426845606
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 36526,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.18163232787649675,
+      "left_forehand": 0.19855663087501152,
+      "left_serve": 0.02354384545851315,
+      "pause": 0.12186552418270644,
+      "play": 0.3833986459341482,
+      "right_backhand": 0.030268030068182267,
+      "right_forehand": 0.043497469696982975,
+      "right_serve": 0.017237525907958653
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 36828,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.01,
+      "left_forehand": 0.01696150532152725,
+      "left_serve": 0.01662854780977702,
+      "pause": 0.8931405692072046,
+      "play": 0.0429894115254166,
+      "right_backhand": 0.000722075901682704,
+      "right_forehand": 0.01955789023439184,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 37228,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01762502837558273,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9190449954967167,
+      "play": 0.04283464742248061,
+      "right_backhand": 0.0008461069094346419,
+      "right_forehand": 0.01749074859848317,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 37628,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016681106521582757,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9178751115014506,
+      "play": 0.04017534294163586,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.020732822389063727,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 37931,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016756541724677533,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9185753049250484,
+      "play": 0.039825246229837026,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.02030729047417011,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 37972,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016681106521582757,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9178751115014506,
+      "play": 0.04017534294163586,
+      "right_backhand": 0.0009835182569523724,
+      "right_forehand": 0.020732822389063727,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 38014,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009063218297918,
+      "left_forehand": 0.0437379361679405,
+      "left_serve": 0.03451150336971563,
+      "pause": 0.7413039963079595,
+      "play": 0.10885445708181579,
+      "right_backhand": 0.015962353414311643,
+      "right_forehand": 0.04424253109618531,
+      "right_serve": 0.0023240042641537156
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 38068,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01882849458128425,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9070039038092874,
+      "play": 0.04489310129065325,
+      "right_backhand": 0.0018438594083383002,
+      "right_forehand": 0.022000344226879257,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 38121,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003870573825644476,
+      "left_forehand": 0.019393406529584226,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9042577191568495,
+      "play": 0.04581133552905151,
+      "right_backhand": 0.002148979378109696,
+      "right_forehand": 0.02126073768978488,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 38157,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021838920123803847,
+      "left_forehand": 0.020430381911800355,
+      "left_serve": 0.0047730939729983615,
+      "pause": 0.8900465450228704,
+      "play": 0.05095759636764563,
+      "right_backhand": 0.0035493431918913543,
+      "right_forehand": 0.027077004663270756,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 38193,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.013741431192727423,
+      "left_forehand": 0.027725666502010873,
+      "left_serve": 0.11246130310403592,
+      "pause": 0.30889964736290554,
+      "play": 0.3074551422844535,
+      "right_backhand": 0.10216544440874677,
+      "right_forehand": 0.12160265066123946,
+      "right_serve": 0.0059487144838804955
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 39551,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0037026037904314478,
+      "left_forehand": 0.021152731239099064,
+      "left_serve": 0.06143960392642712,
+      "pause": 0.717110664699998,
+      "play": 0.09709434050631874,
+      "right_backhand": 0.03995007617309421,
+      "right_forehand": 0.059274320857419245,
+      "right_serve": 0.00027565880721220525
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 39951,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0004807692307692308,
+      "left_forehand": 0.014067477570811261,
+      "left_serve": 0.005219702103430022,
+      "pause": 0.9099330191626938,
+      "play": 0.04675428254152835,
+      "right_backhand": 0.0015100471771954493,
+      "right_forehand": 0.02173167191054169,
+      "right_serve": 0.00030303030303030303
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 40351,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002754294755877034,
+      "left_forehand": 0.017967103013915697,
+      "left_serve": 0.00442865628484183,
+      "pause": 0.9016356864569168,
+      "play": 0.048931946204291935,
+      "right_backhand": 0.0031743090445016412,
+      "right_forehand": 0.02062586138251229,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 41709,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.019924872995796355,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9029956680995774,
+      "play": 0.04661433229210235,
+      "right_backhand": 0.0018625655606782313,
+      "right_forehand": 0.02181677913622065,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 41750,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011909059354390835,
+      "left_forehand": 0.017330554221451095,
+      "left_serve": 0.002435819319547238,
+      "pause": 0.9121038211390379,
+      "play": 0.043099577543825436,
+      "right_backhand": 0.0007827383863511733,
+      "right_forehand": 0.023056583454348203,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 41791,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0448432139875598,
+      "left_forehand": 0.07040432440451688,
+      "left_serve": 0.03347976781894147,
+      "pause": 0.5318496323602777,
+      "play": 0.2195121367844807,
+      "right_backhand": 0.03546085488842379,
+      "right_forehand": 0.05441627132514139,
+      "right_serve": 0.010033798430658365
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 41824,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00894541462262243,
+      "left_forehand": 0.03535366248062626,
+      "left_serve": 0.02234326403008959,
+      "pause": 0.7830257084791244,
+      "play": 0.09499729907604607,
+      "right_backhand": 0.014572062775176944,
+      "right_forehand": 0.03891553901474574,
+      "right_serve": 0.0018470495215683947
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 41857,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019214007303758874,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9096538214427836,
+      "play": 0.04373631853234279,
+      "right_backhand": 0.0015580066951600055,
+      "right_forehand": 0.02082421600906376,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 42616,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0025791911576795294,
+      "left_forehand": 0.01814474845849477,
+      "left_serve": 0.005857227713413259,
+      "pause": 0.8971369880019796,
+      "play": 0.05006695730922082,
+      "right_backhand": 0.0031004543992837184,
+      "right_forehand": 0.022632290102785654,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 43016,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0004807692307692308,
+      "left_forehand": 0.01400392115781498,
+      "left_serve": 0.006200094260292766,
+      "pause": 0.8917761605557173,
+      "play": 0.0624324651646663,
+      "right_backhand": 0.002555798811182377,
+      "right_forehand": 0.022247760516526726,
+      "right_serve": 0.00030303030303030303
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 43416,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0015970483005366726,
+      "left_forehand": 0.017471817815764106,
+      "left_serve": 0.004162009795737714,
+      "pause": 0.9087998353113328,
+      "play": 0.04606522967399225,
+      "right_backhand": 0.0008361085236765348,
+      "right_forehand": 0.020764920275929844,
+      "right_serve": 0.00030303030303030303
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 44174,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019698936577314374,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.9073494202000295,
+      "play": 0.046238684919784695,
+      "right_backhand": 0.0016355260750049666,
+      "right_forehand": 0.02006380221097554,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 44216,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01937113024019898,
+      "left_serve": 0.0023584383671662857,
+      "pause": 0.906604341323969,
+      "play": 0.04610103821806692,
+      "right_backhand": 0.0016355260750049666,
+      "right_forehand": 0.02127433412586915,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 44259,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01633120315367039,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.909479695156249,
+      "play": 0.043881712295628095,
+      "right_backhand": 0.0021109855348148544,
+      "right_forehand": 0.022574087552647622,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 44282,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0012017491552375273,
+      "left_forehand": 0.018531315125854427,
+      "left_serve": 0.012227445979091882,
+      "pause": 0.8824465543533669,
+      "play": 0.05093506862277953,
+      "right_backhand": 0.005431956621131209,
+      "right_forehand": 0.028725910142538516,
+      "right_serve": 0.0005
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 44306,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0012017491552375273,
+      "left_forehand": 0.017889154563516287,
+      "left_serve": 0.009988082309095583,
+      "pause": 0.8856823252020495,
+      "play": 0.05684793922239819,
+      "right_backhand": 0.003486710598193731,
+      "right_forehand": 0.024404038949509356,
+      "right_serve": 0.0005
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 44328,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003870573825644476,
+      "left_forehand": 0.01919363186835152,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.896907258245041,
+      "play": 0.04935599176724328,
+      "right_backhand": 0.0033516346258969897,
+      "right_forehand": 0.02199344385917148,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 44349,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004040789673826426,
+      "left_forehand": 0.02083168803282855,
+      "left_serve": 0.011736881182797537,
+      "pause": 0.8640061193963645,
+      "play": 0.062260437450293436,
+      "right_backhand": 0.008071428164438234,
+      "right_forehand": 0.028570513242308433,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 45322,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02078428124019092,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.90278042118638,
+      "play": 0.050124068547414954,
+      "right_backhand": 0.002086194896263607,
+      "right_forehand": 0.01841621073947107,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 45722,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01686476040607449,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.908395195186065,
+      "play": 0.045589984285710795,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.02126405093057488,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 46122,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01678932520297971,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9099235371160028,
+      "play": 0.04423553554296419,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.0211655929464786,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 47094,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016437613147850295,
+      "left_serve": 0.008684608665794211,
+      "pause": 0.8984647194288574,
+      "play": 0.04773251463545992,
+      "right_backhand": 0.003455765754595073,
+      "right_forehand": 0.024108499297675806,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 47747,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005324736487327886,
+      "left_forehand": 0.022753711528561184,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.8848217629931057,
+      "play": 0.05812623466580891,
+      "right_backhand": 0.005388555366968637,
+      "right_forehand": 0.021523075975978335,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 48147,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.02404331469973505,
+      "left_serve": 0.0028163786187386125,
+      "pause": 0.8569052105430339,
+      "play": 0.06516107958827946,
+      "right_backhand": 0.005457776475102621,
+      "right_forehand": 0.03759717155846468,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 48547,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.014312701850679206,
+      "left_forehand": 0.0328634889599737,
+      "left_serve": 0.10819032418245408,
+      "pause": 0.3790265674887231,
+      "play": 0.2673196849820558,
+      "right_backhand": 0.08417523932634234,
+      "right_forehand": 0.10905083425452373,
+      "right_serve": 0.005061158955248057
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 49200,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01678932520297971,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9099235371160028,
+      "play": 0.04423553554296419,
+      "right_backhand": 0.0022636928845846276,
+      "right_forehand": 0.0211655929464786,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 49248,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018306106521582755,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9101314479069808,
+      "play": 0.04303421390937781,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.02140332930150612,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 49295,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011673126632797572,
+      "left_forehand": 0.039552455711111864,
+      "left_serve": 0.0942338010638287,
+      "pause": 0.48560531663144624,
+      "play": 0.20169007296194713,
+      "right_backhand": 0.06307858182466738,
+      "right_forehand": 0.10005138686899746,
+      "right_serve": 0.0041152583052035995
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 49339,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019225672175900804,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9039320490331678,
+      "play": 0.04652350516261979,
+      "right_backhand": 0.0017686714384134877,
+      "right_forehand": 0.023119805506340522,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 49383,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01919886495165462,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.905632312437696,
+      "play": 0.04552395192150389,
+      "right_backhand": 0.0018438594083383002,
+      "right_forehand": 0.022370714597249618,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 49416,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003392193318679548,
+      "left_forehand": 0.021889718935954827,
+      "left_serve": 0.005170727981384949,
+      "pause": 0.8829597171439719,
+      "play": 0.053703713052618646,
+      "right_backhand": 0.004733166394761802,
+      "right_forehand": 0.026239658566851506,
+      "right_serve": 0.0019111046057767372
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 49448,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.014418958407279409,
+      "left_forehand": 0.039597405681313355,
+      "left_serve": 0.10667898159946326,
+      "pause": 0.42146658334899334,
+      "play": 0.23257674086765015,
+      "right_backhand": 0.07218448460808806,
+      "right_forehand": 0.10798322035056573,
+      "right_serve": 0.005093625136646744
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 49493,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018676476891953127,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9087598565353895,
+      "play": 0.043665064540228435,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.02177369967187649,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 49538,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.01962875642888802,
+      "left_serve": 0.006738622698963521,
+      "pause": 0.8898308517712031,
+      "play": 0.05113846244095616,
+      "right_backhand": 0.0034866010996073876,
+      "right_forehand": 0.024749362011922946,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 49573,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004201919523369484,
+      "left_forehand": 0.01990453196044222,
+      "left_serve": 0.008758682604175637,
+      "pause": 0.883009434827255,
+      "play": 0.056386928966994924,
+      "right_backhand": 0.0050714314371532775,
+      "right_forehand": 0.02261009062362948,
+      "right_serve": 5.6980056980056985e-05
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 49608,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.02018272511366619,
+      "left_serve": 0.003666751522937068,
+      "pause": 0.8951727407540687,
+      "play": 0.05336315584513969,
+      "right_backhand": 0.00329544753808026,
+      "right_forehand": 0.019891835677649267,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 59414,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.08769730835370604,
+      "left_forehand": 0.1462199034942537,
+      "left_serve": 0.12022457347498071,
+      "pause": 0.3728283385627386,
+      "play": 0.22749191522503062,
+      "right_backhand": 0.011452447346714786,
+      "right_forehand": 0.026764655504057665,
+      "right_serve": 0.007320858038517781
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69221,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00402038866124093,
+      "left_forehand": 0.020858735393592443,
+      "left_serve": 0.0013814798418206634,
+      "pause": 0.8901582948444777,
+      "play": 0.05034282768425559,
+      "right_backhand": 0.003063638505286164,
+      "right_forehand": 0.029692492212183633,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69250,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024714761448636793,
+      "left_serve": 0.0014227534267263237,
+      "pause": 0.8733536266965025,
+      "play": 0.06225085309671708,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.02484105230734187,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69278,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.025919853879749447,
+      "left_serve": 0.0014227534267263237,
+      "pause": 0.8689500689706567,
+      "play": 0.06314551650794833,
+      "right_backhand": 0.007201163195954443,
+      "right_forehand": 0.025341575502319195,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69304,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027092541049362286,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8616336361240741,
+      "play": 0.06489546817549771,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.02679139242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69330,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02829763348047495,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8572300783982283,
+      "play": 0.06579013158672896,
+      "right_backhand": 0.008713002904515463,
+      "right_forehand": 0.027291915620167747,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69354,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024714761448636793,
+      "left_serve": 0.0014227534267263237,
+      "pause": 0.8745400964767224,
+      "play": 0.06100085309671708,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.024904582527122087,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69379,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027989144867638514,
+      "left_serve": 0.001748158456602775,
+      "pause": 0.8579628632763935,
+      "play": 0.06697594939211199,
+      "right_backhand": 0.008713002904515463,
+      "right_forehand": 0.026443706311360605,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69402,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027092541049362286,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8616336361240741,
+      "play": 0.06489546817549771,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.02679139242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69425,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02829763348047495,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8572300783982283,
+      "play": 0.06579013158672896,
+      "right_backhand": 0.008713002904515463,
+      "right_forehand": 0.027291915620167747,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69448,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.028731801954142343,
+      "left_forehand": 0.05280988093567652,
+      "left_serve": 0.013466016792805513,
+      "pause": 0.6582189820904765,
+      "play": 0.16154561204298262,
+      "right_backhand": 0.029416454136994882,
+      "right_forehand": 0.047743213617696956,
+      "right_serve": 0.008068038429225002
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69472,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011802061801741435,
+      "left_forehand": 0.03216887540578562,
+      "left_serve": 0.0028007750583509505,
+      "pause": 0.833560019138765,
+      "play": 0.0789416099298911,
+      "right_backhand": 0.010654918318122781,
+      "right_forehand": 0.027966793252012376,
+      "right_serve": 0.002104947095330819
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69496,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027092541049362286,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8616336361240741,
+      "play": 0.06489546817549771,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.02679139242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69519,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027092541049362286,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8616336361240741,
+      "play": 0.06489546817549771,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.02679139242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69544,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.03711452110685331,
+      "left_forehand": 0.06412127662720678,
+      "left_serve": 0.017936117902386514,
+      "pause": 0.601247959728485,
+      "play": 0.18509644598988287,
+      "right_backhand": 0.03207251053547605,
+      "right_forehand": 0.053376746330542665,
+      "right_serve": 0.009034421779167148
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69568,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.029997678335086347,
+      "left_forehand": 0.05243935048448857,
+      "left_serve": 0.012929826705385972,
+      "pause": 0.6502230743801389,
+      "play": 0.1640696053737628,
+      "right_backhand": 0.03311512210097703,
+      "right_forehand": 0.047187938979786626,
+      "right_serve": 0.010037403640374021
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69592,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024714761448636793,
+      "left_serve": 0.0014227534267263237,
+      "pause": 0.8745400964767224,
+      "play": 0.06100085309671708,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.024904582527122087,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69617,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027092541049362286,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8616336361240741,
+      "play": 0.06489546817549771,
+      "right_backhand": 0.006909724215990873,
+      "right_forehand": 0.02679139242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69645,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.042808390797875406,
+      "left_forehand": 0.07288999758657357,
+      "left_serve": 0.01984351338790585,
+      "pause": 0.5511787310079191,
+      "play": 0.20804599295660722,
+      "right_backhand": 0.03622803727025672,
+      "right_forehand": 0.05848120487497312,
+      "right_serve": 0.01052413211788908
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69673,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69702,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8706592931925443,
+      "play": 0.060968209475031496,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.027665271717159098,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69730,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02654990539044756,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8586241077003014,
+      "play": 0.06594763225818503,
+      "right_backhand": 0.007118057549324206,
+      "right_forehand": 0.02866639242519042,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69754,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.01435983175135951,
+      "left_forehand": 0.03807860368471084,
+      "left_serve": 0.0041868228257181846,
+      "pause": 0.8057520451489236,
+      "play": 0.09061514895365434,
+      "right_backhand": 0.009462365468905382,
+      "right_forehand": 0.0365140314569041,
+      "right_serve": 0.0010311507098241704
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69777,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.02320940342490281,
+      "left_forehand": 0.04380618188112623,
+      "left_serve": 0.013864292869145357,
+      "pause": 0.6932591181562745,
+      "play": 0.14286868231680175,
+      "right_backhand": 0.030163397525653352,
+      "right_forehand": 0.04659364076589883,
+      "right_serve": 0.006235283060197252
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69806,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02654990539044756,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8608526430538368,
+      "play": 0.06424308680363959,
+      "right_backhand": 0.007118057549324206,
+      "right_forehand": 0.028142402526200518,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69834,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8554011055300111,
+      "play": 0.06628674011386075,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.028541915620167745,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69856,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8707918689501202,
+      "play": 0.06156164381846584,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.026939261616149,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69879,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0459054568552501,
+      "left_forehand": 0.07348870274164913,
+      "left_serve": 0.020533417923356324,
+      "pause": 0.539668746897945,
+      "play": 0.2138200090649664,
+      "right_backhand": 0.03890269249281154,
+      "right_forehand": 0.05790028248053327,
+      "right_serve": 0.009780691543488356
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69908,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 69938,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8465820297355704,
+      "play": 0.07052759759376932,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.029248202945980618,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 69960,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.030874762746348323,
+      "left_forehand": 0.05503674822725916,
+      "left_serve": 0.018075764213349818,
+      "pause": 0.6555772289399237,
+      "play": 0.15696814005360143,
+      "right_backhand": 0.027452639349092717,
+      "right_forehand": 0.05061983953897798,
+      "right_serve": 0.0053948769314470894
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 69983,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.058834917096263456,
+      "left_forehand": 0.09018014255010148,
+      "left_serve": 0.02295474182184881,
+      "pause": 0.45919799243617954,
+      "play": 0.25534757818173753,
+      "right_backhand": 0.041695512460138924,
+      "right_forehand": 0.06063747139040593,
+      "right_serve": 0.01115164406332421
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 70013,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 70043,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8465820297355704,
+      "play": 0.07052759759376932,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.029248202945980618,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 70066,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.032165132398959365,
+      "left_forehand": 0.05614906563588225,
+      "left_serve": 0.014989985551408649,
+      "pause": 0.644588087072861,
+      "play": 0.16331258944474233,
+      "right_backhand": 0.030627540248689078,
+      "right_forehand": 0.052372474738744776,
+      "right_serve": 0.005795124908712823
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 70088,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07257018805366701,
+      "left_forehand": 0.10272562908811683,
+      "left_serve": 0.027800590159434802,
+      "pause": 0.380629706862442,
+      "play": 0.29014674221364745,
+      "right_backhand": 0.047578815798563136,
+      "right_forehand": 0.06470655631241456,
+      "right_serve": 0.013841771511713981
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 70122,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8706592931925443,
+      "play": 0.060968209475031496,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.027665271717159098,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 70157,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007579286295757006,
+      "left_forehand": 0.025687510954282636,
+      "left_serve": 0.0028356552039355883,
+      "pause": 0.8684950714360195,
+      "play": 0.06162261983891033,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.027389028623236448,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 70179,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02849001819734869,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8509855874614162,
+      "play": 0.06963293418253808,
+      "right_backhand": 0.0073453302765969335,
+      "right_forehand": 0.028747679751003292,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 70201,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07556823408157187,
+      "left_forehand": 0.10753469914591875,
+      "left_serve": 0.028613364805365027,
+      "pause": 0.35613319829555357,
+      "play": 0.3015752651419004,
+      "right_backhand": 0.050321112963144767,
+      "right_forehand": 0.06514305565086398,
+      "right_serve": 0.0151110699156815
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 70683,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020291901547820283,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.8965422418562378,
+      "play": 0.05236476242294746,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.02151917112454669,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 71165,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8707918689501202,
+      "play": 0.06156164381846584,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.026939261616149,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71212,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024549107553243434,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8719145610287384,
+      "play": 0.0619041095718905,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.02540561063342119,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71260,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00402038866124093,
+      "left_forehand": 0.021162831973576473,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.8796196251244589,
+      "play": 0.052578886192461934,
+      "right_backhand": 0.005509932178562839,
+      "right_forehand": 0.03386784145887786,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71298,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005324736487327886,
+      "left_forehand": 0.02252114648393566,
+      "left_serve": 0.0024971581886310858,
+      "pause": 0.8707128831426261,
+      "play": 0.06564798662740233,
+      "right_backhand": 0.005533995618540963,
+      "right_forehand": 0.027081650311107222,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71335,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8542205499744555,
+      "play": 0.0668422956694163,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029166915620167745,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71358,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012217235506199157,
+      "left_forehand": 0.032494385488597316,
+      "left_serve": 0.0038292364424907764,
+      "pause": 0.8252570273876798,
+      "play": 0.08326009142305037,
+      "right_backhand": 0.008860422302859654,
+      "right_forehand": 0.03305045073929879,
+      "right_serve": 0.0010311507098241704
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71382,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.05589663370820802,
+      "left_forehand": 0.08450038226409004,
+      "left_serve": 0.026230476828708094,
+      "pause": 0.4736747955849174,
+      "play": 0.24361528332168864,
+      "right_backhand": 0.04315182271002331,
+      "right_forehand": 0.06150440830481123,
+      "right_serve": 0.011426197277553061
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71417,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71452,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8476300095335502,
+      "play": 0.06937860769477944,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.02934921304699072,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71477,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.033977098522723244,
+      "left_forehand": 0.05942975546875367,
+      "left_serve": 0.01839164007665868,
+      "pause": 0.6346084472793732,
+      "play": 0.16540102631155612,
+      "right_backhand": 0.030180655672591015,
+      "right_forehand": 0.05255333041131699,
+      "right_serve": 0.00545804625702743
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71502,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0703998802085826,
+      "left_forehand": 0.10026622915840627,
+      "left_serve": 0.02799180269211421,
+      "pause": 0.3944204736353997,
+      "play": 0.28267071279686706,
+      "right_backhand": 0.04620157841149215,
+      "right_forehand": 0.06447170252882009,
+      "right_serve": 0.013577620568317754
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71536,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71570,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8465820297355704,
+      "play": 0.07052759759376932,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.029248202945980618,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71592,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.036648706376141676,
+      "left_forehand": 0.062404529925338875,
+      "left_serve": 0.019212698489125216,
+      "pause": 0.6025605099164068,
+      "play": 0.1824920932776462,
+      "right_backhand": 0.03402888318814698,
+      "right_forehand": 0.055571628225472534,
+      "right_serve": 0.007080950601722104
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71615,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0757199810614939,
+      "left_forehand": 0.10625979398233629,
+      "left_serve": 0.028313849023588147,
+      "pause": 0.35449342656905003,
+      "play": 0.3010305002539835,
+      "right_backhand": 0.05115029266615657,
+      "right_forehand": 0.06769303666734619,
+      "right_serve": 0.015339119776045239
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71648,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71682,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8465820297355704,
+      "play": 0.07052759759376932,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.029248202945980618,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71704,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.04243219122810478,
+      "left_forehand": 0.0712142728902109,
+      "left_serve": 0.01976401275289643,
+      "pause": 0.5633498949562913,
+      "play": 0.19938291484038143,
+      "right_backhand": 0.03705551242575707,
+      "right_forehand": 0.05802078022518387,
+      "right_serve": 0.00878042068117441
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71727,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07462081039323272,
+      "left_forehand": 0.10476173116896809,
+      "left_serve": 0.02851486625189668,
+      "pause": 0.3639274897862164,
+      "play": 0.2975303865163036,
+      "right_backhand": 0.04955279068945164,
+      "right_forehand": 0.06658396746528708,
+      "right_serve": 0.014507957728643772
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71760,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8552685297724354,
+      "play": 0.0656933057704264,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029267925721177847,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71794,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8542205499744555,
+      "play": 0.0668422956694163,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.029166915620167745,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71815,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02849001819734869,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8521661430169718,
+      "play": 0.06907737862698252,
+      "right_backhand": 0.0073453302765969335,
+      "right_forehand": 0.028122679751003292,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71836,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07534418080734283,
+      "left_forehand": 0.10502554300105701,
+      "left_serve": 0.028149934693834044,
+      "pause": 0.37447530278620617,
+      "play": 0.2970736547639801,
+      "right_backhand": 0.04552459602973403,
+      "right_forehand": 0.05987445791092097,
+      "right_serve": 0.014532330006924525
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71870,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8564490853279909,
+      "play": 0.06513775021487085,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.028642925721177846,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 71903,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02969511062846135,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8465820297355704,
+      "play": 0.07052759759376932,
+      "right_backhand": 0.009148608965121523,
+      "right_forehand": 0.029248202945980618,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71926,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.050079174705385865,
+      "left_forehand": 0.0780656516976071,
+      "left_serve": 0.021054824903080815,
+      "pause": 0.5097307759269293,
+      "play": 0.2285463904360342,
+      "right_backhand": 0.04096820997520435,
+      "right_forehand": 0.06059211664992265,
+      "right_serve": 0.010962855705835843
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 71949,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07534418080734283,
+      "left_forehand": 0.10502554300105701,
+      "left_serve": 0.028149934693834044,
+      "pause": 0.37447530278620617,
+      "play": 0.2970736547639801,
+      "right_backhand": 0.04552459602973403,
+      "right_forehand": 0.05987445791092097,
+      "right_serve": 0.014532330006924525
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 71980,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009557051511509785,
+      "left_forehand": 0.030030859890525737,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8497588167842741,
+      "play": 0.06821777459661936,
+      "right_backhand": 0.008990301755090175,
+      "right_forehand": 0.028804894021077186,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72010,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.027754997821560216,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8554011055300111,
+      "play": 0.06628674011386075,
+      "right_backhand": 0.008921336237848796,
+      "right_forehand": 0.028541915620167745,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72040,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010158148690193169,
+      "left_forehand": 0.02849001819734869,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8521661430169718,
+      "play": 0.06907737862698252,
+      "right_backhand": 0.0073453302765969335,
+      "right_forehand": 0.028122679751003292,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 72070,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8707918689501202,
+      "play": 0.06156164381846584,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.026939261616149,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72101,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024480614402558505,
+      "left_serve": 0.0026013248552977527,
+      "pause": 0.8707918689501202,
+      "play": 0.06156164381846584,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.026939261616149,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72132,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.02502325006147323,
+      "left_serve": 0.0021846581886310855,
+      "pause": 0.8726208418183373,
+      "play": 0.06106503529133406,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.025689261616149005,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72190,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008939004164095564,
+      "left_forehand": 0.026112238596623184,
+      "left_serve": 0.0018394200933929902,
+      "pause": 0.8650726033696199,
+      "play": 0.06518276354820188,
+      "right_backhand": 0.005833490568035913,
+      "right_forehand": 0.026235869852934957,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72247,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007579286295757006,
+      "left_forehand": 0.025756004104967572,
+      "left_serve": 0.0028356552039355883,
+      "pause": 0.8697503392722133,
+      "play": 0.06255851993576933,
+      "right_backhand": 0.005606217840763186,
+      "right_forehand": 0.02512936753949854,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72306,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.04946761738095412,
+      "left_forehand": 0.08325914311789255,
+      "left_serve": 0.09574893972486308,
+      "pause": 0.47988385748931994,
+      "play": 0.21307914342061582,
+      "right_backhand": 0.026434895181901816,
+      "right_forehand": 0.04372712338575188,
+      "right_serve": 0.008399280298700802
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72365,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07718265521538005,
+      "left_forehand": 0.10316887545812659,
+      "left_serve": 0.031956464568663676,
+      "pause": 0.3408270148953736,
+      "play": 0.3086324252199937,
+      "right_backhand": 0.051657835638717675,
+      "right_forehand": 0.06742146004517795,
+      "right_serve": 0.019153268958566477
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72426,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.18217677747613073,
+      "left_forehand": 0.18270750065617983,
+      "left_serve": 0.05205807197216392,
+      "pause": 0.09569893325573396,
+      "play": 0.3853154416335538,
+      "right_backhand": 0.03375589093773958,
+      "right_forehand": 0.04751316589184745,
+      "right_serve": 0.020774218176650594
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72488,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.09216422891344889,
+      "left_forehand": 0.1156692158574017,
+      "left_serve": 0.02697684662630685,
+      "pause": 0.3142476519836947,
+      "play": 0.3215097935869185,
+      "right_backhand": 0.046714628978815995,
+      "right_forehand": 0.06445616319464315,
+      "right_serve": 0.01826147085876993
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72547,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.20172077264247856,
+      "left_forehand": 0.1962329612607323,
+      "left_serve": 0.03444618121602489,
+      "pause": 0.09478612161212768,
+      "play": 0.37505800365531244,
+      "right_backhand": 0.03231324737820346,
+      "right_forehand": 0.04422911441445204,
+      "right_serve": 0.021213597820668298
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72606,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.16593489354063656,
+      "left_forehand": 0.17067879951890766,
+      "left_serve": 0.04718064081468648,
+      "pause": 0.15934122217378296,
+      "play": 0.3624629865690085,
+      "right_backhand": 0.030639469471090402,
+      "right_forehand": 0.04532982877039252,
+      "right_serve": 0.0184321591414948
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 72665,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.1914917056010503,
+      "left_forehand": 0.18893330166496622,
+      "left_serve": 0.051613177437717865,
+      "pause": 0.10032293583332093,
+      "play": 0.37327443213663,
+      "right_backhand": 0.030512280943924247,
+      "right_forehand": 0.04358448904620775,
+      "right_serve": 0.020267677336182607
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 72724,
+    "predicted_class": "play",
+    "probabilities": {
+      "left_backhand": 0.0848705286475267,
+      "left_forehand": 0.1141178268603754,
+      "left_serve": 0.03028937676676219,
+      "pause": 0.29030574154885824,
+      "play": 0.33882210688513376,
+      "right_backhand": 0.05352785542131518,
+      "right_forehand": 0.0695217789270513,
+      "right_serve": 0.018544784942976927
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 73008,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.014860058147518467,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9216249839346651,
+      "play": 0.03956418073058123,
+      "right_backhand": 0.0010079286148609984,
+      "right_forehand": 0.020722083016268017,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 73291,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.024714761448636793,
+      "left_serve": 0.0014227534267263237,
+      "pause": 0.8745400964767224,
+      "play": 0.06100085309671708,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.024904582527122087,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73346,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.018626204862774522,
+      "left_forehand": 0.042107444299702215,
+      "left_serve": 0.0029032055048449066,
+      "pause": 0.7923388490722723,
+      "play": 0.09789133168088082,
+      "right_backhand": 0.010320775643792216,
+      "right_forehand": 0.03441267932437887,
+      "right_serve": 0.0013995096113541003
+    }
+  },
+  {
+    "true_class": "left_forehand",
+    "frame": 73400,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.028057638018323446,
+      "left_serve": 0.001748158456602775,
+      "pause": 0.8602720251352315,
+      "play": 0.06606841514553664,
+      "right_backhand": 0.008713002904515463,
+      "right_forehand": 0.02497358554841302,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73426,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007234458709550109,
+      "left_forehand": 0.02509174321215816,
+      "left_serve": 0.0021846581886310855,
+      "pause": 0.8737435338969555,
+      "play": 0.061407501044758714,
+      "right_backhand": 0.005397884507429853,
+      "right_forehand": 0.024155610633421188,
+      "right_serve": 0.0007846098070956428
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 73453,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.008453603235647717,
+      "left_forehand": 0.02829763348047495,
+      "left_serve": 0.002510063218507537,
+      "pause": 0.8582780581962081,
+      "play": 0.06464114168773906,
+      "right_backhand": 0.008713002904515463,
+      "right_forehand": 0.027392925721177845,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73514,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.05152764052181082,
+      "left_forehand": 0.09020956633704837,
+      "left_serve": 0.017415306007119068,
+      "pause": 0.48021952133758966,
+      "play": 0.240679391236313,
+      "right_backhand": 0.04410845109166421,
+      "right_forehand": 0.0651528118709123,
+      "right_serve": 0.010687311597542638
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 73576,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009557051511509785,
+      "left_forehand": 0.030099353041210666,
+      "left_serve": 0.0029267298851742033,
+      "pause": 0.8508815088628924,
+      "play": 0.06856024035004403,
+      "right_backhand": 0.008990301755090175,
+      "right_forehand": 0.027271243038349366,
+      "right_serve": 0.0017135715557295228
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73632,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.05849249656199,
+      "left_forehand": 0.09184474619698647,
+      "left_serve": 0.026204942741268663,
+      "pause": 0.48173128768850965,
+      "play": 0.23744253295829942,
+      "right_backhand": 0.039078696242273316,
+      "right_forehand": 0.052531074536001414,
+      "right_serve": 0.01267422307467099
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 73689,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00905228572369488,
+      "left_forehand": 0.029776392913970166,
+      "left_serve": 0.002993759549366016,
+      "pause": 0.8587963886873644,
+      "play": 0.06370432330284015,
+      "right_backhand": 0.008147933337736368,
+      "right_forehand": 0.025883410512932706,
+      "right_serve": 0.001645505972095347
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73744,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.06376798440241131,
+      "left_forehand": 0.09940018507805899,
+      "left_serve": 0.021502359508094745,
+      "pause": 0.4394144992397122,
+      "play": 0.26198809830218034,
+      "right_backhand": 0.04402390839408202,
+      "right_forehand": 0.05580398512746179,
+      "right_serve": 0.014098979947998507
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 73800,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012287195915841913,
+      "left_forehand": 0.03470761455495204,
+      "left_serve": 0.003035033134271676,
+      "pause": 0.8377338283053081,
+      "play": 0.07370894864077251,
+      "right_backhand": 0.009134706087220138,
+      "right_forehand": 0.027643000722871805,
+      "right_serve": 0.0017496726387620136
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 73855,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.07869948441913487,
+      "left_forehand": 0.09590359032715685,
+      "left_serve": 0.028709275469351647,
+      "pause": 0.45269124375381503,
+      "play": 0.24639233881407885,
+      "right_backhand": 0.03541203972884548,
+      "right_forehand": 0.04959667569238682,
+      "right_serve": 0.012595351795230398
+    }
+  },
+  {
+    "true_class": "right_forehand",
+    "frame": 73910,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012287195915841913,
+      "left_forehand": 0.03470761455495204,
+      "left_serve": 0.003035033134271676,
+      "pause": 0.8377338283053081,
+      "play": 0.07370894864077251,
+      "right_backhand": 0.009134706087220138,
+      "right_forehand": 0.027643000722871805,
+      "right_serve": 0.0017496726387620136
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 74155,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004875124084227111,
+      "left_forehand": 0.02372864957449248,
+      "left_serve": 0.0021433846037254255,
+      "pause": 0.8759830767120275,
+      "play": 0.05303501623011284,
+      "right_backhand": 0.00534204373906166,
+      "right_forehand": 0.03421226191592419,
+      "right_serve": 0.0006804431404289761
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 74555,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.016861780800403913,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9169644771899071,
+      "play": 0.04131016230895353,
+      "right_backhand": 0.0010544402427679752,
+      "right_forehand": 0.02047209483209389,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 74955,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.020291901547820283,
+      "left_serve": 0.0025600512703920918,
+      "pause": 0.8965422418562378,
+      "play": 0.05236476242294746,
+      "right_backhand": 0.002294528229596941,
+      "right_forehand": 0.02151917112454669,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 75200,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018936713262681204,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8978717738682838,
+      "play": 0.04950884944753712,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.02305811478429412,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75238,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.019012148465775983,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8997525228474369,
+      "play": 0.04860319718018273,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.022007582869400508,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75276,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018936713262681204,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8990523294238393,
+      "play": 0.04895329389198157,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.022433114784294123,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75302,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0032734971989034256,
+      "left_forehand": 0.021897289288998523,
+      "left_serve": 0.01815927020667042,
+      "pause": 0.8473363057988914,
+      "play": 0.06913305673912916,
+      "right_backhand": 0.009179098892341258,
+      "right_forehand": 0.030255101291824578,
+      "right_serve": 0.0007663805832410483
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75327,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003604641150737033,
+      "left_forehand": 0.022545846214507965,
+      "left_serve": 0.023966559983332344,
+      "pause": 0.8180436799705264,
+      "play": 0.07992338586631079,
+      "right_backhand": 0.012843586398515577,
+      "right_forehand": 0.038148429753463796,
+      "right_serve": 0.0009238706626061278
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75351,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01870415512314632,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8991730807655209,
+      "play": 0.04864321637260172,
+      "right_backhand": 0.003046514656125594,
+      "right_forehand": 0.022932518481372236,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75375,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018936713262681204,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8990523294238393,
+      "play": 0.04895329389198157,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.022433114784294123,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75399,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002674408592597498,
+      "left_forehand": 0.023394215577983376,
+      "left_serve": 0.023502152423181422,
+      "pause": 0.8379549918231589,
+      "play": 0.0672577499167837,
+      "right_backhand": 0.010674534219499033,
+      "right_forehand": 0.03398043951028802,
+      "right_serve": 0.0005615079365079366
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75423,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004610344831499838,
+      "left_forehand": 0.026809211082620518,
+      "left_serve": 0.033988555928251535,
+      "pause": 0.7830804353421971,
+      "play": 0.09036464811290192,
+      "right_backhand": 0.014848670390454254,
+      "right_forehand": 0.04546166695998271,
+      "right_serve": 0.0008364673520923522
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75446,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018181767063444827,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.9023006248632143,
+      "play": 0.04678432899132628,
+      "right_backhand": 0.002971887790453952,
+      "right_forehand": 0.022335503555999104,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75469,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012267691927547245,
+      "left_forehand": 0.031895303560086144,
+      "left_serve": 0.07184803777762161,
+      "pause": 0.7250539097840192,
+      "play": 0.10515375075630999,
+      "right_backhand": 0.015831702676849982,
+      "right_forehand": 0.03472603408287722,
+      "right_serve": 0.0032235694346887923
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75494,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0037296411507370324,
+      "left_forehand": 0.023955084104179108,
+      "left_serve": 0.02989038073804933,
+      "pause": 0.8059879437003186,
+      "play": 0.0858748706137837,
+      "right_backhand": 0.014204866886320453,
+      "right_forehand": 0.035433342144005626,
+      "right_serve": 0.0009238706626061278
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75518,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005444278194783696,
+      "left_forehand": 0.030268830517236854,
+      "left_serve": 0.054005341331350945,
+      "pause": 0.7214026157180805,
+      "play": 0.11193846238308323,
+      "right_backhand": 0.022707663677085432,
+      "right_forehand": 0.053158343529466204,
+      "right_serve": 0.0010744646489131784
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75541,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004622844883915181,
+      "left_forehand": 0.022786192139810747,
+      "left_serve": 0.01792593789771662,
+      "pause": 0.8610271605417457,
+      "play": 0.06429360467194059,
+      "right_backhand": 0.003905314501160515,
+      "right_forehand": 0.024801763746877956,
+      "right_serve": 0.0006371816168327795
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75564,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010352457851249415,
+      "left_forehand": 0.030518932994715187,
+      "left_serve": 0.07173418578521173,
+      "pause": 0.7357658607638851,
+      "play": 0.10164878766975499,
+      "right_backhand": 0.01436373106179157,
+      "right_forehand": 0.03248735109904477,
+      "right_serve": 0.003128692774347236
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75586,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002674408592597498,
+      "left_forehand": 0.02159942834236406,
+      "left_serve": 0.023690831668464446,
+      "pause": 0.8420221136547725,
+      "play": 0.06712508052152705,
+      "right_backhand": 0.01014821843002535,
+      "right_forehand": 0.032178410853740985,
+      "right_serve": 0.0005615079365079366
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75608,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00684120175037565,
+      "left_forehand": 0.03076753416455703,
+      "left_serve": 0.055669456684744316,
+      "pause": 0.6998562481084494,
+      "play": 0.12234511863776945,
+      "right_backhand": 0.02519831757717961,
+      "right_forehand": 0.05791120808612806,
+      "right_serve": 0.0014109149907963344
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75630,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.020383819018370185,
+      "left_serve": 0.012081204655582559,
+      "pause": 0.8766189750103247,
+      "play": 0.05877769992490391,
+      "right_backhand": 0.0036921362065868712,
+      "right_forehand": 0.02487218519511178,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75653,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012267691927547245,
+      "left_forehand": 0.03223676697472029,
+      "left_serve": 0.07184803777762161,
+      "pause": 0.7257421388402228,
+      "play": 0.10448354927168645,
+      "right_backhand": 0.01588048316465486,
+      "right_forehand": 0.03431776260885813,
+      "right_serve": 0.0032235694346887923
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75676,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002674408592597498,
+      "left_forehand": 0.02159942834236406,
+      "left_serve": 0.023690831668464446,
+      "pause": 0.8420221136547725,
+      "play": 0.06712508052152705,
+      "right_backhand": 0.01014821843002535,
+      "right_forehand": 0.032178410853740985,
+      "right_serve": 0.0005615079365079366
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75699,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009294712796456342,
+      "left_forehand": 0.03944313512699003,
+      "left_serve": 0.09344310550772912,
+      "pause": 0.5531307027501107,
+      "play": 0.18182482496902072,
+      "right_backhand": 0.0436421362790487,
+      "right_forehand": 0.07652314414798894,
+      "right_serve": 0.002698238422655444
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75722,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007279843968842831,
+      "left_forehand": 0.025993163927933303,
+      "left_serve": 0.04029582269830547,
+      "pause": 0.7953786432624921,
+      "play": 0.08575145166060594,
+      "right_backhand": 0.01247548248501992,
+      "right_forehand": 0.030036435557327698,
+      "right_serve": 0.002789156439472822
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75745,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012267691927547245,
+      "left_forehand": 0.03223676697472029,
+      "left_serve": 0.07184803777762161,
+      "pause": 0.7257421388402228,
+      "play": 0.10448354927168645,
+      "right_backhand": 0.01588048316465486,
+      "right_forehand": 0.03431776260885813,
+      "right_serve": 0.0032235694346887923
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75766,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030077419259308315,
+      "left_forehand": 0.021793872786808506,
+      "left_serve": 0.01956583166846444,
+      "pause": 0.8428693358769948,
+      "play": 0.06801396941041593,
+      "right_backhand": 0.010231551763358682,
+      "right_forehand": 0.033956188631518766,
+      "right_serve": 0.0005615079365079366
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 75788,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011194982934484857,
+      "left_forehand": 0.0416318202078906,
+      "left_serve": 0.08151788798978427,
+      "pause": 0.5597388280259729,
+      "play": 0.18411197684284064,
+      "right_backhand": 0.04350472944502361,
+      "right_forehand": 0.07524927119436535,
+      "right_serve": 0.0030505033596379895
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 75814,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.02185016862127441,
+      "left_serve": 0.012398331506322855,
+      "pause": 0.8737103031877873,
+      "play": 0.059079167850321405,
+      "right_backhand": 0.003805714070164735,
+      "right_forehand": 0.025082334775009266,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 75840,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.019998601678707904,
+      "left_serve": 0.007251272682793444,
+      "pause": 0.8857867284947523,
+      "play": 0.05641327517746278,
+      "right_backhand": 0.0036309020400895477,
+      "right_forehand": 0.02334523993707409,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 76038,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0017627941568902638,
+      "left_forehand": 0.02117645466491465,
+      "left_serve": 0.0051454515338182506,
+      "pause": 0.8643739776718928,
+      "play": 0.08479824186668868,
+      "right_backhand": 0.002709135336601088,
+      "right_forehand": 0.01935240265236351,
+      "right_serve": 0.0006815421168307027
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 76438,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015252935352326915,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9238965380575105,
+      "play": 0.04101337076881323,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.017995366412286926,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 76838,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.006896760194143533,
+      "left_forehand": 0.0165847843673392,
+      "left_serve": 0.04011140430197269,
+      "pause": 0.583723372121528,
+      "play": 0.17271405893289957,
+      "right_backhand": 0.06611160925719366,
+      "right_forehand": 0.09658265033524041,
+      "right_serve": 0.017275360489682964
+    }
+  },
+  {
+    "true_class": "right_serve",
+    "frame": 77035,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018478591213371885,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8974279319085299,
+      "play": 0.04915502620020102,
+      "right_backhand": 0.002971326686200782,
+      "right_forehand": 0.024466609390463145,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77070,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018936713262681204,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8978717738682838,
+      "play": 0.04950884944753712,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.02305811478429412,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77105,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018814091561642144,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8969949158880981,
+      "play": 0.049389528173732475,
+      "right_backhand": 0.002971326686200782,
+      "right_forehand": 0.024329623089093283,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77132,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.011685472783409794,
+      "left_forehand": 0.04112876931516765,
+      "left_serve": 0.0733594630297016,
+      "pause": 0.6272754025391762,
+      "play": 0.1503182067344437,
+      "right_backhand": 0.03186242216769555,
+      "right_forehand": 0.061025076135595276,
+      "right_serve": 0.0033451872948102933
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77158,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002342622171110543,
+      "left_forehand": 0.020830991173549793,
+      "left_serve": 0.020501074335907244,
+      "pause": 0.8518880315009656,
+      "play": 0.060452421595397154,
+      "right_backhand": 0.008783263810673694,
+      "right_forehand": 0.03414008747588792,
+      "right_serve": 0.0010615079365079367
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77179,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.003945200691316118,
+      "left_forehand": 0.019490456018278576,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8932151208459121,
+      "play": 0.051171133420562454,
+      "right_backhand": 0.0033510735216438197,
+      "right_forehand": 0.023499549693635515,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77200,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.020508331886580532,
+      "left_serve": 0.012398331506322855,
+      "pause": 0.8783718678136377,
+      "play": 0.05780535832651188,
+      "right_backhand": 0.003555714070164735,
+      "right_forehand": 0.023786416407662322,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77229,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.013519798007497546,
+      "left_forehand": 0.03986966060830206,
+      "left_serve": 0.10981560758994519,
+      "pause": 0.45862003272082724,
+      "play": 0.2170547404570206,
+      "right_backhand": 0.061118833787437626,
+      "right_forehand": 0.09560977984782389,
+      "right_serve": 0.004391546981145914
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77258,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0023432646407638906,
+      "left_forehand": 0.021412333302065,
+      "left_serve": 0.010180911033543804,
+      "pause": 0.8663400401022092,
+      "play": 0.06081277406680903,
+      "right_backhand": 0.006891308194666838,
+      "right_forehand": 0.031037225802799356,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77280,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011909059354390835,
+      "left_forehand": 0.016853591213371887,
+      "left_serve": 0.004506037237222782,
+      "pause": 0.9063521510585556,
+      "play": 0.04574059967690354,
+      "right_backhand": 0.002185612400486496,
+      "right_forehand": 0.023171102478020747,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77302,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007346479033048858,
+      "left_forehand": 0.025407774378735457,
+      "left_serve": 0.045389588948613134,
+      "pause": 0.8133603493574739,
+      "play": 0.07636382847742333,
+      "right_backhand": 0.005343475596763025,
+      "right_forehand": 0.02568627318988104,
+      "right_serve": 0.0011022310180611344
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77328,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.01161952786946903,
+      "left_forehand": 0.037769778477029184,
+      "left_serve": 0.12283606320312818,
+      "pause": 0.45407664854578883,
+      "play": 0.21404479076246466,
+      "right_backhand": 0.060854808720030816,
+      "right_forehand": 0.094759100377926,
+      "right_serve": 0.004039282044163369
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77354,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0028353281328273826,
+      "left_forehand": 0.023449518592949966,
+      "left_serve": 0.013596223825327183,
+      "pause": 0.8451737493255799,
+      "play": 0.06758441023879376,
+      "right_backhand": 0.00954023443182837,
+      "right_forehand": 0.036759027516185434,
+      "right_serve": 0.0010615079365079367
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77376,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.021119113136017248,
+      "left_serve": 0.01722826347911197,
+      "pause": 0.86858815207509,
+      "play": 0.0607690843574648,
+      "right_backhand": 0.0036921362065868712,
+      "right_forehand": 0.025029270756609105,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77397,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.02083605784994859,
+      "left_forehand": 0.04423862346049057,
+      "left_serve": 0.07600162467117007,
+      "pause": 0.671238547723263,
+      "play": 0.12870885252122957,
+      "right_backhand": 0.017460673738492125,
+      "right_forehand": 0.03798826930879487,
+      "right_serve": 0.003527350726611472
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77423,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009689311390059912,
+      "left_forehand": 0.03823824735563788,
+      "left_serve": 0.08601260983886255,
+      "pause": 0.5744692208981294,
+      "play": 0.17585211740252546,
+      "right_backhand": 0.040464993201396356,
+      "right_forehand": 0.0717668691801785,
+      "right_serve": 0.0035066307332101716
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77449,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.005469095555713517,
+      "left_forehand": 0.02818532841650854,
+      "left_serve": 0.03479484477000724,
+      "pause": 0.7659547216867401,
+      "play": 0.09679065671322214,
+      "right_backhand": 0.01776760756736135,
+      "right_forehand": 0.04941743869938509,
+      "right_serve": 0.0016203065910619387
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77472,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0074798439688428305,
+      "left_forehand": 0.02667031081205693,
+      "left_serve": 0.040246642370436604,
+      "pause": 0.7927962420497343,
+      "play": 0.08717722950880086,
+      "right_backhand": 0.01255300186486488,
+      "right_forehand": 0.030287572985790708,
+      "right_serve": 0.002789156439472822
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77495,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012755496805596026,
+      "left_forehand": 0.03229774258447639,
+      "left_serve": 0.0745309646068899,
+      "pause": 0.7205371930407648,
+      "play": 0.10546593409553467,
+      "right_backhand": 0.01588048316465486,
+      "right_forehand": 0.03530861626739472,
+      "right_serve": 0.0032235694346887923
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77520,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.00852681084943768,
+      "left_forehand": 0.040648290473900534,
+      "left_serve": 0.06949181962649888,
+      "pause": 0.642013237660165,
+      "play": 0.14664050808606,
+      "right_backhand": 0.030273132655320528,
+      "right_forehand": 0.05957902414714353,
+      "right_serve": 0.0028271765014741567
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77545,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004771264371729723,
+      "left_forehand": 0.02832515277858423,
+      "left_serve": 0.021941186786510237,
+      "pause": 0.8090147587510498,
+      "play": 0.08011652037953829,
+      "right_backhand": 0.011662357487454535,
+      "right_forehand": 0.04291041709304094,
+      "right_serve": 0.001258342352092352
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77570,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0047352044344769785,
+      "left_forehand": 0.023881942602305983,
+      "left_serve": 0.019118398934324085,
+      "pause": 0.8519581465418975,
+      "play": 0.0700414035251998,
+      "right_backhand": 0.004656991184376263,
+      "right_forehand": 0.024633652508901288,
+      "right_serve": 0.0009742602685181728
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77595,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.014587726386169975,
+      "left_forehand": 0.0345017834084798,
+      "left_serve": 0.07512699109695613,
+      "pause": 0.7123205209295778,
+      "play": 0.10879025922249101,
+      "right_backhand": 0.015946708330217774,
+      "right_forehand": 0.03541414097066836,
+      "right_serve": 0.0033118696554393433
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77620,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010709549753895603,
+      "left_forehand": 0.037732929421371846,
+      "left_serve": 0.11263219160303016,
+      "pause": 0.4789418993710159,
+      "play": 0.20491441905585756,
+      "right_backhand": 0.058791100693434524,
+      "right_forehand": 0.09233296767987267,
+      "right_serve": 0.003944942421521859
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77645,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004686518609017859,
+      "left_forehand": 0.02602343493998807,
+      "left_serve": 0.019023273858627215,
+      "pause": 0.819255904055565,
+      "play": 0.07895094434156492,
+      "right_backhand": 0.010903519063863004,
+      "right_forehand": 0.03989806277928158,
+      "right_serve": 0.001258342352092352
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77667,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030918371319771966,
+      "left_forehand": 0.02148948350638762,
+      "left_serve": 0.01722826347911197,
+      "pause": 0.8672165607034985,
+      "play": 0.06139993498831544,
+      "right_backhand": 0.0036921362065868712,
+      "right_forehand": 0.025399641126979476,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77689,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.012267691927547245,
+      "left_forehand": 0.03223676697472029,
+      "left_serve": 0.07184803777762161,
+      "pause": 0.7245615832846671,
+      "play": 0.10503910482724199,
+      "right_backhand": 0.01588048316465486,
+      "right_forehand": 0.03494276260885813,
+      "right_serve": 0.0032235694346887923
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77715,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007953532612523078,
+      "left_forehand": 0.035762675996953056,
+      "left_serve": 0.055265741942439765,
+      "pause": 0.6956387587835228,
+      "play": 0.12225001352234983,
+      "right_backhand": 0.02437919992001548,
+      "right_forehand": 0.056046867662870634,
+      "right_serve": 0.002703209559325397
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77741,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0023432646407638906,
+      "left_forehand": 0.0214448977525399,
+      "left_serve": 0.008986881182797534,
+      "pause": 0.8693160690483874,
+      "play": 0.05932475959371994,
+      "right_backhand": 0.006891308194666838,
+      "right_forehand": 0.030710676729981626,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77766,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.004622844883915181,
+      "left_forehand": 0.022792926146544754,
+      "left_serve": 0.02497511822558547,
+      "pause": 0.852070393644405,
+      "play": 0.06556272322794439,
+      "right_backhand": 0.003905314501160515,
+      "right_forehand": 0.025433497753611957,
+      "right_serve": 0.0006371816168327795
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77790,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0061670053149446395,
+      "left_forehand": 0.025591426615090465,
+      "left_serve": 0.05593977235937536,
+      "pause": 0.7754319945660788,
+      "play": 0.08822634511459065,
+      "right_backhand": 0.014269382919948871,
+      "right_forehand": 0.03152914808702031,
+      "right_serve": 0.0028449250229508017
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77816,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.010411883874010996,
+      "left_forehand": 0.03906549656550211,
+      "left_serve": 0.10922196912514441,
+      "pause": 0.5175681274516005,
+      "play": 0.19468806623507492,
+      "right_backhand": 0.04809562198152302,
+      "right_forehand": 0.07726363260536243,
+      "right_serve": 0.0036852021617815992
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77842,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002676597974097224,
+      "left_forehand": 0.021856777746509445,
+      "left_serve": 0.011180911033543801,
+      "pause": 0.8612191966310008,
+      "play": 0.06219071405058844,
+      "right_backhand": 0.007224641528000171,
+      "right_forehand": 0.03266901817911728,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77864,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01938251883614635,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.89720037592029,
+      "play": 0.04978960336658891,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.023002953239770873,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 77887,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.007663756217471714,
+      "left_forehand": 0.02894764842358908,
+      "left_serve": 0.056138117879633444,
+      "pause": 0.7606515286952742,
+      "play": 0.09546456770433778,
+      "right_backhand": 0.014449888335111327,
+      "right_forehand": 0.0337673655555665,
+      "right_serve": 0.0029171271890157833
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 77913,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.009606711711428094,
+      "left_forehand": 0.04324959045326728,
+      "left_serve": 0.08352295299325267,
+      "pause": 0.608526508404773,
+      "play": 0.15515786362264578,
+      "right_backhand": 0.03294766532592138,
+      "right_forehand": 0.06416153098723776,
+      "right_serve": 0.0028271765014741567
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 77939,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002676597974097224,
+      "left_forehand": 0.021856777746509445,
+      "left_serve": 0.011180911033543801,
+      "pause": 0.8612191966310008,
+      "play": 0.06219071405058844,
+      "right_backhand": 0.007224641528000171,
+      "right_forehand": 0.03266901817911728,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 78096,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0011162790697674418,
+      "left_forehand": 0.01723215117077428,
+      "left_serve": 0.0022207655561063775,
+      "pause": 0.9155928858183158,
+      "play": 0.04194101293980416,
+      "right_backhand": 0.0010544402427679752,
+      "right_forehand": 0.02084246520246426,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 78496,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0,
+      "left_forehand": 0.015094205193596756,
+      "left_serve": 0.001042194127534949,
+      "pause": 0.9253732114612672,
+      "play": 0.03900339000883247,
+      "right_backhand": 0.0007995952815276653,
+      "right_forehand": 0.018687403927241105,
+      "right_serve": 0.0
+    }
+  },
+  {
+    "true_class": "pause",
+    "frame": 78896,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018751912095047906,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9084120701610074,
+      "play": 0.044463957727419505,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.021247157655972772,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_serve",
+    "frame": 79054,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018751912095047906,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9084120701610074,
+      "play": 0.044463957727419505,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.021247157655972772,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 79090,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002098421926910299,
+      "left_forehand": 0.018751912095047906,
+      "left_serve": 0.002775105033832952,
+      "pause": 0.9094600499589872,
+      "play": 0.0433149678284296,
+      "right_backhand": 0.0017692325426666583,
+      "right_forehand": 0.021348167756982873,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 79127,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.002441051568195697,
+      "left_forehand": 0.02148859686802074,
+      "left_serve": 0.011916663265121991,
+      "pause": 0.8629541366555092,
+      "play": 0.058542849332119846,
+      "right_backhand": 0.00937651684335077,
+      "right_forehand": 0.03229804261053888,
+      "right_serve": 0.0009821428571428572
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 79163,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01938251883614635,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.8983809314758456,
+      "play": 0.049234047811033355,
+      "right_backhand": 0.0031240340359705555,
+      "right_forehand": 0.022377953239770876,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 79199,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.018814910108901305,
+      "left_serve": 0.007595322951508496,
+      "pause": 0.8902598227272628,
+      "play": 0.052139451618836964,
+      "right_backhand": 0.004171514656125593,
+      "right_forehand": 0.02436378628764004,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 79227,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0029942600374489427,
+      "left_forehand": 0.020789759586940584,
+      "left_serve": 0.02072284839387739,
+      "pause": 0.837005560065106,
+      "play": 0.07199068303571446,
+      "right_backhand": 0.011232569264376182,
+      "right_forehand": 0.03512797448019141,
+      "right_serve": 0.00013634513634513634
+    }
+  },
+  {
+    "true_class": "right_backhand",
+    "frame": 79255,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0030077419259308315,
+      "left_forehand": 0.021513403192857328,
+      "left_serve": 0.022488200810205722,
+      "pause": 0.818788630077279,
+      "play": 0.07925573644149284,
+      "right_backhand": 0.01288912903417449,
+      "right_forehand": 0.04141752558155187,
+      "right_serve": 0.0006396329365079364
+    }
+  },
+  {
+    "true_class": "play",
+    "frame": 79289,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01907452549351669,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.896620933838374,
+      "play": 0.049829622559007906,
+      "right_backhand": 0.003046514656125594,
+      "right_forehand": 0.023927888851742594,
+      "right_serve": 0.00048214285714285715
+    }
+  },
+  {
+    "true_class": "left_backhand",
+    "frame": 79323,
+    "predicted_class": "pause",
+    "probabilities": {
+      "left_backhand": 0.0021730487925819405,
+      "left_forehand": 0.01907452549351669,
+      "left_serve": 0.004845322951508497,
+      "pause": 0.896620933838374,
+      "play": 0.049829622559007906,
+      "right_backhand": 0.003046514656125594,
+      "right_forehand": 0.023927888851742594,
+      "right_serve": 0.00048214285714285715
+    }
+  }
+]

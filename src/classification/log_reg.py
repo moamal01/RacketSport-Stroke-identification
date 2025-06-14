@@ -473,12 +473,12 @@ for exp in experiments:
                 
             else:
                 if logistic_regression:
-                    save_predictions(probs, os.path.join(save_dir, f"{filename}_log_iteration{idx}.json"), ".")
-                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir, concatenate=True, iteration=f"{str(idx)}_log")
+                    save_predictions(probs, f"{filename}_iteration{idx}.json", save_dir + "/prediction_log")
+                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded, save_dir + "/confusion_matrices/log", concatenate=True, iteration=f"{str(idx)}")
                     
                 if random_forest:
-                    save_predictions(probs_rf, os.path.join(save_dir, f"{filename}_rf_iteration{idx}.json"), ".")
-                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded_rf, save_dir, concatenate=True, iteration=f"{str(idx)}_rf")
+                    save_predictions(probs_rf, f"{filename}_iteration{idx}.json", save_dir + "/prediction_rf")
+                    plot_confusion_matrix(y_test_decoded, y_test_pred_decoded_rf, save_dir + "/confusion_matrices/rf", concatenate=True, iteration=f"{str(idx)}")
                     
                 
 
@@ -511,9 +511,9 @@ for exp in experiments:
             
             # Plotting
             plot_accuracies(train_accuracies, accuracies, f"{save_dir}/accuracies_log.png")
-            plot_accuracies(f1_train_accuracies_macro, f1_accuracies_macro, f"{save_dir}/f1_macro_scores_log.png")
-            plot_accuracies(f1_train_accuracies_weighted, f1_accuracies_weighted, f"{save_dir}/f1_weighted_scores_log.png")
-            plot_accuracies(f1_train_accuracies_micro, f1_accuracies_micro, f"{save_dir}/f1_micro_scores_log.png")
+            plot_accuracies(f1_train_accuracies_macro, f1_accuracies_macro, f"{save_dir}/f1_plots_log/f1_macro_scores.png")
+            plot_accuracies(f1_train_accuracies_weighted, f1_accuracies_weighted, f"{save_dir}/f1_plots_log/f1_weighted_scores.png")
+            plot_accuracies(f1_train_accuracies_micro, f1_accuracies_micro, f"{save_dir}/f1_plots_log/f1_micro_scores.png")
             
         if random_forest:
             # Means
@@ -540,9 +540,9 @@ for exp in experiments:
             
             # Plotting
             plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_log.png")
-            plot_accuracies(f1_train_accuracies_macro_rf, f1_accuracies_macro_rf, f"{save_dir}/f1_macro_scores_rf.png")
-            plot_accuracies(f1_train_accuracies_weighted_rf, f1_accuracies_weighted_rf, f"{save_dir}/f1_weighted_scores_rf.png")
-            plot_accuracies(f1_train_accuracies_micro_rf, f1_accuracies_micro_rf, f"{save_dir}/f1_micro_scores_rf.png")
+            plot_accuracies(f1_train_accuracies_macro_rf, f1_accuracies_macro_rf, f"{save_dir}/f1_plots_rf/f1_macro_scores.png")
+            plot_accuracies(f1_train_accuracies_weighted_rf, f1_accuracies_weighted_rf, f"{save_dir}/f1_plots_rf/f1_weighted_scores.png")
+            plot_accuracies(f1_train_accuracies_micro_rf, f1_accuracies_micro_rf, f"{save_dir}/f1_plots_rf/f1_micro_scores.png")
 
         if cross_validation:
             print("-----------")
