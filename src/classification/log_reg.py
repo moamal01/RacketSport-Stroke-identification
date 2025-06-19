@@ -26,7 +26,7 @@ from utility_functions import (
 )
 
 
-debug = True
+debug = False
 
 if debug:
     prefix = ""
@@ -34,10 +34,10 @@ else:
     prefix = "../../"
 
 logistic_regression = True
-max_iterations = 1
+max_iterations = 10000
 
-random_forest = True
-max_depth = 3
+random_forest = False
+max_depth = 10
 
 cross_validation = True
 per_player_classifiers = False
@@ -171,10 +171,25 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         clf = LogisticRegression(max_iter=max_iterations, solver='saga', penalty='l2')
         clf.fit(X_train, y_train)
         
+        # Find most common class (already done)
         class_counts = Counter(y_train)
         most_common_class = max(class_counts, key=class_counts.get)
         baseline_acc = class_counts[most_common_class] / len(y_train)
+
+        # Baseline predictions (predict the most common class for all samples)
+        y_train_baseline_pred = np.full_like(y_train, fill_value=most_common_class)
+
+        # Compute F1 scores for baseline classifier
+        f1_macro_baseline = f1_score(y_train, y_train_baseline_pred, average='macro')
+        f1_weighted_baseline = f1_score(y_train, y_train_baseline_pred, average='weighted')
+        f1_micro_baseline = f1_score(y_train, y_train_baseline_pred, average='micro')
+
+        # Print them
+        print("# Baseline Classifier ----")
         print(f"Baseline Accuracy:                      {baseline_acc:.2f}")
+        print(f"Baseline F1 Score:                       Macro {f1_macro_baseline:.2f}")
+        print(f"Baseline F1 Score:                       Weighted {f1_weighted_baseline:.2f}")
+        print(f"Baseline F1 Score:                       Micro {f1_micro_baseline:.2f}")
         
         # Train accuracy
         y_train_pred = clf.predict(X_train)
@@ -248,10 +263,12 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
         clf_rf.fit(X_train, y_train)
         
         # Random forest train accuracy
-        rf_train_acc = accuracy_score(y_train, clf_rf.predict(X_train))
-        f1_macro_rf_train = f1_score(y_test, y_test_pred, average='macro')
-        f1_weighted_rf_train = f1_score(y_test, y_test_pred, average='weighted')
-        f1_micro_rf_train = f1_score(y_test, y_test_pred, average='micro')
+        y_train_pred_rf = clf_rf.predict(X_train)
+        
+        rf_train_acc = accuracy_score(y_train, y_train_pred_rf)
+        f1_macro_rf_train = f1_score(y_train, y_train_pred_rf, average='macro')
+        f1_weighted_rf_train = f1_score(y_train, y_train_pred_rf, average='weighted')
+        f1_micro_rf_train = f1_score(y_train, y_train_pred_rf, average='micro')
 
         print("# Random Forest training ----------")
         print(f"Random Forest Train Accuracy:               {rf_train_acc:.2f}")
@@ -269,12 +286,11 @@ def classify(X_train, y_train, X_val, y_val, X_test, y_test, frames, skipped_fra
 
         # Random forest test accuracy
         y_test_pred_rf = clf_rf.predict(X_test)
-        clf_rf.predict(X_test)
         rf_test_acc = accuracy_score(y_test, y_test_pred_rf)
 
-        f1_macro_rf = f1_score(y_test, y_test_pred, average='macro')
-        f1_weighted_rf = f1_score(y_test, y_test_pred, average='weighted')
-        f1_micro_rf = f1_score(y_test, y_test_pred, average='micro')
+        f1_macro_rf = f1_score(y_test, y_test_pred_rf, average='macro')
+        f1_weighted_rf = f1_score(y_test, y_test_pred_rf, average='weighted')
+        f1_micro_rf = f1_score(y_test, y_test_pred_rf, average='micro')
         
         print("# Random Forest test --------------")
         print(f"Random Forest Test Accuracy:                +{rf_test_acc:.2f}+")
@@ -388,7 +404,7 @@ for exp in experiments:
     
     # Open the log file in append mode ("a") to avoid overwriting
     with open(log_path, "a") as log_file, redirect_stdout(log_file):
-        print(f"+++++++++++++++ Running experiment: {exp['desc']} max depth 20 +++++++++++++++")
+        print(f"+++++++++++++++ Running experiment: {exp['desc']} max depth {max_depth} +++++++++++++++")
         
         # Logistic regression lists
         train_accuracies = []
@@ -541,7 +557,7 @@ for exp in experiments:
             f1_accuracies_micro_rf.append(mean_f1_micro_acc_rf)
             
             # Plotting
-            plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_log.png")
+            plot_accuracies(train_accuracies_rf, accuracies_rf, f"{save_dir}/accuracies_rf.png")
             plot_accuracies(f1_train_accuracies_macro_rf, f1_accuracies_macro_rf, f"{save_dir}/f1_plots_rf/f1_macro_scores.png")
             plot_accuracies(f1_train_accuracies_weighted_rf, f1_accuracies_weighted_rf, f"{save_dir}/f1_plots_rf/f1_weighted_scores.png")
             plot_accuracies(f1_train_accuracies_micro_rf, f1_accuracies_micro_rf, f"{save_dir}/f1_plots_rf/f1_micro_scores.png")
