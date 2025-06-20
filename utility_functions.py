@@ -680,12 +680,11 @@ def plot_umap(labels, cm, data, text_embeddings, player, video_number, neighbors
     #plt.show()
     plt.close()
     
-def plot_umap2(labels, data, neighbors, text_embeddings=None, save_dir=""):
-    umap_model_embeddings = umap.UMAP(n_neighbors=neighbors, min_dist=0.1, metric='euclidean', random_state=42)
+def plot_umap2(labels, data, neighbors, text_embeddings=False, save_dir=""):
+    umap_model = umap.UMAP(n_neighbors=neighbors, min_dist=0.1, metric='euclidean', random_state=42)
     stacked_data = np.vstack(data)
-    #text_embeddings = np.vstack(text_embeddings)
     
-    data_2d = umap_model_embeddings.fit_transform(stacked_data)
+    data_2d = umap_model.fit_transform(stacked_data)
     
     unique_labels = list(set(labels))
     cmap = cm.get_cmap("tab20", len(unique_labels))
@@ -705,14 +704,30 @@ def plot_umap2(labels, data, neighbors, text_embeddings=None, save_dir=""):
                     s=20, label=label, color=color_dict[label], marker=marker_dict[label], 
                     edgecolors='black', linewidth=0.5, alpha=0.8)
 
-    # if text_embeddings is not None:
-    #     plt.scatter(text_embeddings[:, 0], text_embeddings[:, 1], 
-    #             s=2, c='black', label="Text Embeddings", marker='o')
 
-    #     #Add captions to text embeddings
-    #     for i, caption in enumerate(text_labels):
-    #         plt.text(text_embeddings[i, 0] + 1.15, text_embeddings[i, 1], caption, 
-    #                 fontsize=8, color='black', ha='center', va='center', alpha=0.7)
+    if text_embeddings:                        # treat the flag as boolean
+        text_vecs, text_labels = [], []
+
+        with open(prefix + "clip_captions.json", "r") as f:
+            clip_captions = json.load(f)
+
+        for key, grouping in clip_captions.items():
+            for caption in grouping:
+                path = prefix + f"embeddings/text/{key}/{caption}/embedding.npy"
+                text_vecs.append(np.load(path))
+                text_labels.append(caption)
+
+        if text_vecs:
+            text_vecs = np.vstack(text_vecs)
+            text_2d = umap_model.transform(text_vecs)
+
+            plt.scatter(text_2d[:, 0], text_2d[:, 1],
+                        s=2, c='black', label="Text Embeddings", marker='o')
+            
+            # for i, caption in enumerate(text_labels):
+            #     plt.text(text_2d[i, 0] + 1.15, text_2d[i, 1],
+            #              caption, fontsize=8, color='black',
+            #              ha='center', va='center', alpha=0.7)
 
     plt.title(f"UMAP")
     plt.xlabel("UMAP Dimension 1")
