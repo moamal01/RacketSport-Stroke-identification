@@ -95,6 +95,39 @@
     └── game_3f.mp4
 ```
 
+# Annotating Data
+The annotate.py file located in the src/annotation directory, enables annotations of frames that are labelled with a specific value. This value is currently set to **empty_event** in the **label_of_interest** field at the top of the script.
+
+1. Start by adding the video you want to annotate to the **videos** folder.  
+2. Then add a json file with the frames you wish to annotate with frames as keys and **empty_event** as value.  
+   Example:  
+   
+    ```json
+    {
+      "123": "empty_event",
+      "456": "empty_event"
+    }
+    ```
+
+   The json can include other key-value pairs but these will be ignored.  
+3. Specify the path to the video and json file at the top of the `annotate.py` script.  
+4. Run the script.
+
+
+The script will show you the frames you have specified in the json file, and request the label in the terminal. Predefined codes has been specified to speed the process up. These codes are currently just short hand notation, for example **lbl** is short for **left_backhand_loop**.
+
+To leave a label as is, simply leave the prompt empty and press 'enter'.
+
+The labels will be updated as soon as the script is prompted with the new label.
+
+To check other labels, simply change the **label_of_interest** field.
+
+# Extracting data from a video
+
+
+# Training a model
+
+
 ## Order of Execution
 1. Get keypoints
 2. Combine the tables
