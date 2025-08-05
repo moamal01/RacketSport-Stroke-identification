@@ -7,6 +7,7 @@ video = 5
 json_path = f"../../data/events/events_markup{video}.json"
 video_path = f"../../videos/game_{video}f.mp4"
 start_at = 0
+event_name = "empty_event"
 
 if os.path.exists(json_path):
     with open(json_path, "r") as f:
@@ -39,7 +40,7 @@ while True:
 
     if key == ord(' '):  # Spacebar → add "empty_event"
         print(f"Added empty_event at frame {current_frame}")
-        event_data[str(current_frame)] = "empty_event"
+        event_data[str(current_frame)] = event_name
         with open(json_path, "w") as f:
             json.dump(event_data, f, indent=2)
         current_frame += 1

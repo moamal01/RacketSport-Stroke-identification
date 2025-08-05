@@ -96,11 +96,35 @@
 ```
 
 # Annotating Data
-The annotate.py file located in the src/annotation directory, enables annotations of frames that are labelled with a specific value. This value is currently set to **empty_event** in the **label_of_interest** field at the top of the script.
+The annotation process consists of two main steps:
 
-1. Start by adding the video you want to annotate to the **videos** folder.  
-2. Then add a json file with the frames you wish to annotate with frames as keys and **empty_event** as value.  
-   Example:  
+1. Identifying stroke frames — Marking the frames where a stroke occurs.
+2. Annotating stroke frames — Labeling each identified frame with the corresponding stroke type.
+
+The relevant python scripts are found under `src/annotation`.
+
+1. Start by adding the video you want to annotate to the **videos** folder.
+2. Then add or create a json file with the frames you wish to annotate with frames as keys and **empty_event** as value.  
+
+## Marking Stroke Frames - add_events.py
+Allows for traversing a video, frame by frame and adding a specified event. This event is currently set to **empty_event** in the **event_name** field at the top of the script.
+
+### Variables
+
+* **video_path**: Path to the video.
+* **json_path**: Path to the json file.
+* **start_from**: Frame to start the stroke markation process from. 
+* **event_name**: Name of the event you want to add.
+
+The script will display the frame specified in the **start_from** variable. From here, you have four options.
+* a — Go 1 frame back.
+* d — Go 1 frame forward.
+* s — Go 10 frames forward.
+* space — Add or overwrite event to the current frame.
+
+All changes are saved automatically after each event is added to prevent data loss.
+
+The json file will be populated with values such as:
    
     ```json
     {
@@ -109,9 +133,12 @@ The annotate.py file located in the src/annotation directory, enables annotation
     }
     ```
 
-   The json can include other key-value pairs but these will be ignored.  
-3. Specify the path to the video and json file at the top of the `annotate.py` script.  
-4. Run the script.
+## Annotating Stroke Frames - annotate.py
+
+Enables annotations of frames that are labelled with a specific value. This value is currently set to **empty_event** in the **label_of_interest** field at the top of the script.
+
+1. Specify the path to the video and json file at the top of the `annotate.py` script.  
+2. Run the script.
 
 
 The script will show you the frames you have specified in the json file, and request the label in the terminal. Predefined codes has been specified to speed the process up. These codes are currently just short hand notation, for example **lbl** is short for **left_backhand_loop**.
@@ -122,7 +149,7 @@ The labels will be updated as soon as the script is prompted with the new label.
 
 To check other labels, simply change the **label_of_interest** field.
 
-# Extracting data from a video
+# Extracting Mask-RCNN Features
 
 
 # Training a model
