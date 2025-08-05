@@ -100,10 +100,11 @@ The annotation process consists of two main steps:
 
 1. Identifying stroke frames — Marking the frames where a stroke occurs.
 2. Annotating stroke frames — Labeling each identified frame with the corresponding stroke type.
+3. Add phase classes. 
 
 The relevant python scripts are found under `src/annotation`.
 
-1. Start by adding the video you want to annotate to the **videos** folder.
+1. Start by adding the video you want to annotate to the **videos** folder. It must be prefixed with "game_" and have a unique suffix. The suffix is currently a number. 
 2. Then add or create a json file with the frames you wish to annotate with frames as keys and **empty_event** as value.  
 
 ## Marking Stroke Frames - add_events.py
@@ -149,8 +150,66 @@ The labels will be updated as soon as the script is prompted with the new label.
 
 To check other labels, simply change the **label_of_interest** field.
 
-# Extracting Mask-RCNN Features
+## Add Phase Events - add_phase_events.py
+To add phase classes, simply execute the `add_phase_events.py` file.
 
+1. Specify the path to the annotated json file.
+2. The script will save a new json file to the `data/extended_events` folder.
+
+# Extracting Mask-RCNN Features
+Once the relevant frames the Mask-RCNN model can be applied. This is done with `detectron-full_video.py`.
+
+### Variables
+
+* video — Suffix of video name.
+* efficient — If is to true, the script will only process frames in intervals around annotated frames. Otherwise, every frame in the video will be processed.
+* start_at — Frame number where the video processing starts from.
+* video_path — Path to the video.
+* Threshold — Decides how many frames around the annotated frame that should be processed.
+* write_video — Create video with overlayed Mask-RCNN detections.
+
+
+**Mask R-CNN for object detection**  
+The bjects of interest are:
+- `0` — Person  
+- `32` — Sports ball  
+- `38` — Tennis racket  
+- `60` — Dining table
+
+The results are saved to a bbox_video{video}.csv.
+
+| **Event Frame** | **Class ID** | **Score** | **BBoxes**         |
+|------------------|--------------|-----------|---------------------|
+
+**Mask R-CNN adaptation for skeletal keypoint detection**  
+The Results are saved to keypoints_video{video}.csv.
+
+| **Path**         | **Event Frame** | **Keypoints**     | **People Boxes**   | **People Scores**   |
+|------------------|------------------|--------------------|---------------------|----------------------|
+
+# Post Processing
+The post processing contain several steps to structure and make the data interpretable for models later on.
+
+All the post processing scripts are located in `src/post_processing`.
+
+## Combining Tables — combine_tables.py
+As both the bbox_video{video}.csv and keypoints_video{video}.csv has the `Event Frame` key, they can be combined using this value. 
+
+### Variables
+* video — Suffix of video name.
+* keypoints_file — Path to the keypoints_video{video}.csv.
+* bbox_file — Path to the bbox_video{video}.csv.
+
+This file produces a table with combined output of the two other csv files and outputs it to `merged_output_video{video}`
+
+| **Path**   | **Event Frame** | **Keypoints**     | **People Boxes**   | **People Scores**    | **Ball Boxes**     | **Ball Scores**     | **Racket Boxes**     | **Racket Scores** | **Table Boxes**     | **Table Scores**       |
+|------------|------------------|--------------------|---------------------|------------------------|---------------------|----------------------|-----------------------|-------------------|----------------------|-------------------------|
+
+## Min-Max Normalization — normalize.py
+
+## Midpoint Normalization — midpoints.py
+
+# Extracting CLIP Embeddings
 
 # Training a model
 

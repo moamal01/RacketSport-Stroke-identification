@@ -36,19 +36,16 @@ cfg_kp.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.01
 cfg_kp.MODEL.DEVICE = device
 keypoint_detector = DefaultPredictor(cfg_kp)
 
+# Variables
 video = 2
+efficient = True
 start_at = 49765
 video_path = f"../videos/game_{video}.mp4"
-cap = cv2.VideoCapture(video_path)
-efficient = True
 threshold = 180
-
-print(device)
-
-# Visualize
 write_video = False
     
 # Get video properties
+cap = cv2.VideoCapture(video_path)
 width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = cap.get(cv2.CAP_PROP_FPS)
