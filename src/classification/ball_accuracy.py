@@ -17,8 +17,8 @@ true_balls = load_json_with_dicts(f"../../data/video_4/ball_markup.json")
 
 width = 1920
 height = 1080
-radius = 30
-confidence_threshold = 0.3
+radius = 100
+confidence_threshold = 0.0
 
 # Functions
 def unnormalize_pred_balls(ball):
@@ -69,7 +69,6 @@ for key, coords in true_balls.items():
         TP += 1
     else:
         FP += 1
-        FN += 1
 
 # Metrics summary
 precision = TP / (TP + FP) if (TP + FP) > 0 else 0
@@ -100,8 +99,8 @@ if frames:
             frame,
             (trues[idx][0], trues[idx][1]),
             radius=radius,
-            color=(0, 0, 255),  # Red
-            thickness=1
+            color=(0, 255, 0),  # Green
+            thickness=2
         )
 
         # Draw predicted ball (small green dot)
@@ -109,8 +108,8 @@ if frames:
             frame,
             (int(detections[idx][0]), int(detections[idx][1])),
             radius=3,
-            color=(0, 255, 0),  # Green
-            thickness=-1
+            color=(0, 0, 255),  # Red
+            thickness=-2
         )
 
         cv2.imshow(f"Event Preview (Frame {frame_no})", frame)

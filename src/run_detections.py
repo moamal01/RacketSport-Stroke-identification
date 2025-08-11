@@ -44,9 +44,6 @@ prob_history = deque(maxlen=sma_window_size)
     
 for frame_number in tqdm(range(frame_count - (frame_range * frame_gap)), desc="Processing Frames"):
     ret, frame = cap.read()
-    
-    #if frame_number < 436 or 5637 < frame_number:
-    #    continue
 
     x = get_feature(
         video_number=4,

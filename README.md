@@ -229,3 +229,6 @@ This file produces a table with combined output of the two other csv files and o
 ## Authors and Acknowledgment
 
 This project was started by **Moamal Fadhil Abdul-Mahdi**.
+
+Supervised by **Thomas Martini Jørgensen**. \
+Co-supervised **by Emil Hovad**.

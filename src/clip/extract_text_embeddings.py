@@ -10,10 +10,6 @@ processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 with open("clip_captions.json", "r") as f:
     clip_captions = json.load(f)
 
-
-with open("notebooks/empty_event_keys.json", "r") as keypoint_file:
-    loaded_keys = json.load(keypoint_file)
-
 for key, grouping in clip_captions.items():
     for caption in grouping:
         text_inputs = processor(text=caption, return_tensors="pt", padding=True)
