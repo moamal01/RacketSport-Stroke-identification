@@ -571,7 +571,7 @@
     "53700": "net",
     "53708": "bounce",
     "53721": "right_backhand_block neutral unknown",
-    "53744": "right_net",
+    "53744": "net",
     "53790": "empty_event",
     "53988": "empty_event",
     "54032": "bounce",
@@ -1574,5 +1574,6 @@
     "115023": "right_out",
     "116611": "right_winner",
     "119217": "left_out",
-    "151830": "right_winner"
+    "151830": "right_winner",
+    "53787": "right_miss_on_own_side"
 }
